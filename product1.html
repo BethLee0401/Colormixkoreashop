@@ -18,7 +18,7 @@
     }
 
     .wrap {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 30px 20px 60px;
     }
@@ -31,44 +31,96 @@
       font-size: 14px;
     }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 10px;
-      line-height: 1.5;
+    .product-page {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 50px;
+      align-items: start;
     }
 
-    .price {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 30px;
+    .main-image {
+      width: 100%;
+      overflow: hidden;
+      background: #fff;
     }
 
     .main-image img {
       width: 100%;
       display: block;
-      border-radius: 8px;
-      margin-bottom: 16px;
+      object-fit: cover;
     }
 
-    .gallery {
+    .thumbnails {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 12px;
     }
 
-    .gallery img {
+    .thumbnail {
+      border: 1px solid #ddd;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .thumbnail img {
       width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
       display: block;
-      border-radius: 8px;
     }
 
-    @media (max-width: 600px) {
+    .product-info {
+      position: sticky;
+      top: 30px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.5;
+      margin: 0 0 18px;
+      font-weight: 600;
+    }
+
+    .price {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 28px;
+    }
+
+    .divider {
+      border-top: 1px solid #ddd;
+      margin: 25px 0;
+    }
+
+    .note {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    @media (max-width: 768px) {
+      .product-page {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+
+      .product-info {
+        position: static;
+      }
+
       h1 {
         font-size: 22px;
       }
 
-      .gallery {
-        grid-template-columns: 1fr;
+      .price {
+        font-size: 21px;
+      }
+
+      .thumbnails {
+        gap: 6px;
       }
     }
   </style>
@@ -80,22 +132,71 @@
 
     <a class="back" href="index.html">← 回到首頁</a>
 
-    <h1>美式復古 U領單排扣高腰傘擺背心短洋裝</h1>
+    <div class="product-page">
 
-    <div class="price">NT$ 2,300</div>
+      <div>
 
-    <div class="main-image">
-      <img src="image-1944593136204205.jpg" alt="商品照片1">
-    </div>
+        <div class="main-image">
+          <img
+            id="mainProductImage"
+            src="image-1944593136204205.jpg"
+            alt="美式復古 U領單排扣高腰傘擺背心短洋裝"
+          >
+        </div>
 
-    <div class="gallery">
-      <img src="IMG_7064.JPG" alt="商品照片2">
-      <img src="IMG_7065.JPG" alt="商品照片3">
-      <img src="IMG_7062.JPG" alt="商品照片4">
-      <img src="IMG_7063.JPG" alt="商品照片5">
+        <div class="thumbnails">
+
+          <button class="thumbnail" onclick="changeImage('image-1944593136204205.jpg')">
+            <img src="image-1944593136204205.jpg" alt="商品照片1">
+          </button>
+
+          <button class="thumbnail" onclick="changeImage('IMG_7064.JPG')">
+            <img src="IMG_7064.JPG" alt="商品照片2">
+          </button>
+
+          <button class="thumbnail" onclick="changeImage('IMG_7065.JPG')">
+            <img src="IMG_7065.JPG" alt="商品照片3">
+          </button>
+
+          <button class="thumbnail" onclick="changeImage('IMG_7062.JPG')">
+            <img src="IMG_7062.JPG" alt="商品照片4">
+          </button>
+
+          <button class="thumbnail" onclick="changeImage('IMG_7063.JPG')">
+            <img src="IMG_7063.JPG" alt="商品照片5">
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="product-info">
+
+        <h1>美式復古 U領單排扣高腰傘擺背心短洋裝</h1>
+
+        <div class="price">NT$ 2,300</div>
+
+        <div class="divider"></div>
+
+        <div class="note">
+          COLORMIX 精選服飾
+        </div>
+
+      </div>
+
     </div>
 
   </div>
+
+  <script>
+    function changeImage(imageName) {
+      document.getElementById('mainProductImage').src = imageName;
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  </script>
 
 </body>
 </html>
