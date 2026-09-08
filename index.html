@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SEOUL DAILY｜正韓女裝</title>
+  <meta name="description" content="精選正韓女裝，帶來簡約、高質感的韓系日常穿搭。">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      background: #f8f6f2;
+      color: #222;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248,246,242,0.95);
+      border-bottom: 1px solid #e5e1da;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 22px;
+      letter-spacing: 3px;
+      font-weight: 600;
+    }
+
+    .menu {
+      display: flex;
+      gap: 25px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .hero {
+      min-height: 75vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 50px 7%;
+      background:
+        linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.25)),
+        url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=85")
+        center/cover;
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 500px;
+    }
+
+    .hero small {
+      letter-spacing: 4px;
+      font-size: 12px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 7vw, 80px);
+      line-height: 1;
+      margin: 15px 0;
+      letter-spacing: 4px;
+    }
+
+    .hero p {
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 13px 28px;
+      background: white;
+      color: #222;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    section {
+      max-width: 1200px;
+      margin: auto;
+      padding: 90px 20px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 28px;
+      letter-spacing: 3px;
+      font-weight: 500;
+    }
+
+    .section-title span {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .product img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-info {
+      padding: 13px 2px;
+    }
+
+    .product-name {
+      font-size: 14px;
+    }
+
+    .price {
+      font-size: 13px;
+      margin-top: 5px;
+      color: #555;
+    }
+
+    .category {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .category a {
+      padding: 35px 15px;
+      border: 1px solid #ddd8cf;
+      text-align: center;
+      font-size: 14px;
+      letter-spacing: 2px;
+      transition: 0.3s;
+    }
+
+    .category a:hover {
+      background: #222;
+      color: white;
+    }
+
+    .about {
+      background: #eeebe5;
+      max-width: none;
+      text-align: center;
+    }
+
+    .about-inner {
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .about h2 {
+      font-size: 28px;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+
+    .about p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    footer {
+      background: #222;
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    footer .logo {
+      margin-bottom: 15px;
+    }
+
+    footer p {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    @media (max-width: 768px) {
+
+      .menu {
+        gap: 12px;
+        font-size: 10px;
+      }
+
+      .menu a:nth-child(n+4) {
+        display: none;
+      }
+
+      .hero {
+        min-height: 78vh;
+        padding: 35px 25px;
+      }
+
+      .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .category {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      section {
+        padding: 60px 15px;
+      }
+
+      .section-title h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="#" class="logo">SEOUL DAILY</a>
+
+    <div class="menu">
+      <a href="#new">NEW</a>
+      <a href="#shop">SHOP</a>
+      <a href="#about">ABOUT</a>
+      <a href="#instagram">INSTAGRAM</a>
+    </div>
+  </nav>
+</header>
+
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <small>KOREAN SELECTED FASHION</small>
+
+    <h1>SEOUL<br>DAILY</h1>
+
+    <p>精選韓國女裝，打造簡約而有型的每日穿搭。</p>
+
+    <a href="#new" class="button">SHOP NEW IN</a>
+
+  </div>
+
+</section>
+
+
+<section id="new">
+
+  <div class="section-title">
+
+    <h2>NEW ARRIVALS</h2>
+
+    <span>最新商品</span>
+
+  </div>
+
+
+  <div class="products">
+
+    <a class="product" href="#">
+      <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=85">
+      <div class="product-info">
+        <div class="product-name">韓系簡約長版洋裝</div>
+        <div class="price">NT$ 1,280</div>
+      </div>
+    </a>
+
+
+    <a class="product" href="#">
+      <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=800&q=85">
+      <div class="product-info">
+        <div class="product-name">韓系寬鬆針織上衣</div>
+        <div class="price">NT$ 980</div>
+      </div>
+    </a>
+
+
+    <a class="product" href="#">
+      <img src="https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=800&q=85">
+      <div class="product-info">
+        <div class="product-name">簡約高腰長裙</div>
+        <div class="price">NT$ 1,180</div>
+      </div>
+    </a>
+
+
+    <a class="product" href="#">
+      <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=85">
+      <div class="product-info">
+        <div class="product-name">韓系質感外套</div>
+        <div class="price">NT$ 1,680</div>
+      </div>
+    </a>
+
+  </div>
+
+</section>
+
+
+<section id="shop">
+
+  <div class="section-title">
+
+    <h2>SHOP BY CATEGORY</h2>
+
+    <span>商品分類</span>
+
+  </div>
+
+
+  <div class="category">
+
+    <a href="#">TOPS</a>
+    <a href="#">DRESSES</a>
+    <a href="#">BOTTOMS</a>
+    <a href="#">OUTER</a>
+
+  </div>
+
+</section>
+
+
+<section id="about" class="about">
+
+  <div class="about-inner">
+
+    <h2>SEOUL DAILY</h2>
+
+    <p>
+      從韓國挑選日常服飾，
+      將簡約、舒適與質感帶進每天的穿搭。
+      我們希望每一件衣服，都能成為妳衣櫥裡真正會穿的那一件。
+    </p>
+
+  </div>
+
+</section>
+
+
+<footer id="instagram">
+
+  <div class="logo">SEOUL DAILY</div>
+
+  <p>Follow us on Instagram · LINE</p>
+
+  <p style="margin-top:20px;">
+    © 2026 SEOUL DAILY
+  </p>
+
+</footer>
+
+</body>
+</html>
