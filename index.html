@@ -397,6 +397,21 @@ const supabaseKey = "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
 const supabaseClient = supabase.createClient(
   supabaseUrl,
   supabaseKey
+  async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .eq('status', 'active');
+
+  if (error) {
+    console.error('讀取商品失敗：', error);
+    return;
+  }
+
+  console.log('Supabase 商品資料：', data);
+}
+
+loadProducts();
 );
 </script>
 </script>
