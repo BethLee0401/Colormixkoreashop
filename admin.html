@@ -658,7 +658,62 @@ rows
         $("list").appendChild(element);
       });
     }
+function addVariantRow(variant = {}) {
+  const row = document.createElement("div");
+  row.className = "variant-row";
 
+  row.innerHTML = `
+    <div>
+      <label>尺寸</label>
+      <input
+        class="variant-size"
+        type="text"
+        placeholder="例如：S"
+        value="${escapeHtml(variant.size || "")}"
+      >
+    </div>
+
+    <div>
+      <label>顏色</label>
+      <input
+        class="variant-color"
+        type="text"
+        placeholder="例如：深藍色"
+        value="${escapeHtml(variant.color || "")}"
+      >
+    </div>
+
+    <div>
+      <label>庫存數量</label>
+      <input
+        class="variant-stock"
+        type="number"
+        min="0"
+        step="1"
+        value="${Number(variant.stock || 0)}"
+      >
+    </div>
+
+    <button
+      class="variant-remove"
+      type="button"
+    >
+      刪除
+    </button>
+  `;
+
+  row
+    .querySelector(".variant-remove")
+    .addEventListener("click", function () {
+      row.remove();
+    });
+
+  $("variantRows").appendChild(row);
+}
+
+$("addVariant").onclick = function () {
+  addVariantRow();
+};
     function clearForm() {
       $("pid").value = "";
       $("name").value = "";
