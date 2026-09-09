@@ -710,7 +710,26 @@ function addVariantRow(variant = {}) {
 
   $("variantRows").appendChild(row);
 }
+function updateVariantStockVisibility() {
+  const isStock =
+    $("productType").value === "stock";
 
+  document
+    .querySelectorAll(".variant-stock")
+    .forEach(function (input) {
+      input.parentElement.style.display =
+        isStock ? "" : "none";
+
+      if (!isStock) {
+        input.value = "0";
+      }
+    });
+}
+
+$("productType").addEventListener(
+  "change",
+  updateVariantStockVisibility
+);
 $("addVariant").onclick = function () {
   addVariantRow();
 };
