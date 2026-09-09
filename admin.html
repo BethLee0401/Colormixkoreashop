@@ -371,6 +371,13 @@
     };
 
     let rows = [];
+let currentProductPage = 1;
+const productsPerPage = 5;
+
+function changeProductPage(page) {
+  currentProductPage = page;
+  load();
+}
 
     function salePrice(product) {
       const originalPrice = Number(product.price || 0);
