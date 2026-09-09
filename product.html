@@ -454,6 +454,14 @@ function money(value) {
 
   return originalPrice;
 }
+  const originalPrice = Number(item.price || 0);
+
+  if (item.product_type === "stock") {
+    return Math.round(originalPrice * 0.85);
+  }
+
+  return originalPrice;
+}
 
     function parseOptions(value) {
       if (!value) return [];
