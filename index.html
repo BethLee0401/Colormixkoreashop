@@ -401,10 +401,8 @@ const supabaseClient = supabase.createClient(
 async function loadProducts() {
   const { data, error } = await supabaseClient
     .from('Products')
-    .select('*')
-   const { data, error } = await supabaseClient
-  .from('Products')
-  .select('*');
+    .select('*');
+
   if (error) {
     console.error('讀取商品失敗：', error);
     return;
