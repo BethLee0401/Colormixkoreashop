@@ -953,8 +953,8 @@ const variantColors = [
   Number($("stockQuantity").value || 0)
 ),
           category: $("category").value,
-          size: $("size").value.trim(),
-          color: $("color").value.trim(),
+         size: variantSizes.join("／"),
+color: variantColors.join("／"),
           descripion: $("desc").value.trim(),
           active: $("active").checked,
           image_urls: addedImages.length
