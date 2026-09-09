@@ -648,6 +648,8 @@ rows
       $("price").value = product.price || "";
       $("productType").value =
   product.product_type || "live";
+      $("stockQuantity").value =
+  Number(product.stock_quantity || 0);
       $("category").value =
   product.category || "tops";
       $("size").value = product.size || "";
