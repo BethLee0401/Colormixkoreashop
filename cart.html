@@ -1069,6 +1069,29 @@ document
       "訂單訊息已複製，請在 Facebook 對話中貼上並傳送。"
     );
   };
+          document
+  .getElementById("instagramOrderLink")
+  .onclick = function (event) {
+    event.preventDefault();
+
+    const message =
+      "您好，我的訂單編號是 " +
+      orderNumber +
+      "，請提供轉帳資料，謝謝。";
+
+    navigator.clipboard
+      .writeText(message)
+      .catch(function () {});
+
+    window.open(
+      "https://ig.me/m/colormix637",
+      "_blank"
+    );
+
+    window.alert(
+      "訂單訊息已複製，請在 Instagram 對話中貼上並傳送。"
+    );
+  };
 
           cart = [];
           saveCart();
