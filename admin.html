@@ -878,6 +878,57 @@ async function loadOrders() {
 }
 
 $("reloadOrders").onclick = loadOrders;
+    function showAdminPage(page) {
+  const sections =
+    document.querySelectorAll("#dashboard > section");
+
+  const showProductPage = page === "products";
+
+  if (sections[0]) {
+    sections[0].classList.toggle(
+      "admin-page-hidden",
+      !showProductPage
+    );
+  }
+
+  if (sections[1]) {
+    sections[1].classList.toggle(
+      "admin-page-hidden",
+      !showProductPage
+    );
+  }
+
+  if (sections[2]) {
+    sections[2].classList.toggle(
+      "admin-page-hidden",
+      showProductPage
+    );
+  }
+
+  $("showProducts").classList.toggle(
+    "menu-active",
+    showProductPage
+  );
+
+  $("showOrders").classList.toggle(
+    "menu-active",
+    !showProductPage
+  );
+
+  if (!showProductPage) {
+    loadOrders();
+  }
+}
+
+$("showProducts").onclick = function () {
+  showAdminPage("products");
+};
+
+$("showOrders").onclick = function () {
+  showAdminPage("orders");
+};
+
+showAdminPage("products");
     db.auth.onAuthStateChange(function () {
       session();
     });
