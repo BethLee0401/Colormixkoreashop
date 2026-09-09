@@ -228,7 +228,30 @@
   display: none !important;
 }
 
+.variant-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px auto;
+  gap: 8px;
+  align-items: end;
+  margin: 10px 0;
+  padding: 10px;
+  background: #f7f7f7;
+  border-radius: 6px;
+}
 
+.variant-row label {
+  margin-top: 0;
+}
+
+.variant-remove {
+  background: #a93636;
+}
+
+@media (max-width: 700px) {
+  .variant-row {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 
