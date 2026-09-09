@@ -557,8 +557,13 @@ function updateCartCount() {
 
              <div class="price">
   ${product.product_type === "stock"
-    ? 'NT$ ' + salePrice(product).toLocaleString("zh-TW")
-    : 'NT$ ' + salePrice(product).toLocaleString("zh-TW")}
+    ? '<div style="color:#999;text-decoration:line-through;">原價 NT$ ' +
+      Number(product.price || 0).toLocaleString("zh-TW") +
+      '</div><div style="color:#b23b34;font-weight:700;">NT$ ' +
+      salePrice(product).toLocaleString("zh-TW") +
+      "</div>"
+    : 'NT$ ' +
+      salePrice(product).toLocaleString("zh-TW")}
 </div>
             </div>
           </a>
