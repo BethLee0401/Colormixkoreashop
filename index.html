@@ -286,16 +286,8 @@
   </div>
 
 
-  <div class="products">
-
-    <a class="product" href="product1.html">
-  <img src="image-1944593136204205.jpg">
-  <div class="product-info">
-    <div class="product-name" id="product-name-1">美式復古 U領單排扣高腰傘擺背心短洋裝</div>
-<div class="price" id="product-price-1">NT$ 2,300</div>
-  </div>
-</a>
-
+  <div class="products" id="product-list">
+    <p>商品載入中…</p>
   </div>
 
 </section>
@@ -353,39 +345,36 @@
 
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const supabaseUrl = "https://qwcpgwbaormtgpkjlaio.supabase.co";
-
-const supabaseKey = "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
-
 const supabaseClient = supabase.createClient(
-  supabaseUrl,
-  supabaseKey
+  "https://qwcpgwbaormtgpkjlaio.supabase.co",
+  "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
 );
-
+const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[char]));
 async function loadProducts() {
+  const list = document.getElementById("product-list");
   const { data, error } = await supabaseClient
-    .from('Products')
-    .select('*');
-
-  if (error) {
-    console.error('讀取商品失敗：', error);
-    return;
-  }
-
-  console.log('Supabase 商品資料：', data);
-
-  if (data && data.length > 0) {
-    const product = data[0];
-
-    document.getElementById('product-name-1').textContent = product.name;
-    document.getElementById('product-price-1').textContent =
-      'NT$ ' + Number(product.price).toLocaleString();
-  }
+    .from("Products").select("*").eq("active", true)
+    .order("created_at", { ascending: false });
+  if (error) { list.innerHTML = "<p>商品載入失敗，請稍後再試。</p>"; return; }
+  if (!data?.length) { list.innerHTML = "<p>目前沒有上架商品。</p>"; return; }
+  list.innerHTML = data.map(product => {
+    const photos = Array.isArray(product.image_urls) ? product.image_urls : [];
+    const fallback = product.id === 1 ? "image-1944593136204205.jpg" : "";
+    const image = photos[0] || fallback;
+    return `<a class="product" href="product.html?id=${encodeURIComponent(product.id)}">
+      ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}">` : '<div style="aspect-ratio:3/4;background:#eee;display:grid;place-items:center;color:#888">尚未上傳照片</div>'}
+      <div class="product-info">
+        <div class="product-name">${escapeHtml(product.name)}</div>
+        <div class="price">NT$ ${Number(product.price).toLocaleString()}</div>
+      </div>
+    </a>`;
+  }).join("");
 }
-
 loadProducts();
 </script>
 </body>
 </html>
+
