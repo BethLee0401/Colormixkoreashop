@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>COLORMIX ｜Korean Fashion</title>
-  <meta name="description" content="精選正韓女裝，帶來簡約、高質感的韓系日常穿搭。">
+  <title>COLORMIX｜Korean Fashion</title>
+
+  <meta
+    name="description"
+    content="精選正韓女裝，帶來簡約、高質感的韓系日常穿搭。"
+  >
 
   <style>
     * {
@@ -15,9 +19,9 @@
     }
 
     body {
-      font-family: Arial, "Noto Sans TC", sans-serif;
-      background: #f8f6f2;
       color: #222;
+      background: #f8f6f2;
+      font-family: Arial, "Noto Sans TC", sans-serif;
       line-height: 1.6;
     }
 
@@ -30,7 +34,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(248,246,242,0.95);
+      background: rgba(248, 246, 242, 0.96);
       border-bottom: 1px solid #e5e1da;
     }
 
@@ -39,33 +43,57 @@
       margin: auto;
       padding: 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
     }
 
     .logo {
       font-size: 22px;
-      letter-spacing: 3px;
       font-weight: 600;
+      letter-spacing: 3px;
     }
 
     .menu {
       display: flex;
+      align-items: center;
       gap: 25px;
       font-size: 13px;
       letter-spacing: 1px;
     }
 
+    .cart-link {
+      position: relative;
+    }
+
+    .cart-count {
+      display: none;
+      position: absolute;
+      top: -13px;
+      right: -14px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 10px;
+      line-height: 18px;
+      text-align: center;
+    }
+
     .hero {
       min-height: 75vh;
+      padding: 50px 7%;
       display: flex;
       align-items: flex-end;
-      padding: 50px 7%;
+      color: #fff;
       background:
-        linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.25)),
+        linear-gradient(
+          rgba(0, 0, 0, 0.08),
+          rgba(0, 0, 0, 0.25)
+        ),
         url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=85")
-        center/cover;
-      color: white;
+        center / cover;
     }
 
     .hero-content {
@@ -73,14 +101,14 @@
     }
 
     .hero small {
-      letter-spacing: 4px;
       font-size: 12px;
+      letter-spacing: 4px;
     }
 
     .hero h1 {
+      margin: 15px 0;
       font-size: clamp(38px, 7vw, 80px);
       line-height: 1;
-      margin: 15px 0;
       letter-spacing: 4px;
     }
 
@@ -91,7 +119,7 @@
     .button {
       display: inline-block;
       padding: 13px 28px;
-      background: white;
+      background: #fff;
       color: #222;
       font-size: 12px;
       letter-spacing: 2px;
@@ -104,21 +132,21 @@
     }
 
     .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
       margin-bottom: 35px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
     }
 
     .section-title h2 {
       font-size: 28px;
-      letter-spacing: 3px;
       font-weight: 500;
+      letter-spacing: 3px;
     }
 
     .section-title span {
-      font-size: 12px;
       color: #777;
+      font-size: 12px;
     }
 
     .products {
@@ -127,11 +155,26 @@
       gap: 18px;
     }
 
-    .product img {
+    .product {
+      display: block;
+    }
+
+    .product-image {
       width: 100%;
       aspect-ratio: 3 / 4;
-      object-fit: cover;
       display: block;
+      background: #eee;
+      object-fit: cover;
+    }
+
+    .no-image {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      display: grid;
+      place-items: center;
+      background: #eee;
+      color: #888;
+      font-size: 13px;
     }
 
     .product-info {
@@ -140,12 +183,13 @@
 
     .product-name {
       font-size: 14px;
+      line-height: 1.6;
     }
 
     .price {
-      font-size: 13px;
       margin-top: 5px;
       color: #555;
+      font-size: 13px;
     }
 
     .category {
@@ -157,20 +201,20 @@
     .category a {
       padding: 35px 15px;
       border: 1px solid #ddd8cf;
-      text-align: center;
       font-size: 14px;
       letter-spacing: 2px;
+      text-align: center;
       transition: 0.3s;
     }
 
     .category a:hover {
       background: #222;
-      color: white;
+      color: #fff;
     }
 
     .about {
-      background: #eeebe5;
       max-width: none;
+      background: #eeebe5;
       text-align: center;
     }
 
@@ -180,9 +224,9 @@
     }
 
     .about h2 {
+      margin-bottom: 20px;
       font-size: 28px;
       letter-spacing: 4px;
-      margin-bottom: 20px;
     }
 
     .about p {
@@ -191,9 +235,9 @@
     }
 
     footer {
-      background: #222;
-      color: white;
       padding: 50px 20px;
+      background: #222;
+      color: #fff;
       text-align: center;
     }
 
@@ -202,18 +246,37 @@
     }
 
     footer p {
-      font-size: 12px;
       color: #aaa;
+      font-size: 12px;
+    }
+
+    .social-links {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    .social-links a {
+      text-decoration: underline;
     }
 
     @media (max-width: 768px) {
-
-      .menu {
-        gap: 12px;
-        font-size: 10px;
+      .nav {
+        padding: 18px;
       }
 
-      .menu a:nth-child(n+4) {
+      .logo {
+        font-size: 18px;
+      }
+
+      .menu {
+        gap: 16px;
+        font-size: 12px;
+      }
+
+      .menu a:nth-child(-n+4) {
         display: none;
       }
 
@@ -244,137 +307,254 @@
 
 <body>
 
-<header>
-  <nav class="nav">
-    <a href="#" class="logo">COLORMIX</a>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="logo">COLORMIX</a>
 
-    <div class="menu">
-      <a href="#new">NEW</a>
-      <a href="#shop">SHOP</a>
-      <a href="#about">ABOUT</a>
-      <a href="#instagram">INSTAGRAM</a>
-    </div>
-  </nav>
-</header>
+      <div class="menu">
+        <a href="#new">NEW</a>
+        <a href="#shop">SHOP</a>
+        <a href="#about">ABOUT</a>
+        <a href="#instagram">INSTAGRAM</a>
 
+        <a href="member.html">會員中心</a>
 
-<section class="hero">
-
-  <div class="hero-content">
-
-    <small>KOREAN SELECTED FASHION</small>
-
-    <h1>SEOUL<br>DAILY</h1>
-
-    <p>精選韓國女裝，打造簡約而有型的每日穿搭。</p>
-
-    <a href="#new" class="button">SHOP NEW IN</a>
-
-  </div>
-
-</section>
-
-
-<section id="new">
-
-  <div class="section-title">
-
-    <h2>NEW ARRIVALS</h2>
-
-    <span>最新商品</span>
-
-  </div>
-
-
-  <div class="products" id="product-list">
-    <p>商品載入中…</p>
-  </div>
-
-</section>
-
-
-<section id="shop">
-
-  <div class="section-title">
-
-    <h2>SHOP BY CATEGORY</h2>
-
-    <span>商品分類</span>
-
-  </div>
-
-
-  <div class="category">
-
-    <a href="#">TOPS</a>
-    <a href="#">DRESSES</a>
-    <a href="#">BOTTOMS</a>
-    <a href="#">OUTER</a>
-
-  </div>
-
-</section>
-
-
-<section id="about" class="about">
-
-  <div class="about-inner">
-
-    <h2>SEOUL DAILY</h2>
-
-    <p>
-      從韓國挑選日常服飾，
-      將簡約、舒適與質感帶進每天的穿搭。
-      我們希望每一件衣服，都能成為妳衣櫥裡真正會穿的那一件。
-    </p>
-
-  </div>
-
-</section>
-
-
-<footer id="instagram">
-
-  <div class="logo">SEOUL DAILY</div>
-
-  <p>Follow us on Instagram · LINE</p>
-
-  <p style="margin-top:20px;">
-    © 2026 SEOUL DAILY
-  </p>
-
-</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const supabaseClient = supabase.createClient(
-  "https://qwcpgwbaormtgpkjlaio.supabase.co",
-  "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
-);
-const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[char]));
-async function loadProducts() {
-  const list = document.getElementById("product-list");
-  const { data, error } = await supabaseClient
-    .from("Products").select("*").eq("active", true)
-    .order("created_at", { ascending: false });
-  if (error) { list.innerHTML = "<p>商品載入失敗，請稍後再試。</p>"; return; }
-  if (!data?.length) { list.innerHTML = "<p>目前沒有上架商品。</p>"; return; }
-  list.innerHTML = data.map(product => {
-    const photos = Array.isArray(product.image_urls) ? product.image_urls : [];
-    const fallback = product.id === 1 ? "image-1944593136204205.jpg" : "";
-    const image = photos[0] || fallback;
-    return `<a class="product" href="product.html?id=${encodeURIComponent(product.id)}">
-      ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(product.name)}">` : '<div style="aspect-ratio:3/4;background:#eee;display:grid;place-items:center;color:#888">尚未上傳照片</div>'}
-      <div class="product-info">
-        <div class="product-name">${escapeHtml(product.name)}</div>
-        <div class="price">NT$ ${Number(product.price).toLocaleString()}</div>
+        <a href="cart.html" class="cart-link">
+          購物車
+          <span id="cartCount" class="cart-count">0</span>
+        </a>
       </div>
-    </a>`;
-  }).join("");
-}
-loadProducts();
-</script>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <small>KOREAN SELECTED FASHION</small>
+
+      <h1>SEOUL<br>DAILY</h1>
+
+      <p>精選韓國女裝，打造簡約而有型的每日穿搭。</p>
+
+      <a href="#new" class="button">SHOP NEW IN</a>
+    </div>
+  </section>
+
+  <section id="new">
+    <div class="section-title">
+      <h2>NEW ARRIVALS</h2>
+      <span>最新商品</span>
+    </div>
+
+    <div class="products" id="productList">
+      <p>商品載入中⋯</p>
+    </div>
+  </section>
+
+  <section id="shop">
+    <div class="section-title">
+      <h2>SHOP BY CATEGORY</h2>
+      <span>商品分類</span>
+    </div>
+
+    <div class="category">
+      <a href="#new">TOPS</a>
+      <a href="#new">DRESSES</a>
+      <a href="#new">BOTTOMS</a>
+      <a href="#new">OUTER</a>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="about-inner">
+      <h2>SEOUL DAILY</h2>
+
+      <p>
+        從韓國挑選日常服飾，
+        將簡約、舒適與質感帶進每天的穿搭。
+        我們希望每一件衣服，都能成為妳衣櫥裡真正會穿的那一件。
+      </p>
+    </div>
+  </section>
+
+  <footer id="instagram">
+    <div class="logo">COLORMIX</div>
+
+    <p>Follow us on Facebook · Instagram</p>
+
+    <div class="social-links">
+      <a
+        href="https://m.me/100063898780134"
+        target="_blank"
+        rel="noopener"
+      >
+        Facebook 私訊
+      </a>
+
+      <a
+        href="https://ig.me/m/colormix637"
+        target="_blank"
+        rel="noopener"
+      >
+        Instagram 私訊
+      </a>
+    </div>
+
+    <p style="margin-top: 22px;">
+      © 2026 COLORMIX
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://qwcpgwbaormtgpkjlaio.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+
+    const db = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const CART_KEY = "colormix_cart";
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeImages(value) {
+      let images = value;
+
+      if (typeof images === "string") {
+        try {
+          images = JSON.parse(images);
+        } catch (error) {
+          images = [images];
+        }
+      }
+
+      if (!Array.isArray(images)) {
+        return [];
+      }
+
+      return images.map(function (item) {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        if (item && typeof item === "object") {
+          return item.url || item.publicUrl || "";
+        }
+
+        return "";
+      }).filter(Boolean);
+    }
+
+    function updateCartCount() {
+      let cart = [];
+
+      try {
+        cart = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+      } catch (error) {
+        cart = [];
+      }
+
+      const count = Array.isArray(cart)
+        ? cart.reduce(function (total, item) {
+            return total + Number(item.quantity || 1);
+          }, 0)
+        : 0;
+
+      const cartCount =
+        document.getElementById("cartCount");
+
+      cartCount.textContent = count;
+      cartCount.style.display =
+        count > 0 ? "block" : "none";
+    }
+
+    async function loadProducts() {
+      const list =
+        document.getElementById("productList");
+
+      const { data, error } = await db
+        .from("Products")
+        .select("*")
+        .eq("active", true)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        list.innerHTML =
+          "<p>商品載入失敗，請稍後再試。</p>";
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        list.innerHTML =
+          "<p>目前沒有上架商品。</p>";
+        return;
+      }
+
+      list.innerHTML = data.map(function (product) {
+        const photos =
+          normalizeImages(product.image_urls);
+
+        const fallback =
+          Number(product.id) === 1
+            ? "image-1944593136204205.jpg"
+            : "";
+
+        const image = photos[0] || fallback;
+
+        const imageHtml = image
+          ? `
+            <img
+              class="product-image"
+              src="${escapeHtml(image)}"
+              alt="${escapeHtml(product.name)}"
+            >
+          `
+          : `
+            <div class="no-image">
+              尚未上傳照片
+            </div>
+          `;
+
+        return `
+          <a
+            class="product"
+            href="product.html?id=${encodeURIComponent(product.id)}"
+          >
+            ${imageHtml}
+
+            <div class="product-info">
+              <div class="product-name">
+                ${escapeHtml(product.name)}
+              </div>
+
+              <div class="price">
+                NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    updateCartCount();
+    loadProducts();
+  </script>
+
 </body>
 </html>
-
