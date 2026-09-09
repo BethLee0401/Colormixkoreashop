@@ -30,11 +30,16 @@
       text-decoration: none;
     }
 
+    button {
+      color: inherit;
+      font-family: inherit;
+    }
+
     header {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(248, 246, 242, 0.96);
+      background: rgba(248, 246, 242, 0.97);
       border-bottom: 1px solid #e5e1da;
     }
 
@@ -82,7 +87,7 @@
     }
 
     .hero {
-      min-height: 75vh;
+      min-height: 72vh;
       padding: 50px 7%;
       display: flex;
       align-items: flex-end;
@@ -90,14 +95,14 @@
       background:
         linear-gradient(
           rgba(0, 0, 0, 0.08),
-          rgba(0, 0, 0, 0.25)
+          rgba(0, 0, 0, 0.28)
         ),
         url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1800&q=85")
         center / cover;
     }
 
     .hero-content {
-      max-width: 500px;
+      max-width: 520px;
     }
 
     .hero small {
@@ -116,26 +121,82 @@
       margin-bottom: 25px;
     }
 
-    .button {
+    .hero-button {
       display: inline-block;
       padding: 13px 28px;
+      border: 0;
       background: #fff;
       color: #222;
       font-size: 12px;
       letter-spacing: 2px;
+      cursor: pointer;
     }
 
-    section {
+    .catalog {
       max-width: 1200px;
       margin: auto;
-      padding: 90px 20px;
+      padding: 80px 20px;
+    }
+
+    .catalog-layout {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 45px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 100px;
+      padding-right: 25px;
+      border-right: 1px solid #d8d3cb;
+    }
+
+    .sidebar-title {
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .sidebar-title.category-title {
+      margin-top: 30px;
+    }
+
+    .filter-button {
+      width: 100%;
+      margin: 0 0 5px;
+      padding: 9px 8px;
+      border: 0;
+      border-left: 3px solid transparent;
+      background: transparent;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .filter-button:hover {
+      background: #eeebe5;
+    }
+
+    .filter-button.active {
+      border-left-color: #222;
+      background: #eeebe5;
+      font-weight: 700;
+    }
+
+    .catalog-main {
+      min-width: 0;
     }
 
     .section-title {
-      margin-bottom: 35px;
+      margin-bottom: 32px;
+      padding-bottom: 17px;
+      border-bottom: 1px solid #d8d3cb;
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
+      gap: 20px;
     }
 
     .section-title h2 {
@@ -151,8 +212,8 @@
 
     .products {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px 18px;
     }
 
     .product {
@@ -186,34 +247,39 @@
       line-height: 1.6;
     }
 
+    .product-type {
+      margin-top: 4px;
+      color: #888;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
     .price {
       margin-top: 5px;
       color: #555;
       font-size: 13px;
     }
 
-    .category {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+    .original-price {
+      color: #999;
+      text-decoration: line-through;
     }
 
-    .category a {
-      padding: 35px 15px;
-      border: 1px solid #ddd8cf;
-      font-size: 14px;
-      letter-spacing: 2px;
+    .sale-price {
+      color: #b23b34;
+      font-weight: 700;
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 60px 20px;
+      border: 1px dashed #bbb;
+      color: #777;
       text-align: center;
-      transition: 0.3s;
-    }
-
-    .category a:hover {
-      background: #222;
-      color: #fff;
     }
 
     .about {
-      max-width: none;
+      padding: 80px 20px;
       background: #eeebe5;
       text-align: center;
     }
@@ -262,7 +328,18 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 850px) {
+      .catalog-layout {
+        grid-template-columns: 155px 1fr;
+        gap: 25px;
+      }
+
+      .products {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
       .nav {
         padding: 18px;
       }
@@ -272,50 +349,95 @@
       }
 
       .menu {
-        gap: 16px;
+        gap: 14px;
         font-size: 12px;
       }
 
-      .menu a:nth-child(-n+4) {
+      .menu .desktop-link {
         display: none;
       }
 
       .hero {
-        min-height: 78vh;
+        min-height: 72vh;
         padding: 35px 25px;
       }
 
-      .products {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+      .catalog {
+        padding: 55px 15px;
       }
 
-      .category {
-        grid-template-columns: repeat(2, 1fr);
+      .catalog-layout {
+        display: block;
       }
 
-      section {
-        padding: 60px 15px;
+      .sidebar {
+        position: static;
+        margin-bottom: 35px;
+        padding: 0 0 22px;
+        border-right: 0;
+        border-bottom: 1px solid #d8d3cb;
+      }
+
+      .sidebar-buttons {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      .sidebar-title.category-title {
+        margin-top: 20px;
+      }
+
+      .filter-button {
+        width: auto;
+        min-width: max-content;
+        padding: 9px 13px;
+        border: 1px solid #ccc;
+      }
+
+      .filter-button.active {
+        border-color: #222;
+        background: #222;
+        color: #fff;
       }
 
       .section-title h2 {
         font-size: 22px;
+      }
+
+      .products {
+        gap: 15px 10px;
+      }
+
+      .product-name {
+        font-size: 13px;
       }
     }
   </style>
 </head>
 
 <body>
-
   <header>
     <nav class="nav">
       <a href="index.html" class="logo">COLORMIX</a>
 
       <div class="menu">
-        <a href="#new">NEW</a>
-        <a href="#shop">SHOP</a>
-        <a href="#about">ABOUT</a>
-        <a href="#instagram">INSTAGRAM</a>
+        <a
+          class="desktop-link"
+          href="#products"
+          data-top-filter="stock"
+        >
+          現貨
+        </a>
+
+        <a
+          class="desktop-link"
+          href="#products"
+          data-top-filter="live"
+        >
+          連線商品
+        </a>
 
         <a href="member.html">會員中心</a>
 
@@ -335,48 +457,118 @@
 
       <p>精選韓國女裝，打造簡約而有型的每日穿搭。</p>
 
-      <a href="#new" class="button">SHOP NEW IN</a>
+      <button
+        id="shopButton"
+        class="hero-button"
+        type="button"
+      >
+        SHOP NOW
+      </button>
     </div>
   </section>
 
-  <section id="stock">
-  <div class="section-title">
-    <h2>IN STOCK</h2>
-    <span>現貨專區</span>
-  </div>
+  <section id="products" class="catalog">
+    <div class="catalog-layout">
 
-  <div class="products" id="stockProductList">
-    <p>商品載入中⋯</p>
-  </div>
-</section>
+      <aside class="sidebar">
+        <div class="sidebar-title">SHOP</div>
 
-<section id="live">
-  <div class="section-title">
-    <h2>LIVE COLLECTION</h2>
-    <span>連線商品</span>
-  </div>
+        <div class="sidebar-buttons">
+          <button
+            class="filter-button active"
+            type="button"
+            data-filter="stock"
+          >
+            現貨專區
+          </button>
 
-  <div class="products" id="liveProductList">
-    <p>商品載入中⋯</p>
-  </div>
-</section>
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="live"
+          >
+            連線商品
+          </button>
 
-<section id="shop">
-  
-    <div class="section-title">
-      <h2>SHOP BY CATEGORY</h2>
-      <span>商品分類</span>
-    </div>
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="all"
+          >
+            全部商品
+          </button>
+        </div>
 
-    <div class="category">
-      <a href="#new">TOPS</a>
-      <a href="#new">DRESSES</a>
-      <a href="#new">BOTTOMS</a>
-      <a href="#new">OUTER</a>
+        <div class="sidebar-title category-title">
+          商品分類
+        </div>
+
+        <div class="sidebar-buttons">
+          <button
+            class="filter-button"
+            type="button"
+            data-category="tops"
+          >
+            上半身
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-category="bottoms"
+          >
+            下半身
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-category="dresses"
+          >
+            洋裝
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-category="outer"
+          >
+            外套
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-category="shoes"
+          >
+            鞋子
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-category="accessories"
+          >
+            飾品
+          </button>
+        </div>
+      </aside>
+
+      <div class="catalog-main">
+        <div class="section-title">
+          <h2 id="catalogTitle">IN STOCK</h2>
+          <span id="catalogSubtitle">現貨專區</span>
+        </div>
+
+        <div id="productList" class="products">
+          <p>商品載入中⋯</p>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <section id="about" class="about">
+  <section class="about">
     <div class="about-inner">
       <h2>SEOUL DAILY</h2>
 
@@ -388,7 +580,7 @@
     </div>
   </section>
 
-  <footer id="instagram">
+  <footer>
     <div class="logo">COLORMIX</div>
 
     <p>Follow us on Facebook · Instagram</p>
@@ -411,7 +603,7 @@
       </a>
     </div>
 
-    <p style="margin-top: 22px;">
+    <p style="margin-top:22px;">
       © 2026 COLORMIX
     </p>
   </footer>
@@ -419,18 +611,31 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const SUPABASE_URL =
-      "https://qwcpgwbaormtgpkjlaio.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
-
     const db = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
+      "https://qwcpgwbaormtgpkjlaio.supabase.co",
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
     );
 
     const CART_KEY = "colormix_cart";
+
+    let allProducts = [];
+    let currentFilter = "stock";
+    let currentCategory = "";
+
+    const filterTitles = {
+      stock: ["IN STOCK", "現貨專區"],
+      live: ["LIVE COLLECTION", "連線商品"],
+      all: ["ALL ITEMS", "全部商品"]
+    };
+
+    const categoryTitles = {
+      tops: ["TOPS", "上半身"],
+      bottoms: ["BOTTOMS", "下半身"],
+      dresses: ["DRESSES", "洋裝"],
+      outer: ["OUTER", "外套"],
+      shoes: ["SHOES", "鞋子"],
+      accessories: ["ACCESSORIES", "飾品"]
+    };
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -468,20 +673,18 @@
         return "";
       }).filter(Boolean);
     }
-function money(value) {
-  return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
-}
-    function salePrice(item) {
-  const originalPrice = Number(item.price || 0);
 
-  if (item.product_type === "stock") {
-    return Math.round(originalPrice * 0.85);
-  }
+    function salePrice(product) {
+      const originalPrice = Number(product.price || 0);
 
-  return originalPrice;
-}
+      if (product.product_type === "stock") {
+        return Math.round(originalPrice * 0.85);
+      }
 
-function updateCartCount() {
+      return originalPrice;
+    }
+
+    function updateCartCount() {
       let cart = [];
 
       try {
@@ -506,112 +709,197 @@ function updateCartCount() {
         count > 0 ? "block" : "none";
     }
 
-   function productCard(product) {
-  const photos = normalizeImages(product.image_urls);
+    function productCard(product) {
+      const photos =
+        normalizeImages(product.image_urls);
 
-  const fallback =
-    Number(product.id) === 1
-      ? "image-1944593136204205.jpg"
-      : "";
+      const fallback =
+        Number(product.id) === 1
+          ? "image-1944593136204205.jpg"
+          : "";
 
-  const image = photos[0] || fallback;
+      const image = photos[0] || fallback;
 
-  const imageHtml = image
-    ? `
-      <img
-        class="product-image"
-        src="${escapeHtml(image)}"
-        alt="${escapeHtml(product.name)}"
-      >
-    `
-    : `
-      <div class="no-image">
-        尚未上傳照片
-      </div>
-    `;
+      const imageHtml = image
+        ? `
+          <img
+            class="product-image"
+            src="${escapeHtml(image)}"
+            alt="${escapeHtml(product.name)}"
+          >
+        `
+        : `
+          <div class="no-image">
+            尚未上傳照片
+          </div>
+        `;
 
-  const priceHtml =
-    product.product_type === "stock"
-      ? `
-        <div style="color:#999;text-decoration:line-through;">
-          原價 NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
-        </div>
+      const isStock =
+        product.product_type === "stock";
 
-        <div style="color:#b23b34;font-weight:700;">
-          NT$ ${salePrice(product).toLocaleString("zh-TW")}
-        </div>
-      `
-      : `
-        NT$ ${salePrice(product).toLocaleString("zh-TW")}
+      const priceHtml = isStock
+        ? `
+          <div class="original-price">
+            原價 NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
+          </div>
+
+          <div class="sale-price">
+            NT$ ${salePrice(product).toLocaleString("zh-TW")}
+          </div>
+        `
+        : `
+          <div>
+            NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
+          </div>
+        `;
+
+      return `
+        <a
+          class="product"
+          href="product.html?id=${encodeURIComponent(product.id)}"
+        >
+          ${imageHtml}
+
+          <div class="product-info">
+            <div class="product-name">
+              ${escapeHtml(product.name)}
+            </div>
+
+            <div class="product-type">
+              ${isStock ? "IN STOCK" : "LIVE COLLECTION"}
+            </div>
+
+            <div class="price">
+              ${priceHtml}
+            </div>
+          </div>
+        </a>
       `;
+    }
 
-  return `
-    <a
-      class="product"
-      href="product.html?id=${encodeURIComponent(product.id)}"
-    >
-      ${imageHtml}
+    function renderProducts() {
+      let products = allProducts;
 
-      <div class="product-info">
-        <div class="product-name">
-          ${escapeHtml(product.name)}
-        </div>
+      if (currentCategory) {
+        products = allProducts.filter(function (product) {
+          return product.category === currentCategory;
+        });
 
-        <div class="price">
-          ${priceHtml}
-        </div>
-      </div>
-    </a>
-  `;
-}
+        document.getElementById("catalogTitle").textContent =
+          categoryTitles[currentCategory][0];
 
-async function loadProducts() {
-  const stockList =
-    document.getElementById("stockProductList");
+        document.getElementById("catalogSubtitle").textContent =
+          categoryTitles[currentCategory][1];
+      } else {
+        if (currentFilter === "stock") {
+          products = allProducts.filter(function (product) {
+            return product.product_type === "stock";
+          });
+        }
 
-  const liveList =
-    document.getElementById("liveProductList");
+        if (currentFilter === "live") {
+          products = allProducts.filter(function (product) {
+            return product.product_type !== "stock";
+          });
+        }
 
-  const { data, error } = await db
-    .from("Products")
-    .select("*")
-    .eq("active", true)
-    .order("created_at", {
-      ascending: false
-    });
+        document.getElementById("catalogTitle").textContent =
+          filterTitles[currentFilter][0];
 
-  if (error) {
-    stockList.innerHTML =
-      "<p>商品載入失敗，請稍後再試。</p>";
+        document.getElementById("catalogSubtitle").textContent =
+          filterTitles[currentFilter][1];
+      }
 
-    liveList.innerHTML =
-      "<p>商品載入失敗，請稍後再試。</p>";
+      const list =
+        document.getElementById("productList");
 
-    return;
-  }
+      list.innerHTML = products.length
+        ? products.map(productCard).join("")
+        : '<div class="empty">目前這個分類沒有商品</div>';
+    }
 
-  const products = data || [];
+    function selectFilter(button) {
+      document
+        .querySelectorAll(".filter-button")
+        .forEach(function (item) {
+          item.classList.remove("active");
+        });
 
-  const stockProducts = products.filter(function (product) {
-    return product.product_type === "stock";
-  });
+      button.classList.add("active");
 
-  const liveProducts = products.filter(function (product) {
-    return product.product_type !== "stock";
-  });
+      if (button.dataset.category) {
+        currentCategory = button.dataset.category;
+        currentFilter = "all";
+      } else {
+        currentCategory = "";
+        currentFilter = button.dataset.filter;
+      }
 
-  stockList.innerHTML = stockProducts.length
-    ? stockProducts.map(productCard).join("")
-    : "<p>目前沒有現貨商品。</p>";
+      renderProducts();
+    }
 
-  liveList.innerHTML = liveProducts.length
-    ? liveProducts.map(productCard).join("")
-    : "<p>目前沒有連線商品。</p>";
-}
+    document
+      .querySelectorAll(".filter-button")
+      .forEach(function (button) {
+        button.addEventListener("click", function () {
+          selectFilter(button);
+        });
+      });
+
+    document
+      .querySelectorAll("[data-top-filter]")
+      .forEach(function (link) {
+        link.addEventListener("click", function () {
+          currentCategory = "";
+          currentFilter = link.dataset.topFilter;
+
+          const matchingButton =
+            document.querySelector(
+              '[data-filter="' +
+              currentFilter +
+              '"]'
+            );
+
+          if (matchingButton) {
+            selectFilter(matchingButton);
+          }
+        });
+      });
+
+    document
+      .getElementById("shopButton")
+      .addEventListener("click", function () {
+        document
+          .getElementById("products")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+      });
+
+    async function loadProducts() {
+      const list =
+        document.getElementById("productList");
+
+      const { data, error } = await db
+        .from("Products")
+        .select("*")
+        .eq("active", true)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        list.innerHTML =
+          '<div class="empty">商品載入失敗，請稍後再試。</div>';
+        return;
+      }
+
+      allProducts = data || [];
+      renderProducts();
+    }
 
     updateCartCount();
     loadProducts();
   </script>
-
 </body>
 </html>
