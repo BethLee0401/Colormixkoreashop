@@ -195,6 +195,63 @@
     margin: 16px 0;
   }
 }
+    #dashboard:not(.hidden) {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.admin-menu {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+  position: sticky;
+  top: 20px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd6cc;
+  border-radius: 10px;
+}
+
+.admin-menu button {
+  width: 100%;
+  margin-bottom: 8px;
+  background: #eee;
+  color: #222;
+  text-align: left;
+}
+
+.admin-menu button.menu-active {
+  background: #222;
+  color: #fff;
+}
+
+#dashboard > .actions,
+#dashboard > section {
+  grid-column: 2;
+}
+
+.admin-page-hidden {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  #dashboard:not(.hidden) {
+    display: block;
+  }
+
+  .admin-menu {
+    position: static;
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .admin-menu button {
+    margin: 0;
+    text-align: center;
+  }
+}
   </style>
 </head>
 
