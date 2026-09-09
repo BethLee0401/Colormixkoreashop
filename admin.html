@@ -1,25 +1,657 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>COLORMIX 商品管理</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans TC",sans-serif;background:#f6f3ee;color:#222}.wrap{max-width:900px;margin:auto;padding:28px 16px}h1{letter-spacing:2px}.card{background:#fff;border:1px solid #ddd6cc;border-radius:10px;padding:20px;margin:16px 0}label{display:block;margin:12px 0 5px;font-size:14px}input,textarea{width:100%;padding:11px;border:1px solid #bbb;border-radius:6px;font:inherit}textarea{min-height:90px}button{padding:11px 16px;border:0;border-radius:6px;background:#222;color:#fff;cursor:pointer}.light{background:#eee;color:#222}.danger{background:#a93636}.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.hidden{display:none}.check{display:flex;gap:8px;align-items:center;margin-top:14px}.check input{width:auto}.check label{margin:0}.item{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;border-top:1px solid #eee;padding:12px 0}.item img{width:70px;height:88px;object-fit:cover;background:#eee}.msg{color:#a93636;margin-top:10px;font-size:14px}@media(max-width:600px){.item{grid-template-columns:60px 1fr}.item .actions{grid-column:1/-1}}
-</style></head><body><div class="wrap">
-<h1>COLORMIX 商品管理</h1>
-<section id="loginBox" class="card"><h2>後台登入</h2><label>電子信箱</label><input id="email" type="email"><label>密碼</label><input id="password" type="password"><div class="actions"><button id="login">登入</button></div><div id="loginMsg" class="msg"></div></section>
-<main id="dashboard" class="hidden"><div class="actions"><button id="logout" class="light">登出</button></div>
-<section class="card"><h2 id="formTitle">新增商品</h2><input id="pid" type="hidden"><label>商品名稱</label><input id="name"><label>價格</label><input id="price" type="number" min="0"><label>尺寸</label><input id="size" placeholder="例如：S／M／L"><label>顏色</label><input id="color" placeholder="例如：深藍色"><label>商品介紹</label><textarea id="desc"></textarea><label>商品照片（最多 5 張）</label><input id="images" type="file" accept="image/*" multiple><div class="check"><input id="active" type="checkbox" checked><label for="active">立即上架</label></div><div class="actions"><button id="save">儲存商品</button><button id="cancel" class="light">取消編輯</button></div><div id="formMsg" class="msg"></div></section>
-<section class="card"><h2>全部商品</h2><div id="list"></div></section></main></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const db=supabase.createClient('https://qwcpgwbaormtgpkjlaio.supabase.co','sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l'),$=x=>document.getElementById(x);let rows=[];
-async function session(){const{data}=await db.auth.getSession(),on=!!data.session;$('loginBox').classList.toggle('hidden',on);$('dashboard').classList.toggle('hidden',!on);if(on)load()}
-$('login').onclick=async()=>{const{error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('loginMsg').textContent=error?'登入失敗：'+error.message:'';if(!error)session()};$('logout').onclick=async()=>{await db.auth.signOut();session()};
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function load(){const{data,error}=await db.from('Products').select('*').order('created_at',{ascending:false});if(error){$('list').textContent='讀取失敗：'+error.message;return}rows=data||[];$('list').innerHTML=rows.length?'':'目前沒有商品';rows.forEach(p=>{const pics=Array.isArray(p.image_urls)?p.image_urls:[],el=document.createElement('div');el.className='item';el.innerHTML='<img src="'+(pics[0]||'')+'"><div><b>'+esc(p.name||'')+'</b><div>NT$ '+Number(p.price||0).toLocaleString()+'</div><small>'+(p.active?'已上架':'已下架')+'</small></div><div class="actions"><button class="light edit">編輯</button><button class="danger del">刪除</button></div>';el.querySelector('.edit').onclick=()=>edit(p.id);el.querySelector('.del').onclick=()=>remove(p.id);$('list').appendChild(el)})}
-function clearForm(){$('pid').value='';$('name').value='';$('price').value='';$('size').value='';$('color').value='';$('desc').value='';$('images').value='';$('active').checked=true;$('formTitle').textContent='新增商品';$('formMsg').textContent=''}$('cancel').onclick=clearForm;
-function edit(id){const p=rows.find(x=>x.id===id);$('pid').value=p.id;$('name').value=p.name||'';$('price').value=p.price||'';$('size').value=p.size||'';$('color').value=p.color||'';$('desc').value=p.descripion||'';$('active').checked=!!p.active;$('formTitle').textContent='編輯商品';scrollTo({top:0,behavior:'smooth'})}
-async function upload(){const urls=[];for(const f of [...$('images').files].slice(0,5)){const path=Date.now()+'-'+crypto.randomUUID()+'.'+f.name.split('.').pop();const{error}=await db.storage.from('product-images').upload(path,f);if(error)throw error;urls.push(db.storage.from('product-images').getPublicUrl(path).data.publicUrl)}return urls}
-$('save').onclick=async()=>{try{$('formMsg').textContent='儲存中…';const id=$('pid').value,old=rows.find(x=>String(x.id)===id),added=await upload(),payload={name:$('name').value.trim(),price:Number($('price').value),size:$('size').value.trim(),color:$('color').value.trim(),descripion:$('desc').value.trim(),active:$('active').checked,image_urls:added.length?added:(old?.image_urls||[])};if(!payload.name||!$('price').value)throw Error('請填商品名稱和價格');const{error}=await(id?db.from('Products').update(payload).eq('id',id):db.from('Products').insert(payload));if(error)throw error;clearForm();await load()}catch(e){$('formMsg').textContent='儲存失敗：'+e.message}};
-async function remove(id){if(!confirm('確定刪除這件商品？'))return;const{error}=await db.from('Products').delete().eq('id',id);if(error)alert(error.message);else load()}db.auth.onAuthStateChange(session);session();
-</script></body></html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>COLORMIX 商品管理</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #222;
+      background: #f6f3ee;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+      padding: 28px 16px;
+    }
+
+    h1 {
+      letter-spacing: 2px;
+    }
+
+    .card {
+      margin: 16px 0;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd6cc;
+      border-radius: 10px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      background: #fff;
+      color: #222;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 6px;
+      background: #222;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .light {
+      background: #eee;
+      color: #222;
+    }
+
+    .danger {
+      background: #a93636;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .check input {
+      width: auto;
+    }
+
+    .check label {
+      margin: 0;
+    }
+
+    .item {
+      padding: 14px 0;
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .item img {
+      width: 70px;
+      height: 88px;
+      background: #eee;
+      object-fit: cover;
+    }
+
+    .item-name {
+      margin-bottom: 4px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .original-price {
+      color: #888;
+      font-size: 13px;
+      text-decoration: line-through;
+    }
+
+    .sale-price {
+      color: #b23b34;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .normal-price {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .tag {
+ anspruchlos display: inline-block;
+      margin: 5px 6px 0 0;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: #eee;
+      color: #555;
+      font-size: 12px;
+    }
+
+    .tag.stock {
+      background: #fff0ed;
+      color: #a93636;
+    }
+
+    .msg {
+      margin-top: 10px;
+      color: #a93636;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .hint {
+      margin-top: 6px;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .item {
+        grid-template-columns: 60px 1fr;
+      }
+
+      .item .actions {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>COLORMIX 商品管理</h1>
+
+    <section id="loginBox" class="card">
+      <h2>後台登入</h2>
+
+      <label for="email">電子信箱</label>
+      <input id="email" type="email">
+
+      <label for="password">密碼</label>
+      <input id="password" type="password">
+
+      <div class="actions">
+        <button id="login" type="button">登入</button>
+      </div>
+
+      <div id="loginMsg" class="msg"></div>
+    </section>
+
+    <main id="dashboard" class="hidden">
+      <div class="actions">
+        <button id="logout" class="light" type="button">
+          登出
+        </button>
+      </div>
+
+      <section class="card">
+        <h2 id="formTitle">新增商品</h2>
+
+        <input id="pid" type="hidden">
+
+        <label for="name">商品名稱</label>
+        <input id="name" type="text">
+
+        <label for="price">商品原價</label>
+        <input id="price" type="number" min="0">
+
+        <label for="productType">商品類型</label>
+        <select id="productType">
+          <option value="live">連線商品｜維持原價</option>
+          <option value="stock">現貨商品｜自動 85 折</option>
+        </select>
+
+        <div class="hint">
+          選擇「現貨商品」後，官網會自動以原價的 85 折販售。
+        </div>
+
+        <label for="size">尺寸</label>
+        <input
+          id="size"
+          type="text"
+          placeholder="例如：S／M／L"
+        >
+
+        <label for="color">顏色</label>
+        <input
+          id="color"
+          type="text"
+          placeholder="例如：深藍色"
+        >
+
+        <label for="desc">商品介紹</label>
+        <textarea id="desc"></textarea>
+
+        <label for="images">商品照片（最多5張）</label>
+        <input
+          id="images"
+          type="file"
+          accept="image/*"
+          multiple
+        >
+
+        <div class="check">
+          <input id="active" type="checkbox" checked>
+          <label for="active">立即上架</label>
+        </div>
+
+        <div class="actions">
+          <button id="save" type="button">儲存商品</button>
+
+          <button id="cancel" class="light" type="button">
+            取消編輯
+          </button>
+        </div>
+
+        <div id="formMsg" class="msg"></div>
+      </section>
+
+      <section class="card">
+        <h2>全部商品</h2>
+        <div id="list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const db = supabase.createClient(
+      "https://qwcpgwbaormtgpkjlaio.supabase.co",
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
+    );
+
+    const $ = function (id) {
+      return document.getElementById(id);
+    };
+
+    let rows = [];
+
+    function salePrice(product) {
+      const originalPrice = Number(product.price || 0);
+
+      if (product.product_type === "stock") {
+        return Math.round(originalPrice * 0.85);
+      }
+
+      return originalPrice;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeImages(value) {
+      let images = value;
+
+      if (typeof images === "string") {
+        try {
+          images = JSON.parse(images);
+        } catch (error) {
+          images = [images];
+        }
+      }
+
+      if (!Array.isArray(images)) {
+        return [];
+      }
+
+      return images.map(function (item) {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        if (item && typeof item === "object") {
+          return item.url || item.publicUrl || "";
+        }
+
+        return "";
+      }).filter(Boolean);
+    }
+
+    async function session() {
+      const {
+        data: { session }
+      } = await db.auth.getSession();
+
+      const loggedIn = Boolean(session);
+
+      $("loginBox").classList.toggle("hidden", loggedIn);
+      $("dashboard").classList.toggle("hidden", !loggedIn);
+
+      if (loggedIn) {
+        await load();
+      }
+    }
+
+    $("login").onclick = async function () {
+      $("loginMsg").textContent = "";
+
+      const { error } = await db.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+
+      if (error) {
+        $("loginMsg").textContent =
+          "登入失敗：" + error.message;
+        return;
+      }
+
+      await session();
+    };
+
+    $("logout").onclick = async function () {
+      await db.auth.signOut();
+      await session();
+    };
+
+    async function load() {
+      const { data, error } = await db
+        .from("Products")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        $("list").textContent =
+          "讀取失敗：" + error.message;
+        return;
+      }
+
+      rows = data || [];
+      $("list").innerHTML = "";
+
+      if (!rows.length) {
+        $("list").textContent = "目前沒有商品";
+        return;
+      }
+
+      rows.forEach(function (product) {
+        const pictures =
+          normalizeImages(product.image_urls);
+
+        const fallback =
+          Number(product.id) === 1
+            ? "image-1944593136204205.jpg"
+            : "";
+
+        const picture = pictures[0] || fallback;
+        const finalPrice = salePrice(product);
+        const isStock =
+          product.product_type === "stock";
+
+        const priceHtml = isStock
+          ? `
+            <div class="original-price">
+              原價 NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
+            </div>
+
+            <div class="sale-price">
+              現貨85折 NT$ ${finalPrice.toLocaleString("zh-TW")}
+            </div>
+          `
+          : `
+            <div class="normal-price">
+              NT$ ${finalPrice.toLocaleString("zh-TW")}
+            </div>
+          `;
+
+        const element = document.createElement("div");
+        element.className = "item";
+
+        element.innerHTML = `
+          <img
+            src="${escapeHtml(picture)}"
+            alt="${escapeHtml(product.name)}"
+          >
+
+          <div>
+            <div class="item-name">
+              ${escapeHtml(product.name || "")}
+            </div>
+
+            ${priceHtml}
+
+            <span class="tag ${isStock ? "stock" : ""}">
+              ${isStock ? "現貨商品" : "連線商品"}
+            </span>
+
+            <span class="tag">
+              ${product.active ? "已上架" : "已下架"}
+            </span>
+          </div>
+
+          <div class="actions">
+            <button class="light edit" type="button">
+              編輯
+            </button>
+
+            <button class="danger delete" type="button">
+              刪除
+            </button>
+          </div>
+        `;
+
+        element
+          .querySelector(".edit")
+          .addEventListener("click", function () {
+            edit(product.id);
+          });
+
+        element
+          .querySelector(".delete")
+          .addEventListener("click", function () {
+            removeProduct(product.id);
+          });
+
+        $("list").appendChild(element);
+      });
+    }
+
+    function clearForm() {
+      $("pid").value = "";
+      $("name").value = "";
+      $("price").value = "";
+      $("productType").value = "live";
+      $("size").value = "";
+      $("color").value = "";
+      $("desc").value = "";
+      $("images").value = "";
+      $("active").checked = true;
+      $("formTitle").textContent = "新增商品";
+      $("formMsg").textContent = "";
+    }
+
+    $("cancel").onclick = clearForm;
+
+    function edit(id) {
+      const product = rows.find(function (item) {
+        return item.id === id;
+      });
+
+      if (!product) return;
+
+      $("pid").value = product.id;
+      $("name").value = product.name || "";
+      $("price").value = product.price || "";
+      $("productType").value =
+        product.product_type || "live";
+      $("size").value = product.size || "";
+      $("color").value = product.color || "";
+      $("desc").value = product.descripion || "";
+      $("images").value = "";
+      $("active").checked = Boolean(product.active);
+      $("formTitle").textContent = "編輯商品";
+      $("formMsg").textContent =
+        "如不更換照片，照片欄位保持空白即可。";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    async function uploadImages() {
+      const urls = [];
+      const files = Array.from($("images").files).slice(0, 5);
+
+      for (const file of files) {
+        const extension =
+          file.name.split(".").pop() || "jpg";
+
+        const path =
+          Date.now() +
+          "-" +
+          crypto.randomUUID() +
+          "." +
+          extension;
+
+        const { error } = await db.storage
+          .from("product-images")
+          .upload(path, file);
+
+        if (error) {
+          throw error;
+        }
+
+        const publicUrl = db.storage
+          .from("product-images")
+          .getPublicUrl(path)
+          .data
+          .publicUrl;
+
+        urls.push(publicUrl);
+      }
+
+      return urls;
+    }
+
+    $("save").onclick = async function () {
+      const saveButton = $("save");
+
+      try {
+        saveButton.disabled = true;
+        saveButton.textContent = "儲存中⋯";
+        $("formMsg").textContent = "儲存中⋯";
+
+        const id = $("pid").value;
+
+        const oldProduct = rows.find(function (item) {
+          return String(item.id) === String(id);
+        });
+
+        const addedImages = await uploadImages();
+
+        const payload = {
+          name: $("name").value.trim(),
+          price: Number($("price").value),
+          product_type: $("productType").value,
+          size: $("size").value.trim(),
+          color: $("color").value.trim(),
+          descripion: $("desc").value.trim(),
+          active: $("active").checked,
+          image_urls: addedImages.length
+            ? addedImages
+            : (oldProduct?.image_urls || [])
+        };
+
+        if (!payload.name || !$("price").value) {
+          throw new Error("請填寫商品名稱和價格");
+        }
+
+        let result;
+
+        if (id) {
+          result = await db
+            .from("Products")
+            .update(payload)
+            .eq("id", id);
+        } else {
+          result = await db
+            .from("Products")
+            .insert(payload);
+        }
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        clearForm();
+        await load();
+
+        $("formMsg").textContent = "商品儲存成功";
+      } catch (error) {
+        $("formMsg").textContent =
+          "儲存失敗：" + error.message;
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = "儲存商品";
+      }
+    };
+
+    async function removeProduct(id) {
+      const confirmed = window.confirm(
+        "確定要刪除這件商品嗎？"
+      );
+
+      if (!confirmed) return;
+
+      const { error } = await db
+        .from("Products")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        window.alert("刪除失敗：" + error.message);
+      } else {
+        await load();
+      }
+    }
+
+    db.auth.onAuthStateChange(function () {
+      session();
+    });
+
+    session();
+  </script>
+</body>
+</html>
