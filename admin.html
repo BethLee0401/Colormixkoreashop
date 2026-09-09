@@ -948,9 +948,11 @@ const variantColors = [
           name: $("name").value.trim(),
           price: Number($("price").value),
           product_type: $("productType").value,
-          stock_quantity: Math.max(
-  0,
-  Number($("stockQuantity").value || 0)
+          stock_quantity: variants.reduce(
+  function (total, variant) {
+    return total + variant.stock;
+  },
+  0
 ),
           category: $("category").value,
          size: variantSizes.join("／"),
