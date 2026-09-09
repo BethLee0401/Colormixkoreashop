@@ -1036,7 +1036,31 @@
           }
 
           const orderNumber =
-            data?.order_number || "";
+  data?.order_number || "";
+
+document
+  .getElementById("facebookOrderLink")
+  .onclick = function (event) {
+    event.preventDefault();
+
+    const message =
+      "您好，我的訂單編號是 " +
+      orderNumber +
+      "，請提供轉帳資料，謝謝。";
+
+    navigator.clipboard
+      .writeText(message)
+      .catch(function () {});
+
+    window.open(
+      "https://m.me/100063898780134",
+      "_blank"
+    );
+
+    window.alert(
+      "訂單訊息已複製，請在 Facebook 對話中貼上並傳送。"
+    );
+  };
 
           cart = [];
           saveCart();
