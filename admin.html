@@ -709,6 +709,7 @@ function addVariantRow(variant = {}) {
     });
 
   $("variantRows").appendChild(row);
+  updateVariantStockVisibility();
 }
 function updateVariantStockVisibility() {
   const isStock =
