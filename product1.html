@@ -245,7 +245,7 @@ const supabaseClient = supabase.createClient(
 async function loadProduct() {
   const { data, error } = await supabaseClient
     .from('Products')
-    .select('*');
+    .select('*').eq('id', 1);
 
   if (error) {
     console.error('讀取商品失敗：', error);
