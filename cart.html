@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>購物車｜COLORMIX</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #222;
+      background: #f8f6f2;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    .header {
+      height: 72px;
+      padding: 0 6%;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 22px;
+      font-size: 14px;
+    }
+
+    .container {
+      width: min(1080px, calc(100% - 32px));
+      margin: 45px auto 70px;
+    }
+
+    h1 {
+      margin: 0 0 30px;
+      font-size: 30px;
+      letter-spacing: 2px;
+    }
+
+    h2 {
+      margin: 0 0 22px;
+      font-size: 21px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.3fr 0.8fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .card {
+      padding: 28px;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 110px 1fr auto;
+      gap: 18px;
+      padding: 20px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item:first-child {
+      padding-top: 0;
+    }
+
+    .cart-item:last-child {
+      border-bottom: 0;
+    }
+
+    .product-image {
+      width: 110px;
+      height: 140px;
+      background: #eee;
+      object-fit: cover;
+    }
+
+    .product-name {
+      margin-bottom: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .product-option {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .product-price {
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    .quantity-row {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    .quantity-btn {
+      width: 35px;
+      height: 35px;
+      border: 1px solid #999;
+      background: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .quantity-number {
+      width: 42px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .item-right {
+      min-width: 95px;
+      text-align: right;
+    }
+
+    .item-total {
+      font-weight: 700;
+    }
+
+    .remove-btn {
+      margin-top: 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #777;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .empty {
+      padding: 55px 15px;
+      color: #777;
+      text-align: center;
+      border: 1px dashed #bbb;
+    }
+
+    .empty a {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 13px 25px;
+      background: #222;
+      color: #fff;
+    }
+
+    .login-notice {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #c9b98a;
+      background: #fffbea;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .login-notice a {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #aaa;
+      border-radius: 0;
+      background: #fff;
+      color: #222;
+      font-size: 16px;
+    }
+
+    input,
+    select {
+      height: 48px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #222;
+      outline-offset: 1px;
+    }
+
+    .summary {
+      margin: 25px 0 20px;
+      padding-top: 18px;
+      border-top: 1px solid #bbb;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 11px 0;
+      font-size: 15px;
+    }
+
+    .summary-row.total {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #bbb;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .free-shipping {
+      margin-top: 10px;
+      color: #785f24;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #222;
+      background: #222;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .checkout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 18px;
+      padding: 13px;
+      border: 1px solid #d8a2a2;
+      background: #fff5f5;
+      color: #9a1c1c;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .success-box {
+      padding: 40px 25px;
+      background: #fff;
+      border: 1px solid #bbb;
+      text-align: center;
+    }
+
+    .success-box h2 {
+      font-size: 25px;
+    }
+
+    .order-number {
+      margin: 23px 0;
+      padding: 16px;
+      background: #f1f1f1;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .success-box p {
+      line-height: 1.8;
+    }
+
+    .success-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .success-actions a {
+      padding: 13px 20px;
+      border: 1px solid #222;
+    }
+
+    .success-actions a:first-child {
+      background: #222;
+      color: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        height: 64px;
+        padding: 0 18px;
+      }
+
+      .logo {
+        font-size: 18px;
+        letter-spacing: 3px;
+      }
+
+      .header-links {
+        gap: 13px;
+        font-size: 13px;
+      }
+
+      .container {
+        margin: 28px auto 50px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .checkout-card {
+        margin-top: 20px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .cart-item {
+        grid-template-columns: 85px 1fr;
+        gap: 14px;
+      }
+
+      .product-image {
+        width: 85px;
+        height: 110px;
+      }
+
+      .item-right {
+        grid-column: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <a class="logo" href="index.html">COLORMIX</a>
+
+    <nav class="header-links">
+      <a href="index.html">商品</a>
+      <a href="member.html">會員中心</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>購物車</h1>
+
+    <div id="message" class="message"></div>
+
+    <section id="cartLayout" class="layout">
+      <div class="card">
+        <h2>購買商品</h2>
+        <div id="cartItems"></div>
+      </div>
+
+      <div class="card checkout-card">
+        <h2>結帳資料</h2>
+
+        <div id="loginNotice" class="login-notice hidden">
+          結帳前必須先登入會員。<br>
+          <a href="member.html?return=cart.html">登入或加入會員</a>
+        </div>
+
+        <form id="checkoutForm">
+          <div class="form-group">
+            <label for="customerName">收件人姓名</label>
+            <input
+              id="customerName"
+              type="text"
+              autocomplete="name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerPhone">聯絡電話</label>
+            <input
+              id="customerPhone"
+              type="tel"
+              autocomplete="tel"
+              placeholder="例如：0912345678"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="shippingMethod">寄送方式</label>
+            <select id="shippingMethod" required>
+              <option value="family">全家店到店｜運費 NT$60</option>
+              <option value="seven">7-ELEVEN 店到店｜運費 NT$60</option>
+              <option value="post">郵寄宅配｜運費 NT$80</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label id="addressLabel" for="shippingAddress">
+              全家店名／店號
+            </label>
+
+            <input
+              id="shippingAddress"
+              type="text"
+              placeholder="請填寫門市名稱與店號"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="orderNote">訂單備註（選填）</label>
+            <textarea
+              id="orderNote"
+              placeholder="有其他需求可填寫在這裡"
+            ></textarea>
+          </div>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span>商品金額</span>
+              <span id="subtotal">NT$ 0</span>
+            </div>
+
+            <div class="summary-row">
+              <span>運費</span>
+              <span id="shippingFee">NT$ 0</span>
+            </div>
+
+            <div class="summary-row total">
+              <span>總計</span>
+              <span id="grandTotal">NT$ 0</span>
+            </div>
+
+            <div id="freeShippingText" class="free-shipping"></div>
+          </div>
+
+          <button
+            id="checkoutButton"
+            class="checkout-btn"
+            type="submit"
+          >
+            確認成立訂單
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section id="successBox" class="success-box hidden">
+      <h2>訂單成立</h2>
+
+      <p>感謝您的購買！</p>
+
+      <div id="successOrderNumber" class="order-number"></div>
+
+      <p>
+        我們將私訊提供轉帳資訊。<br>
+        確認轉帳後會安排寄出商品。
+      </p>
+
+      <div class="success-actions">
+        <a href="member.html">查看訂單紀錄</a>
+        <a href="index.html">繼續購物</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://qwcpgwbaormtgpkjlaio.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+
+    const db = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const CART_KEY = "colormix_cart";
+
+    let cart = [];
+    let currentUser = null;
+
+    const cartItemsElement =
+      document.getElementById("cartItems");
+
+    const checkoutForm =
+      document.getElementById("checkoutForm");
+
+    const checkoutButton =
+      document.getElementById("checkoutButton");
+
+    const shippingMethod =
+      document.getElementById("shippingMethod");
+
+    const shippingAddress =
+      document.getElementById("shippingAddress");
+
+    const addressLabel =
+      document.getElementById("addressLabel");
+
+    function money(value) {
+      return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function loadCart() {
+      try {
+        const savedCart = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+
+        cart = Array.isArray(savedCart) ? savedCart : [];
+      } catch (error) {
+        cart = [];
+      }
+
+      cart = cart.map(function (item) {
+        return {
+          product_id: Number(
+            item.product_id || item.id
+          ),
+          name: item.name || "商品",
+          price: Number(item.price || 0),
+          size: item.size || "",
+          color: item.color || "",
+          image: item.image || "",
+          quantity: Math.max(
+            1,
+            Number(item.quantity || 1)
+          )
+        };
+      }).filter(function (item) {
+        return item.product_id;
+      });
+    }
+
+    function saveCart() {
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify(cart)
+      );
+    }
+
+    function subtotalAmount() {
+      return cart.reduce(function (total, item) {
+        return total + item.price * item.quantity;
+      }, 0);
+    }
+
+    function shippingAmount() {
+      const subtotal = subtotalAmount();
+
+      if (subtotal >= 10000) {
+        return 0;
+      }
+
+      return shippingMethod.value === "post" ? 80 : 60;
+    }
+
+    function renderSummary() {
+      const subtotal = subtotalAmount();
+      const shipping = cart.length ? shippingAmount() : 0;
+      const total = subtotal + shipping;
+
+      document.getElementById("subtotal").textContent =
+        money(subtotal);
+
+      document.getElementById("shippingFee").textContent =
+        shipping === 0 && subtotal >= 10000
+          ? "免運"
+          : money(shipping);
+
+      document.getElementById("grandTotal").textContent =
+        money(total);
+
+      const freeShippingText =
+        document.getElementById("freeShippingText");
+
+      if (subtotal >= 10000) {
+        freeShippingText.textContent =
+          "此筆訂單已達滿 NT$10,000 免運。";
+      } else {
+        freeShippingText.textContent =
+          "再購買 " +
+          money(10000 - subtotal) +
+          " 即享免運。";
+      }
+    }
+
+    function renderCart() {
+      if (!cart.length) {
+        cartItemsElement.innerHTML = `
+          <div class="empty">
+            購物車目前沒有商品<br>
+            <a href="index.html">前往選購商品</a>
+          </div>
+        `;
+
+        checkoutButton.disabled = true;
+        renderSummary();
+        return;
+      }
+
+      cartItemsElement.innerHTML = cart.map(function (item, index) {
+        const imageHtml = item.image
+          ? `
+            <img
+              class="product-image"
+              src="${escapeHtml(item.image)}"
+              alt="${escapeHtml(item.name)}"
+            >
+          `
+          : `<div class="product-image"></div>`;
+
+        return `
+          <article class="cart-item">
+            ${imageHtml}
+
+            <div>
+              <div class="product-name">
+                ${escapeHtml(item.name)}
+              </div>
+
+              ${
+                item.size
+                  ? `<div class="product-option">
+                      尺寸：${escapeHtml(item.size)}
+                    </div>`
+                  : ""
+              }
+
+              ${
+                item.color
+                  ? `<div class="product-option">
+                      顏色：${escapeHtml(item.color)}
+                    </div>`
+                  : ""
+              }
+
+              <div class="product-price">
+                ${money(item.price)}
+              </div>
+
+              <div class="quantity-row">
+                <button
+                  class="quantity-btn"
+                  type="button"
+                  onclick="changeQuantity(${index}, -1)"
+                  aria-label="減少數量"
+                >−</button>
+
+                <span class="quantity-number">
+                  ${item.quantity}
+                </span>
+
+                <button
+                  class="quantity-btn"
+                  type="button"
+                  onclick="changeQuantity(${index}, 1)"
+                  aria-label="增加數量"
+                >＋</button>
+              </div>
+            </div>
+
+            <div class="item-right">
+              <div class="item-total">
+                ${money(item.price * item.quantity)}
+              </div>
+
+              <button
+                class="remove-btn"
+                type="button"
+                onclick="removeItem(${index})"
+              >
+                刪除
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      checkoutButton.disabled = !currentUser;
+      renderSummary();
+    }
+
+    function changeQuantity(index, amount) {
+      cart[index].quantity += amount;
+
+      if (cart[index].quantity < 1) {
+        cart[index].quantity = 1;
+      }
+
+      saveCart();
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+      renderCart();
+    }
+
+    function updateShippingFields() {
+      if (shippingMethod.value === "family") {
+        addressLabel.textContent = "全家店名／店號";
+        shippingAddress.placeholder =
+          "請填寫全家門市名稱與店號";
+      } else if (shippingMethod.value === "seven") {
+        addressLabel.textContent = "7-ELEVEN 店名／店號";
+        shippingAddress.placeholder =
+          "請填寫 7-ELEVEN 門市名稱與店號";
+      } else {
+        addressLabel.textContent = "完整收件地址";
+        shippingAddress.placeholder =
+          "請填寫郵遞區號與完整地址";
+      }
+
+      renderSummary();
+    }
+
+    function showMessage(text) {
+      const message = document.getElementById("message");
+      message.textContent = text;
+      message.style.display = "block";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function hideMessage() {
+      document.getElementById("message").style.display = "none";
+    }
+
+    async function checkLogin() {
+      const {
+        data: { user }
+      } = await db.auth.getUser();
+
+      currentUser = user;
+
+      const loginNotice =
+        document.getElementById("loginNotice");
+
+      if (!currentUser) {
+        loginNotice.classList.remove("hidden");
+        checkoutButton.disabled = true;
+      } else {
+        loginNotice.classList.add("hidden");
+        checkoutButton.disabled = cart.length === 0;
+      }
+
+      renderCart();
+    }
+
+    shippingMethod.addEventListener(
+      "change",
+      updateShippingFields
+    );
+
+    checkoutForm.addEventListener(
+      "submit",
+      async function (event) {
+        event.preventDefault();
+        hideMessage();
+
+        if (!currentUser) {
+          location.href =
+            "member.html?return=cart.html";
+          return;
+        }
+
+        if (!cart.length) {
+          showMessage("購物車目前沒有商品。");
+          return;
+        }
+
+        const name =
+          document.getElementById("customerName").value.trim();
+
+        const phone =
+          document.getElementById("customerPhone").value.trim();
+
+        const address =
+          shippingAddress.value.trim();
+
+        const note =
+          document.getElementById("orderNote").value.trim();
+
+        if (!name || !phone || !address) {
+          showMessage("請完整填寫收件資料。");
+          return;
+        }
+
+        if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g, ""))) {
+          showMessage("請填寫正確的手機號碼，例如 0912345678。");
+          return;
+        }
+
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = "訂單建立中⋯";
+
+        const items = cart.map(function (item) {
+          return {
+            product_id: item.product_id,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color
+          };
+        });
+
+        const { data, error } = await db.rpc(
+          "create_order",
+          {
+            p_items: items,
+            p_name: name,
+            p_phone: phone,
+            p_shipping_method: shippingMethod.value,
+            p_shipping_address: address,
+            p_note: note
+          }
+        );
+
+        checkoutButton.disabled = false;
+        checkoutButton.textContent = "確認成立訂單";
+
+        if (error) {
+          showMessage(
+            "訂單建立失敗：" + error.message
+          );
+          return;
+        }
+
+        let orderNumber = "";
+
+        if (Array.isArray(data) && data.length) {
+          orderNumber =
+            data[0].order_number ||
+            data[0].order_no ||
+            "";
+        } else if (data && typeof data === "object") {
+          orderNumber =
+            data.order_number ||
+            data.order_no ||
+            "";
+        } else if (typeof data === "string") {
+          orderNumber = data;
+        }
+
+        cart = [];
+        saveCart();
+
+        document
+          .getElementById("cartLayout")
+          .classList.add("hidden");
+
+        document
+          .getElementById("successBox")
+          .classList.remove("hidden");
+
+        document
+          .getElementById("successOrderNumber")
+          .textContent =
+            orderNumber
+              ? "訂單編號：" + orderNumber
+              : "訂單已成功建立";
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+    );
+
+    loadCart();
+    updateShippingFields();
+    checkLogin();
+  </script>
+</body>
+</html>
