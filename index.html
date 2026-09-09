@@ -456,7 +456,9 @@
         return "";
       }).filter(Boolean);
     }
-
+function money(value) {
+  return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+}
     function salePrice(item) {
   const originalPrice = Number(item.price || 0);
 
