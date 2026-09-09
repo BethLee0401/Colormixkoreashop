@@ -194,10 +194,10 @@
 
      <div class="product-info">
 
-  <h1>美式復古 U領單排扣高腰傘擺背心短洋裝</h1>
-
-  <div class="price">NT$ 2,300</div>
-
+  <h1 id="product-name">美式復古 U領單排扣高腰傘擺背心短洋裝</h1>
+       
+  <div class="price" id="product-price">NT$ 2,300</div>
+       
   <div class="divider"></div>
 
   <div class="note">
@@ -224,7 +224,8 @@
     </div>
 
   </div>
-
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     function changeImage(imageName) {
       document.getElementById('mainProductImage').src = imageName;
@@ -233,6 +234,34 @@
         behavior: 'smooth'
       });
     }
+    const supabaseUrl = "https://qwcpggwbaormtgpkjlaio.supabase.co";
+const supabaseKey = "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+
+const supabaseClient = supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+async function loadProduct() {
+  const { data, error } = await supabaseClient
+    .from('Products')
+    .select('*');
+
+  if (error) {
+    console.error('讀取商品失敗：', error);
+    return;
+  }
+
+  if (data && data.length > 0) {
+    const product = data[0];
+
+    document.getElementById('product-name').textContent = product.name;
+    document.getElementById('product-price').textContent =
+      'NT$ ' + Number(product.price).toLocaleString();
+  }
+}
+
+loadProduct();
   </script>
 
 </body>
