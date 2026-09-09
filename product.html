@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>商品｜COLORMIX</title>
+  <title>商品介紹｜COLORMIX</title>
 
   <style>
     * {
@@ -13,381 +13,766 @@
 
     body {
       margin: 0;
-      font-family: Arial, "Noto Sans TC", sans-serif;
-      background: #f8f6f2;
       color: #222;
+      background: #f8f6f2;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      height: 72px;
+      padding: 0 6%;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 14px;
+    }
+
+    .cart-link {
+      position: relative;
+    }
+
+    .cart-count {
+      display: none;
+      position: absolute;
+      top: -11px;
+      right: -12px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 11px;
+      line-height: 18px;
+      text-align: center;
     }
 
     .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 30px 20px 60px;
+      width: min(1100px, calc(100% - 32px));
+      margin: 30px auto 70px;
     }
 
     .back {
       display: inline-block;
       margin-bottom: 25px;
-      color: #222;
-      text-decoration: none;
+      color: #555;
       font-size: 14px;
     }
 
-    .product-page {
+    .product-layout {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 50px;
+      grid-template-columns: 1fr 0.82fr;
+      gap: 55px;
       align-items: start;
     }
 
     .main-image {
-      width: 100%;
-      overflow: hidden;
-      background: #eee;
-    }
-
-    .main-image img {
-      width: 100%;
       display: block;
-      object-fit: cover;
-    }
-
-    .empty-image {
       width: 100%;
-      aspect-ratio: 3 / 4;
-      display: grid;
-      place-items: center;
-      color: #888;
+      max-height: 760px;
       background: #eee;
+      object-fit: cover;
     }
 
     .thumbnails {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-top: 12px;
+      gap: 9px;
+      margin-top: 10px;
     }
 
     .thumbnail {
+      width: 100%;
+      aspect-ratio: 1 / 1.25;
       padding: 0;
-      border: 1px solid #ddd;
-      background: none;
+      border: 1px solid transparent;
+      background: #eee;
       cursor: pointer;
       overflow: hidden;
     }
 
+    .thumbnail.active {
+      border-color: #222;
+    }
+
     .thumbnail img {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 100%;
       object-fit: cover;
-      display: block;
     }
 
     .product-info {
       position: sticky;
-      top: 30px;
+      top: 25px;
+      padding-top: 5px;
     }
 
-    h1 {
-      margin: 0 0 18px;
+    .product-name {
+      margin: 0 0 14px;
       font-size: 28px;
       line-height: 1.5;
-      font-weight: 600;
+      letter-spacing: 1px;
     }
 
     .price {
-      margin-bottom: 28px;
-      font-size: 24px;
-      font-weight: bold;
+      margin-bottom: 22px;
+      font-size: 23px;
+      font-weight: 700;
     }
 
     .divider {
-      border-top: 1px solid #ddd;
-      margin: 25px 0;
+      height: 1px;
+      margin: 22px 0;
+      background: #bbb;
     }
 
-    .note {
-      color: #555;
+    .option-group {
+      margin-bottom: 24px;
+    }
+
+    .option-title {
+      margin-bottom: 11px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .option-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .option-button {
+      min-width: 54px;
+      min-height: 42px;
+      padding: 9px 15px;
+      border: 1px solid #aaa;
+      background: #fff;
+      color: #222;
       font-size: 14px;
-      line-height: 1.8;
+      cursor: pointer;
     }
 
-    .note p {
-      margin: 0 0 14px;
+    .option-button.selected {
+      border-color: #222;
+      background: #222;
+      color: #fff;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+    }
+
+    .quantity button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid #999;
+      background: #fff;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .quantity-number {
+      width: 50px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .description-title {
+      margin-bottom: 15px;
+      font-size: 17px;
+      font-weight: 700;
     }
 
     .description {
+      color: #444;
+      font-size: 16px;
+      line-height: 1.9;
       white-space: pre-line;
     }
 
-    .buy-btn {
-      display: block;
+    .add-button {
       width: 100%;
-      padding: 15px;
-      margin-top: 12px;
+      height: 55px;
+      margin-top: 28px;
       border: 1px solid #222;
-      border-radius: 3px;
       background: #222;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      font-size: 15px;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    .ig-btn {
-      background: white;
-      color: #222;
+    .add-button:hover {
+      background: #444;
     }
 
-    .buy-btn:hover {
-      opacity: 0.8;
+    .add-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    .loading,
-    .error {
-      padding: 40px 0;
+    .buy-note {
+      margin-top: 13px;
       color: #666;
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
     }
 
-    @media (max-width: 768px) {
-      .product-page {
-        grid-template-columns: 1fr;
-        gap: 25px;
+    .notice {
+      display: none;
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 20;
+      max-width: calc(100% - 44px);
+      padding: 15px 20px;
+      background: #222;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.6;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .error {
+      padding: 60px 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .loading {
+      padding: 80px 20px;
+      color: #777;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        height: 64px;
+        padding: 0 18px;
+      }
+
+      .logo {
+        font-size: 18px;
+        letter-spacing: 3px;
+      }
+
+      .header-links {
+        gap: 13px;
+        font-size: 13px;
+      }
+
+      .wrap {
+        margin-top: 22px;
+      }
+
+      .product-layout {
+        display: block;
       }
 
       .product-info {
         position: static;
+        padding-top: 30px;
       }
 
-      h1 {
-        font-size: 22px;
+      .product-name {
+        font-size: 23px;
       }
 
       .price {
         font-size: 21px;
-      }
-
-      .thumbnails {
-        gap: 6px;
       }
     }
   </style>
 </head>
 
 <body>
+  <header class="header">
+    <a class="logo" href="index.html">COLORMIX</a>
 
-  <div class="wrap">
+    <nav class="header-links">
+      <a href="index.html">商品</a>
+      <a href="member.html">會員中心</a>
 
-    <a class="back" href="index.html">← 回到首頁</a>
+      <a class="cart-link" href="cart.html">
+        購物車
+        <span id="cartCount" class="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
 
-    <div id="productPage" class="loading">
-      商品載入中…
+  <main class="wrap">
+    <a class="back" href="index.html">← 回到商品列表</a>
+
+    <div id="loading" class="loading">
+      商品載入中⋯
     </div>
 
-  </div>
+    <section id="productLayout" class="product-layout" hidden>
+      <div>
+        <img
+          id="mainImage"
+          class="main-image"
+          src=""
+          alt=""
+        >
+
+        <div id="thumbnails" class="thumbnails"></div>
+      </div>
+
+      <div class="product-info">
+        <h1 id="productName" class="product-name"></h1>
+
+        <div id="productPrice" class="price"></div>
+
+        <div class="divider"></div>
+
+        <div id="sizeGroup" class="option-group">
+          <div class="option-title">尺寸</div>
+          <div id="sizeButtons" class="option-buttons"></div>
+        </div>
+
+        <div id="colorGroup" class="option-group">
+          <div class="option-title">顏色</div>
+          <div id="colorButtons" class="option-buttons"></div>
+        </div>
+
+        <div class="option-group">
+          <div class="option-title">數量</div>
+
+          <div class="quantity">
+            <button
+              id="minusButton"
+              type="button"
+              aria-label="減少數量"
+            >−</button>
+
+            <span id="quantityNumber" class="quantity-number">1</span>
+
+            <button
+              id="plusButton"
+              type="button"
+              aria-label="增加數量"
+            >＋</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="description-title">商品介紹</div>
+        <div id="productDescription" class="description"></div>
+
+        <div class="divider"></div>
+
+        <button id="addButton" class="add-button" type="button">
+          加入購物車
+        </button>
+
+        <div class="buy-note">
+          滿 NT$10,000 免運<br>
+          全家、7-ELEVEN 運費 NT$60｜郵寄運費 NT$80
+        </div>
+      </div>
+    </section>
+
+    <div id="errorBox" class="error" hidden>
+      找不到這項商品，商品可能已下架。<br>
+      <a href="index.html">返回商品列表</a>
+    </div>
+  </main>
+
+  <div id="notice" class="notice"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const supabaseUrl =
+    const SUPABASE_URL =
       "https://qwcpgwbaormtgpkjlaio.supabase.co";
 
-    const supabaseKey =
+    const SUPABASE_KEY =
       "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
 
-    const supabaseClient = supabase.createClient(
-      supabaseUrl,
-      supabaseKey
+    const db = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
-    const productId =
-      new URLSearchParams(window.location.search).get("id");
+    const CART_KEY = "colormix_cart";
 
-    function escapeHtml(value) {
-      return String(value ?? "").replace(
-        /[&<>"']/g,
-        character => ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-        })[character]
-      );
+    let product = null;
+    let selectedSize = "";
+    let selectedColor = "";
+    let quantity = 1;
+
+    const fallbackImages = [
+      "image-1944593136204205.jpg",
+      "IMG_7064.JPG",
+      "IMG_7065.JPG",
+      "IMG_7062.JPG",
+      "IMG_7063.JPG"
+    ];
+
+    function money(value) {
+      return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
     }
 
-    function getProductImages(product) {
-      if (
-        Array.isArray(product.image_urls) &&
-        product.image_urls.length > 0
-      ) {
-        return product.image_urls;
+    function parseOptions(value) {
+      if (!value) return [];
+
+      return String(value)
+        .split(/[\/／,，、]/)
+        .map(function (item) {
+          return item.trim();
+        })
+        .filter(Boolean);
+    }
+
+    function normalizeImages(value) {
+      let images = value;
+
+      if (typeof images === "string") {
+        try {
+          images = JSON.parse(images);
+        } catch (error) {
+          images = [images];
+        }
       }
 
-      if (Number(product.id) === 1) {
-        return [
-          "image-1944593136204205.jpg",
-          "IMG_7064.JPG",
-          "IMG_7065.JPG",
-          "IMG_7062.JPG",
-          "IMG_7063.JPG"
-        ];
+      if (!Array.isArray(images)) {
+        return [];
       }
 
-      return [];
+      return images.map(function (item) {
+        if (typeof item === "string") {
+          return item;
+        }
+
+        if (item && typeof item === "object") {
+          return item.url || item.publicUrl || "";
+        }
+
+        return "";
+      }).filter(Boolean);
+    }
+
+    function updateCartCount() {
+      let cart = [];
+
+      try {
+        cart = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+      } catch (error) {
+        cart = [];
+      }
+
+      const count = Array.isArray(cart)
+        ? cart.reduce(function (total, item) {
+            return total + Number(item.quantity || 1);
+          }, 0)
+        : 0;
+
+      const cartCount =
+        document.getElementById("cartCount");
+
+      cartCount.textContent = count;
+      cartCount.style.display = count > 0 ? "block" : "none";
+    }
+
+    function createOptionButtons(
+      containerId,
+      options,
+      type
+    ) {
+      const container =
+        document.getElementById(containerId);
+
+      container.innerHTML = "";
+
+      if (!options.length) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option-button selected";
+        button.textContent = "單一規格";
+        container.appendChild(button);
+
+        if (type === "size") {
+          selectedSize = "單一規格";
+        } else {
+          selectedColor = "單一顏色";
+        }
+
+        return;
+      }
+
+      options.forEach(function (option, index) {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className =
+          "option-button" + (index === 0 ? " selected" : "");
+        button.textContent = option;
+
+        button.addEventListener("click", function () {
+          container
+            .querySelectorAll(".option-button")
+            .forEach(function (item) {
+              item.classList.remove("selected");
+            });
+
+          button.classList.add("selected");
+
+          if (type === "size") {
+            selectedSize = option;
+          } else {
+            selectedColor = option;
+          }
+        });
+
+        container.appendChild(button);
+      });
+
+      if (type === "size") {
+        selectedSize = options[0];
+      } else {
+        selectedColor = options[0];
+      }
+    }
+
+    function renderImages(images) {
+      const mainImage =
+        document.getElementById("mainImage");
+
+      const thumbnails =
+        document.getElementById("thumbnails");
+
+      mainImage.src = images[0];
+      mainImage.alt = product.name;
+      thumbnails.innerHTML = "";
+
+      images.forEach(function (imageUrl, index) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className =
+          "thumbnail" + (index === 0 ? " active" : "");
+
+        const image = document.createElement("img");
+        image.src = imageUrl;
+        image.alt = product.name + " 商品圖片 " + (index + 1);
+
+        button.appendChild(image);
+
+        button.addEventListener("click", function () {
+          mainImage.src = imageUrl;
+
+          thumbnails
+            .querySelectorAll(".thumbnail")
+            .forEach(function (item) {
+              item.classList.remove("active");
+            });
+
+          button.classList.add("active");
+        });
+
+        thumbnails.appendChild(button);
+      });
+
+      thumbnails.style.display =
+        images.length > 1 ? "grid" : "none";
+    }
+
+    function showNotice(text) {
+      const notice = document.getElementById("notice");
+
+      notice.textContent = text;
+      notice.style.display = "block";
+
+      window.setTimeout(function () {
+        notice.style.display = "none";
+      }, 2500);
+    }
+
+    function addToCart() {
+      let cart = [];
+
+      try {
+        cart = JSON.parse(
+          localStorage.getItem(CART_KEY) || "[]"
+        );
+      } catch (error) {
+        cart = [];
+      }
+
+      if (!Array.isArray(cart)) {
+        cart = [];
+      }
+
+      const images = normalizeImages(product.image_urls);
+      const selectedImage =
+        images[0] ||
+        (Number(product.id) === 1 ? fallbackImages[0] : "");
+
+      const sameItem = cart.find(function (item) {
+        return (
+          Number(item.product_id || item.id) === Number(product.id) &&
+          item.size === selectedSize &&
+          item.color === selectedColor
+        );
+      });
+
+      if (sameItem) {
+        sameItem.quantity =
+          Number(sameItem.quantity || 1) + quantity;
+      } else {
+        cart.push({
+          product_id: Number(product.id),
+          name: product.name,
+          price: Number(product.price),
+          size: selectedSize,
+          color: selectedColor,
+          quantity: quantity,
+          image: selectedImage
+        });
+      }
+
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify(cart)
+      );
+
+      updateCartCount();
+      showNotice("商品已加入購物車");
+
+      quantity = 1;
+      document.getElementById("quantityNumber").textContent = "1";
     }
 
     async function loadProduct() {
-      const productPage =
-        document.getElementById("productPage");
+      const params = new URLSearchParams(location.search);
+      const productId = Number(params.get("id"));
 
       if (!productId) {
-        productPage.className = "error";
-        productPage.textContent = "找不到商品。";
+        showError();
         return;
       }
 
-      const { data: product, error } =
-        await supabaseClient
-          .from("Products")
-          .select("*")
-          .eq("id", productId)
-          .eq("active", true)
-          .single();
+      const { data, error } = await db
+        .from("Products")
+        .select("*")
+        .eq("id", productId)
+        .eq("active", true)
+        .single();
 
-      if (error || !product) {
-        productPage.className = "error";
-        productPage.textContent =
-          "找不到商品，商品可能已經下架。";
+      if (error || !data) {
+        showError();
         return;
       }
 
-      const images = getProductImages(product);
+      product = data;
 
       document.title =
         product.name + "｜COLORMIX";
 
-      const mainImage = images.length
-        ? `
-          <img
-            id="mainProductImage"
-            src="${escapeHtml(images[0])}"
-            alt="${escapeHtml(product.name)}"
-          >
-        `
-        : `
-          <div class="empty-image">
-            尚未上傳照片
-          </div>
-        `;
+      document.getElementById("productName").textContent =
+        product.name;
 
-      const thumbnails = images.map(
-        image => `
-          <button
-            type="button"
-            class="thumbnail"
-            data-image="${escapeHtml(image)}"
-          >
-            <img
-              src="${escapeHtml(image)}"
-              alt="${escapeHtml(product.name)}"
-            >
-          </button>
-        `
-      ).join("");
+      document.getElementById("productPrice").textContent =
+        money(product.price);
 
-      productPage.className = "product-page";
+      document.getElementById("productDescription").textContent =
+        product.descripion ||
+        "COLORMIX 精選正韓服飾，簡約好搭，輕鬆穿出日常質感。";
 
-      productPage.innerHTML = `
-        <div>
-          <div class="main-image" id="mainImage">
-            ${mainImage}
-          </div>
+      const sizes = parseOptions(product.size);
+      const colors = parseOptions(product.color);
 
-          <div class="thumbnails">
-            ${thumbnails}
-          </div>
-        </div>
+      createOptionButtons(
+        "sizeButtons",
+        sizes,
+        "size"
+      );
 
-        <div class="product-info">
+      createOptionButtons(
+        "colorButtons",
+        colors,
+        "color"
+      );
 
-          <h1>${escapeHtml(product.name)}</h1>
+      let images = normalizeImages(product.image_urls);
 
-          <div class="price">
-            NT$ ${Number(product.price).toLocaleString()}
-          </div>
+      if (!images.length && Number(product.id) === 1) {
+        images = fallbackImages;
+      }
 
-          <div class="divider"></div>
+      if (!images.length) {
+        images = [
+          "https://placehold.co/800x1000/f0f0f0/777?text=COLORMIX"
+        ];
+      }
 
-          <div class="note">
-            <p>
-              <strong>尺寸：</strong>
-              ${escapeHtml(product.size || "")}
-            </p>
+      renderImages(images);
 
-            <p>
-              <strong>顏色：</strong>
-              ${escapeHtml(product.color || "")}
-            </p>
-
-            <br>
-
-            <p><strong>商品介紹</strong></p>
-
-            <p class="description">
-              ${escapeHtml(product.descripion || "")}
-            </p>
-          </div>
-
-          <div class="divider"></div>
-
-          <a
-            href="https://www.facebook.com/share/1DdW5b2iau/?mibextid=wwXIfr"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="buy-btn"
-          >
-            Facebook 私訊購買
-          </a>
-
-          <a
-            href="https://www.instagram.com/colormix637?stkn=MW1pdHhvOXR5ZGdnNg=="
-            target="_blank"
-            rel="noopener noreferrer"
-            class="buy-btn ig-btn"
-          >
-            Instagram 私訊購買
-          </a>
-
-        </div>
-      `;
-
-      document
-        .querySelectorAll(".thumbnail")
-        .forEach(button => {
-          button.addEventListener("click", () => {
-            const selectedImage =
-              button.dataset.image;
-
-            document.getElementById(
-              "mainImage"
-            ).innerHTML = `
-              <img
-                id="mainProductImage"
-                src="${escapeHtml(selectedImage)}"
-                alt="${escapeHtml(product.name)}"
-              >
-            `;
-
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth"
-            });
-          });
-        });
+      document.getElementById("loading").hidden = true;
+      document.getElementById("productLayout").hidden = false;
     }
 
+    function showError() {
+      document.getElementById("loading").hidden = true;
+      document.getElementById("productLayout").hidden = true;
+      document.getElementById("errorBox").hidden = false;
+    }
+
+    document
+      .getElementById("minusButton")
+      .addEventListener("click", function () {
+        if (quantity > 1) {
+          quantity -= 1;
+          document.getElementById("quantityNumber").textContent =
+            quantity;
+        }
+      });
+
+    document
+      .getElementById("plusButton")
+      .addEventListener("click", function () {
+        quantity += 1;
+        document.getElementById("quantityNumber").textContent =
+          quantity;
+      });
+
+    document
+      .getElementById("addButton")
+      .addEventListener("click", addToCart);
+
+    updateCartCount();
     loadProduct();
   </script>
-
 </body>
 </html>
