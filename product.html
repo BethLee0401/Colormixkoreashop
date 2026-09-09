@@ -446,14 +446,7 @@ function money(value) {
   return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
 }
     function salePrice(item) {
-  const originalPrice = Number(item.price || 0);
-
-  if (item.product_type === "stock") {
-    return Math.round(originalPrice * 0.85);
-  }
-
-  return originalPrice;
-}
+  
   const originalPrice = Number(item.price || 0);
 
   if (item.product_type === "stock") {
