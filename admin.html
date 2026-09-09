@@ -843,7 +843,65 @@ if (variantError) {
 
       return urls;
     }
+function collectVariants() {
+  return Array.from(
+    document.querySelectorAll(".variant-row")
+  ).map(function (row) {
+    return {
+      size: row
+        .querySelector(".variant-size")
+        .value
+        .trim(),
 
+      color: row
+        .querySelector(".variant-color")
+        .value
+        .trim(),
+
+      stock: Math.max(
+        0,
+        Number(
+          row.querySelector(".variant-stock").value || 0
+        )
+      )
+    };
+  }).filter(function (variant) {
+    return variant.size || variant.color;
+  });
+}
+
+async function saveVariants(productId, variants) {
+  const deleteResult = await db
+    .from("product_variants")
+    .delete()
+    .eq("product_id", productId);
+
+  if (deleteResult.error) {
+    throw deleteResult.error;
+  }
+
+  if (!variants.length) {
+    return;
+  }
+
+  const rowsToSave = variants.map(function (variant) {
+    return {
+      product_id: Number(productId),
+      size: variant.size,
+      color: variant.color,
+      stock: variant.stock,
+      active: true
+    };
+  });
+
+  const insertResult = await db
+    .from("product_variants")
+    .insert(rowsToSave);
+
+  if (insertResult.error) {
+    throw insertResult.error;
+  }
+}
     $("save").onclick = async function () {
       const saveButton = $("save");
 
