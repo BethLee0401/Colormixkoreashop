@@ -506,82 +506,108 @@ function updateCartCount() {
         count > 0 ? "block" : "none";
     }
 
-    async function loadProducts() {
-      const list =
-        document.getElementById("productList");
+   function productCard(product) {
+  const photos = normalizeImages(product.image_urls);
 
-      const { data, error } = await db
-        .from("Products")
-        .select("*")
-        .eq("active", true)
-        .order("created_at", {
-          ascending: false
-        });
+  const fallback =
+    Number(product.id) === 1
+      ? "image-1944593136204205.jpg"
+      : "";
 
-      if (error) {
-        list.innerHTML =
-          "<p>商品載入失敗，請稍後再試。</p>";
-        return;
-      }
+  const image = photos[0] || fallback;
 
-      if (!data || data.length === 0) {
-        list.innerHTML =
-          "<p>目前沒有上架商品。</p>";
-        return;
-      }
+  const imageHtml = image
+    ? `
+      <img
+        class="product-image"
+        src="${escapeHtml(image)}"
+        alt="${escapeHtml(product.name)}"
+      >
+    `
+    : `
+      <div class="no-image">
+        尚未上傳照片
+      </div>
+    `;
 
-      list.innerHTML = data.map(function (product) {
-        const photos =
-          normalizeImages(product.image_urls);
+  const priceHtml =
+    product.product_type === "stock"
+      ? `
+        <div style="color:#999;text-decoration:line-through;">
+          原價 NT$ ${Number(product.price || 0).toLocaleString("zh-TW")}
+        </div>
 
-        const fallback =
-          Number(product.id) === 1
-            ? "image-1944593136204205.jpg"
-            : "";
+        <div style="color:#b23b34;font-weight:700;">
+          NT$ ${salePrice(product).toLocaleString("zh-TW")}
+        </div>
+      `
+      : `
+        NT$ ${salePrice(product).toLocaleString("zh-TW")}
+      `;
 
-        const image = photos[0] || fallback;
+  return `
+    <a
+      class="product"
+      href="product.html?id=${encodeURIComponent(product.id)}"
+    >
+      ${imageHtml}
 
-        const imageHtml = image
-          ? `
-            <img
-              class="product-image"
-              src="${escapeHtml(image)}"
-              alt="${escapeHtml(product.name)}"
-            >
-          `
-          : `
-            <div class="no-image">
-              尚未上傳照片
-            </div>
-          `;
+      <div class="product-info">
+        <div class="product-name">
+          ${escapeHtml(product.name)}
+        </div>
 
-        return `
-          <a
-            class="product"
-            href="product.html?id=${encodeURIComponent(product.id)}"
-          >
-            ${imageHtml}
+        <div class="price">
+          ${priceHtml}
+        </div>
+      </div>
+    </a>
+  `;
+}
 
-            <div class="product-info">
-              <div class="product-name">
-                ${escapeHtml(product.name)}
-              </div>
+async function loadProducts() {
+  const stockList =
+    document.getElementById("stockProductList");
 
-             <div class="price">
-  ${product.product_type === "stock"
-    ? '<div style="color:#999;text-decoration:line-through;">原價 NT$ ' +
-      Number(product.price || 0).toLocaleString("zh-TW") +
-      '</div><div style="color:#b23b34;font-weight:700;">NT$ ' +
-      salePrice(product).toLocaleString("zh-TW") +
-      "</div>"
-    : 'NT$ ' +
-      salePrice(product).toLocaleString("zh-TW")}
-</div>
-            </div>
-          </a>
-        `;
-      }).join("");
-    }
+  const liveList =
+    document.getElementById("liveProductList");
+
+  const { data, error } = await db
+    .from("Products")
+    .select("*")
+    .eq("active", true)
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+    stockList.innerHTML =
+      "<p>商品載入失敗，請稍後再試。</p>";
+
+    liveList.innerHTML =
+      "<p>商品載入失敗，請稍後再試。</p>";
+
+    return;
+  }
+
+  const products = data || [];
+
+  const stockProducts = products.filter(function (product) {
+    return product.product_type === "stock";
+  });
+
+  const liveProducts = products.filter(function (product) {
+    return product.product_type !== "stock";
+  });
+
+  stockList.innerHTML = stockProducts.length
+    ? stockProducts.map(productCard).join("")
+    : "<p>目前沒有現貨商品。</p>";
+
+  liveList.innerHTML = liveProducts.length
+    ? liveProducts.map(productCard).join("")
+    : "<p>目前沒有連線商品。</p>";
+}
 
     updateCartCount();
     loadProducts();
