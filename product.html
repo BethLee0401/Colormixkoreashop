@@ -438,7 +438,9 @@
       "IMG_7062.JPG",
       "IMG_7063.JPG"
     ];
-
+function money(value) {
+  return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+}
     function salePrice(item) {
   const originalPrice = Number(item.price || 0);
 
