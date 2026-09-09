@@ -917,7 +917,33 @@ async function saveVariants(productId, variants) {
         });
 
         const addedImages = await uploadImages();
+const variants = collectVariants();
 
+if (!variants.length) {
+  throw new Error(
+    "請至少填寫一組尺寸、顏色與庫存數量"
+  );
+}
+
+const variantSizes = [
+  ...new Set(
+    variants
+      .map(function (variant) {
+        return variant.size;
+      })
+      .filter(Boolean)
+  )
+];
+
+const variantColors = [
+  ...new Set(
+    variants
+      .map(function (variant) {
+        return variant.color;
+      })
+      .filter(Boolean)
+  )
+];
         const payload = {
           name: $("name").value.trim(),
           price: Number($("price").value),
