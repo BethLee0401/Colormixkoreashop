@@ -670,7 +670,138 @@
         await load();
       }
     }
+async function loadOrders() {
+  $("orderList").textContent = "訂單載入中⋯";
 
+  const { data: orders, error } = await db
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    $("orderList").textContent =
+      "讀取訂單失敗：" + error.message;
+    return;
+  }
+
+  if (!orders || !orders.length) {
+    $("orderList").textContent = "目前沒有訂單";
+    return;
+  }
+
+  const orderIds = orders.map(function (order) {
+    return order.id;
+  });
+
+  const { data: items, error: itemError } = await db
+    .from("order_items")
+    .select("*")
+    .in("order_id", orderIds);
+
+  if (itemError) {
+    $("orderList").textContent =
+      "讀取商品明細失敗：" + itemError.message;
+    return;
+  }
+
+  const shippingNames = {
+    family: "全家店到店",
+    seven: "7-ELEVEN 店到店",
+    post: "郵寄宅配"
+  };
+
+  const statusNames = {
+    pending: "等待付款",
+    paid: "已付款",
+    shipping: "已出貨",
+    completed: "已完成",
+    cancelled: "已取消"
+  };
+
+  $("orderList").innerHTML = orders.map(function (order) {
+    const orderItems = (items || []).filter(function (item) {
+      return item.order_id === order.id;
+    });
+
+    const itemHtml = orderItems.map(function (item) {
+      return `
+        <div style="padding:8px 0;border-bottom:1px solid #eee;">
+          <strong>${escapeHtml(item.product_name)}</strong><br>
+          尺寸：${escapeHtml(item.size || "無")}　
+          顏色：${escapeHtml(item.color || "無")}<br>
+          NT$ ${Number(item.price || 0).toLocaleString("zh-TW")}
+          × ${Number(item.quantity || 1)}
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="card" style="background:#fafafa;">
+        <h3>
+          訂單編號：${escapeHtml(order.order_number)}
+        </h3>
+
+        <p>
+          訂購時間：
+          ${new Date(order.created_at).toLocaleString("zh-TW")}
+        </p>
+
+        <p>
+          姓名：${escapeHtml(order.customer_name)}<br>
+          電話：${escapeHtml(order.phone)}<br>
+          寄送方式：
+          ${escapeHtml(shippingNames[order.shipping_method] || order.shipping_method)}<br>
+          寄送資料：${escapeHtml(order.shipping_address)}
+        </p>
+
+        ${order.note
+          ? `<p>備註：${escapeHtml(order.note)}</p>`
+          : ""}
+
+        <div>${itemHtml}</div>
+
+        <p>
+          商品金額：NT$ ${Number(order.subtotal || 0).toLocaleString("zh-TW")}<br>
+          運費：NT$ ${Number(order.shipping_fee || 0).toLocaleString("zh-TW")}<br>
+          <strong>
+            總金額：NT$ ${Number(order.total || 0).toLocaleString("zh-TW")}
+          </strong>
+        </p>
+
+        <label>訂單狀態</label>
+        <select class="order-status" data-id="${order.id}">
+          ${Object.entries(statusNames).map(function ([value, label]) {
+            return `
+              <option
+                value="${value}"
+                ${order.status === value ? "selected" : ""}
+              >
+                ${label}
+              </option>
+            `;
+          }).join("")}
+        </select>
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".order-status").forEach(function (select) {
+    select.addEventListener("change", async function () {
+      const { error } = await db
+        .from("orders")
+        .update({ status: select.value })
+        .eq("id", select.dataset.id);
+
+      if (error) {
+        window.alert("更新失敗：" + error.message);
+      } else {
+        window.alert("訂單狀態已更新");
+      }
+    });
+  });
+}
+
+$("reloadOrders").onclick = loadOrders;
     db.auth.onAuthStateChange(function () {
       session();
     });
