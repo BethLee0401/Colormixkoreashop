@@ -553,11 +553,11 @@ function updateCartCount() {
                 ${escapeHtml(product.name)}
               </div>
 
-              <div class="price">
-                ${product.product_type === "stock"
-  ? '現貨85折 NT$ ' + salePrice(product).toLocaleString("zh-TW")
-  : 'NT$ ' + salePrice(product).toLocaleString("zh-TW")} || 0).toLocaleString("zh-TW")}
-              </div>
+             <div class="price">
+  ${product.product_type === "stock"
+    ? '現貨85折 NT$ ' + salePrice(product).toLocaleString("zh-TW")
+    : 'NT$ ' + salePrice(product).toLocaleString("zh-TW")}
+</div>
             </div>
           </a>
         `;
