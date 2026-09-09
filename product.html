@@ -660,7 +660,7 @@
         cart.push({
           product_id: Number(product.id),
           name: product.name,
-          price: Number(product.price),
+          price: salePrice(product),
           size: selectedSize,
           color: selectedColor,
           quantity: quantity,
