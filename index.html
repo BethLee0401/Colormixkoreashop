@@ -402,8 +402,9 @@ async function loadProducts() {
   const { data, error } = await supabaseClient
     .from('Products')
     .select('*')
-    .eq('status', 'active');
-
+   const { data, error } = await supabaseClient
+  .from('Products')
+  .select('*');
   if (error) {
     console.error('讀取商品失敗：', error);
     return;
