@@ -662,6 +662,7 @@ function money(value) {
         cart.push({
           product_id: Number(product.id),
           name: product.name,
+          original_price: Number(product.price),
           price: salePrice(product),
           size: selectedSize,
           color: selectedColor,
