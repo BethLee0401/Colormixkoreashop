@@ -717,7 +717,7 @@ document.getElementById("productPrice").innerHTML =
   product.product_type === "stock"
     ? '<span style="font-size:15px;color:#888;text-decoration:line-through;">原價 ' +
       money(product.price) +
-      '</span><br><span style="color:#b23b34;">現貨85折 ' +
+      '</span><br><span style="color:#b23b34;">' +
       money(finalPrice) +
       "</span>"
     : money(finalPrice);
