@@ -970,20 +970,29 @@ color: variantColors.join("／"),
 
         let result;
 
-        if (id) {
-          result = await db
-            .from("Products")
-            .update(payload)
-            .eq("id", id);
-        } else {
-          result = await db
-            .from("Products")
-            .insert(payload);
-        }
+if (id) {
+  result = await db
+    .from("Products")
+    .update(payload)
+    .eq("id", id)
+    .select("id")
+    .single();
+} else {
+  result = await db
+    .from("Products")
+    .insert(payload)
+    .select("id")
+    .single();
+}
 
-        if (result.error) {
-          throw result.error;
-        }
+if (result.error) {
+  throw result.error;
+}
+
+await saveVariants(
+  result.data.id,
+  variants
+);
 
         clearForm();
         await load();
