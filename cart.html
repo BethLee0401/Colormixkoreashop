@@ -117,15 +117,30 @@
       font-size: 14px;
     }
 
-    .product-price {
+    .original-price {
       margin-top: 10px;
+      color: #888;
+      font-size: 13px;
+      text-decoration: line-through;
+    }
+
+    .sale-price {
+      margin-top: 3px;
+      color: #b23b34;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .normal-price {
+      margin-top: 10px;
+      font-size: 16px;
       font-weight: 700;
     }
 
     .quantity-row {
+      margin-top: 15px;
       display: flex;
       align-items: center;
-      margin-top: 15px;
     }
 
     .quantity-btn {
@@ -144,12 +159,18 @@
     }
 
     .item-right {
-      min-width: 95px;
+      min-width: 100px;
       text-align: right;
     }
 
     .item-total {
       font-weight: 700;
+    }
+
+    .item-saving {
+      margin-top: 5px;
+      color: #b23b34;
+      font-size: 12px;
     }
 
     .remove-btn {
@@ -225,13 +246,6 @@
       resize: vertical;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid #222;
-      outline-offset: 1px;
-    }
-
     .summary {
       margin: 25px 0 20px;
       padding-top: 18px;
@@ -239,11 +253,16 @@
     }
 
     .summary-row {
+      margin: 11px 0;
       display: flex;
       justify-content: space-between;
       gap: 20px;
-      margin: 11px 0;
       font-size: 15px;
+    }
+
+    .discount-row {
+      color: #b23b34;
+      font-weight: 700;
     }
 
     .summary-row.total {
@@ -312,10 +331,10 @@
     }
 
     .success-actions {
+      margin-top: 25px;
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin-top: 25px;
     }
 
     .success-actions a {
@@ -340,7 +359,6 @@
 
       .logo {
         font-size: 18px;
-        letter-spacing: 3px;
       }
 
       .header-links {
@@ -350,10 +368,6 @@
 
       .container {
         margin: 28px auto 50px;
-      }
-
-      h1 {
-        font-size: 25px;
       }
 
       .layout {
@@ -415,18 +429,15 @@
 
         <div id="loginNotice" class="login-notice hidden">
           結帳前必須先登入會員。<br>
-          <a href="member.html?return=cart.html">登入或加入會員</a>
+          <a href="member.html?return=cart.html">
+            登入或加入會員
+          </a>
         </div>
 
         <form id="checkoutForm">
           <div class="form-group">
             <label for="customerName">收件人姓名</label>
-            <input
-              id="customerName"
-              type="text"
-              autocomplete="name"
-              required
-            >
+            <input id="customerName" type="text" required>
           </div>
 
           <div class="form-group">
@@ -434,7 +445,6 @@
             <input
               id="customerPhone"
               type="tel"
-              autocomplete="tel"
               placeholder="例如：0912345678"
               required
             >
@@ -442,10 +452,19 @@
 
           <div class="form-group">
             <label for="shippingMethod">寄送方式</label>
+
             <select id="shippingMethod" required>
-              <option value="family">全家店到店｜運費 NT$60</option>
-              <option value="seven">7-ELEVEN 店到店｜運費 NT$60</option>
-              <option value="post">郵寄宅配｜運費 NT$80</option>
+              <option value="family">
+                全家店到店｜運費 NT$60
+              </option>
+
+              <option value="seven">
+                7-ELEVEN 店到店｜運費 NT$60
+              </option>
+
+              <option value="post">
+                郵寄宅配｜運費 NT$80
+              </option>
             </select>
           </div>
 
@@ -464,15 +483,25 @@
 
           <div class="form-group">
             <label for="orderNote">訂單備註（選填）</label>
-            <textarea
-              id="orderNote"
-              placeholder="有其他需求可填寫在這裡"
-            ></textarea>
+            <textarea id="orderNote"></textarea>
           </div>
 
           <div class="summary">
             <div class="summary-row">
-              <span>商品金額</span>
+              <span>商品原價總額</span>
+              <span id="originalSubtotal">NT$ 0</span>
+            </div>
+
+            <div
+              id="discountRow"
+              class="summary-row discount-row"
+            >
+              <span>現貨折扣</span>
+              <span id="discountAmount">− NT$ 0</span>
+            </div>
+
+            <div class="summary-row">
+              <span>折扣後商品金額</span>
               <span id="subtotal">NT$ 0</span>
             </div>
 
@@ -482,11 +511,14 @@
             </div>
 
             <div class="summary-row total">
-              <span>總計</span>
+              <span>總金額</span>
               <span id="grandTotal">NT$ 0</span>
             </div>
 
-            <div id="freeShippingText" class="free-shipping"></div>
+            <div
+              id="freeShippingText"
+              class="free-shipping"
+            ></div>
           </div>
 
           <button
@@ -503,9 +535,10 @@
     <section id="successBox" class="success-box hidden">
       <h2>訂單成立</h2>
 
-      <p>感謝您的購買！</p>
-
-      <div id="successOrderNumber" class="order-number"></div>
+      <div
+        id="successOrderNumber"
+        class="order-number"
+      ></div>
 
       <p>
         我們將私訊提供轉帳資訊。<br>
@@ -522,15 +555,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const SUPABASE_URL =
-      "https://qwcpgwbaormtgpkjlaio.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
-
     const db = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
+      "https://qwcpgwbaormtgpkjlaio.supabase.co",
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
     );
 
     const CART_KEY = "colormix_cart";
@@ -540,9 +567,6 @@
 
     const cartItemsElement =
       document.getElementById("cartItems");
-
-    const checkoutForm =
-      document.getElementById("checkoutForm");
 
     const checkoutButton =
       document.getElementById("checkoutButton");
@@ -557,7 +581,8 @@
       document.getElementById("addressLabel");
 
     function money(value) {
-      return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+      return "NT$ " +
+        Number(value || 0).toLocaleString("zh-TW");
     }
 
     function escapeHtml(value) {
@@ -571,22 +596,30 @@
 
     function loadCart() {
       try {
-        const savedCart = JSON.parse(
+        cart = JSON.parse(
           localStorage.getItem(CART_KEY) || "[]"
         );
-
-        cart = Array.isArray(savedCart) ? savedCart : [];
       } catch (error) {
         cart = [];
       }
 
+      if (!Array.isArray(cart)) {
+        cart = [];
+      }
+
       cart = cart.map(function (item) {
+        const salePrice = Number(item.price || 0);
+        const originalPrice = Number(
+          item.original_price || item.price || 0
+        );
+
         return {
           product_id: Number(
             item.product_id || item.id
           ),
           name: item.name || "商品",
-          price: Number(item.price || 0),
+          original_price: originalPrice,
+          price: salePrice,
           size: item.size || "",
           color: item.color || "",
           image: item.image || "",
@@ -607,10 +640,24 @@
       );
     }
 
+    function originalSubtotalAmount() {
+      return cart.reduce(function (total, item) {
+        return total +
+          item.original_price * item.quantity;
+      }, 0);
+    }
+
     function subtotalAmount() {
       return cart.reduce(function (total, item) {
         return total + item.price * item.quantity;
       }, 0);
+    }
+
+    function discountAmount() {
+      return Math.max(
+        0,
+        originalSubtotalAmount() - subtotalAmount()
+      );
     }
 
     function shippingAmount() {
@@ -620,29 +667,60 @@
         return 0;
       }
 
-      return shippingMethod.value === "post" ? 80 : 60;
+      return shippingMethod.value === "post"
+        ? 80
+        : 60;
     }
 
     function renderSummary() {
-      const subtotal = subtotalAmount();
-      const shipping = cart.length ? shippingAmount() : 0;
-      const total = subtotal + shipping;
+      const originalSubtotal =
+        originalSubtotalAmount();
 
-      document.getElementById("subtotal").textContent =
-        money(subtotal);
+      const subtotal =
+        subtotalAmount();
 
-      document.getElementById("shippingFee").textContent =
+      const discount =
+        discountAmount();
+
+      const shipping =
+        cart.length ? shippingAmount() : 0;
+
+      const total =
+        subtotal + shipping;
+
+      document.getElementById(
+        "originalSubtotal"
+      ).textContent = money(originalSubtotal);
+
+      document.getElementById(
+        "discountAmount"
+      ).textContent = "− " + money(discount);
+
+      document.getElementById(
+        "discountRow"
+      ).style.display = discount > 0 ? "flex" : "none";
+
+      document.getElementById(
+        "subtotal"
+      ).textContent = money(subtotal);
+
+      document.getElementById(
+        "shippingFee"
+      ).textContent =
         shipping === 0 && subtotal >= 10000
           ? "免運"
           : money(shipping);
 
-      document.getElementById("grandTotal").textContent =
-        money(total);
+      document.getElementById(
+        "grandTotal"
+      ).textContent = money(total);
 
       const freeShippingText =
         document.getElementById("freeShippingText");
 
-      if (subtotal >= 10000) {
+      if (!cart.length) {
+        freeShippingText.textContent = "";
+      } else if (subtotal >= 10000) {
         freeShippingText.textContent =
           "此筆訂單已達滿 NT$10,000 免運。";
       } else {
@@ -667,83 +745,117 @@
         return;
       }
 
-      cartItemsElement.innerHTML = cart.map(function (item, index) {
-        const imageHtml = item.image
-          ? `
-            <img
-              class="product-image"
-              src="${escapeHtml(item.image)}"
-              alt="${escapeHtml(item.name)}"
-            >
-          `
-          : `<div class="product-image"></div>`;
+      cartItemsElement.innerHTML =
+        cart.map(function (item, index) {
+          const hasDiscount =
+            item.original_price > item.price;
 
-        return `
-          <article class="cart-item">
-            ${imageHtml}
-
-            <div>
-              <div class="product-name">
-                ${escapeHtml(item.name)}
+          const priceHtml = hasDiscount
+            ? `
+              <div class="original-price">
+                原價 ${money(item.original_price)}
               </div>
 
-              ${
-                item.size
-                  ? `<div class="product-option">
-                      尺寸：${escapeHtml(item.size)}
-                    </div>`
-                  : ""
-              }
-
-              ${
-                item.color
-                  ? `<div class="product-option">
-                      顏色：${escapeHtml(item.color)}
-                    </div>`
-                  : ""
-              }
-
-              <div class="product-price">
+              <div class="sale-price">
                 ${money(item.price)}
               </div>
-
-              <div class="quantity-row">
-                <button
-                  class="quantity-btn"
-                  type="button"
-                  onclick="changeQuantity(${index}, -1)"
-                  aria-label="減少數量"
-                >−</button>
-
-                <span class="quantity-number">
-                  ${item.quantity}
-                </span>
-
-                <button
-                  class="quantity-btn"
-                  type="button"
-                  onclick="changeQuantity(${index}, 1)"
-                  aria-label="增加數量"
-                >＋</button>
+            `
+            : `
+              <div class="normal-price">
+                ${money(item.price)}
               </div>
-            </div>
+            `;
 
-            <div class="item-right">
-              <div class="item-total">
-                ${money(item.price * item.quantity)}
+          const savedAmount =
+            (item.original_price - item.price) *
+            item.quantity;
+
+          return `
+            <article class="cart-item">
+              ${
+                item.image
+                  ? `
+                    <img
+                      class="product-image"
+                      src="${escapeHtml(item.image)}"
+                      alt="${escapeHtml(item.name)}"
+                    >
+                  `
+                  : `<div class="product-image"></div>`
+              }
+
+              <div>
+                <div class="product-name">
+                  ${escapeHtml(item.name)}
+                </div>
+
+                ${
+                  item.size
+                    ? `
+                      <div class="product-option">
+                        尺寸：${escapeHtml(item.size)}
+                      </div>
+                    `
+                    : ""
+                }
+
+                ${
+                  item.color
+                    ? `
+                      <div class="product-option">
+                        顏色：${escapeHtml(item.color)}
+                      </div>
+                    `
+                    : ""
+                }
+
+                ${priceHtml}
+
+                <div class="quantity-row">
+                  <button
+                    class="quantity-btn"
+                    type="button"
+                    onclick="changeQuantity(${index}, -1)"
+                  >−</button>
+
+                  <span class="quantity-number">
+                    ${item.quantity}
+                  </span>
+
+                  <button
+                    class="quantity-btn"
+                    type="button"
+                    onclick="changeQuantity(${index}, 1)"
+                  >＋</button>
+                </div>
               </div>
 
-              <button
-                class="remove-btn"
-                type="button"
-                onclick="removeItem(${index})"
-              >
-                刪除
-              </button>
-            </div>
-          </article>
-        `;
-      }).join("");
+              <div class="item-right">
+                <div class="item-total">
+                  ${money(item.price * item.quantity)}
+                </div>
+
+                ${
+                  savedAmount > 0
+                    ? `
+                      <div class="item-saving">
+                        已折 ${money(savedAmount)}
+                      </div>
+                    `
+                    : ""
+                }
+
+                <button
+                  class="remove-btn"
+                  type="button"
+                  onclick="removeItem(${index})"
+                >
+                  刪除
+                </button>
+              </div>
+            </article>
+          `;
+        }).join("");
 
       checkoutButton.disabled = !currentUser;
       renderSummary();
@@ -768,15 +880,21 @@
 
     function updateShippingFields() {
       if (shippingMethod.value === "family") {
-        addressLabel.textContent = "全家店名／店號";
+        addressLabel.textContent =
+          "全家店名／店號";
+
         shippingAddress.placeholder =
           "請填寫全家門市名稱與店號";
       } else if (shippingMethod.value === "seven") {
-        addressLabel.textContent = "7-ELEVEN 店名／店號";
+        addressLabel.textContent =
+          "7-ELEVEN 店名／店號";
+
         shippingAddress.placeholder =
           "請填寫 7-ELEVEN 門市名稱與店號";
       } else {
-        addressLabel.textContent = "完整收件地址";
+        addressLabel.textContent =
+          "完整收件地址";
+
         shippingAddress.placeholder =
           "請填寫郵遞區號與完整地址";
       }
@@ -785,7 +903,9 @@
     }
 
     function showMessage(text) {
-      const message = document.getElementById("message");
+      const message =
+        document.getElementById("message");
+
       message.textContent = text;
       message.style.display = "block";
 
@@ -795,10 +915,6 @@
       });
     }
 
-    function hideMessage() {
-      document.getElementById("message").style.display = "none";
-    }
-
     async function checkLogin() {
       const {
         data: { user }
@@ -806,16 +922,12 @@
 
       currentUser = user;
 
-      const loginNotice =
-        document.getElementById("loginNotice");
+      document
+        .getElementById("loginNotice")
+        .classList.toggle("hidden", Boolean(user));
 
-      if (!currentUser) {
-        loginNotice.classList.remove("hidden");
-        checkoutButton.disabled = true;
-      } else {
-        loginNotice.classList.add("hidden");
-        checkoutButton.disabled = cart.length === 0;
-      }
+      checkoutButton.disabled =
+        !user || cart.length === 0;
 
       renderCart();
     }
@@ -825,119 +937,122 @@
       updateShippingFields
     );
 
-    checkoutForm.addEventListener(
-      "submit",
-      async function (event) {
-        event.preventDefault();
-        hideMessage();
+    document
+      .getElementById("checkoutForm")
+      .addEventListener(
+        "submit",
+        async function (event) {
+          event.preventDefault();
 
-        if (!currentUser) {
-          location.href =
-            "member.html?return=cart.html";
-          return;
-        }
-
-        if (!cart.length) {
-          showMessage("購物車目前沒有商品。");
-          return;
-        }
-
-        const name =
-          document.getElementById("customerName").value.trim();
-
-        const phone =
-          document.getElementById("customerPhone").value.trim();
-
-        const address =
-          shippingAddress.value.trim();
-
-        const note =
-          document.getElementById("orderNote").value.trim();
-
-        if (!name || !phone || !address) {
-          showMessage("請完整填寫收件資料。");
-          return;
-        }
-
-        if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g, ""))) {
-          showMessage("請填寫正確的手機號碼，例如 0912345678。");
-          return;
-        }
-
-        checkoutButton.disabled = true;
-        checkoutButton.textContent = "訂單建立中⋯";
-
-        const items = cart.map(function (item) {
-          return {
-            product_id: item.product_id,
-            quantity: item.quantity,
-            size: item.size,
-            color: item.color
-          };
-        });
-
-        const { data, error } = await db.rpc(
-          "create_order",
-          {
-            p_items: items,
-            p_name: name,
-            p_phone: phone,
-            p_shipping_method: shippingMethod.value,
-            p_shipping_address: address,
-            p_note: note
+          if (!currentUser) {
+            location.href =
+              "member.html?return=cart.html";
+            return;
           }
-        );
 
-        checkoutButton.disabled = false;
-        checkoutButton.textContent = "確認成立訂單";
+          if (!cart.length) {
+            showMessage("購物車目前沒有商品。");
+            return;
+          }
 
-        if (error) {
-          showMessage(
-            "訂單建立失敗：" + error.message
+          const name =
+            document
+              .getElementById("customerName")
+              .value
+              .trim();
+
+          const phone =
+            document
+              .getElementById("customerPhone")
+              .value
+              .trim();
+
+          const address =
+            shippingAddress.value.trim();
+
+          const note =
+            document
+              .getElementById("orderNote")
+              .value
+              .trim();
+
+          if (!name || !phone || !address) {
+            showMessage("請完整填寫收件資料。");
+            return;
+          }
+
+          if (!/^09\d{8}$/.test(
+            phone.replace(/[-\s]/g, "")
+          )) {
+            showMessage(
+              "請填寫正確的手機號碼，例如0912345678。"
+            );
+            return;
+          }
+
+          checkoutButton.disabled = true;
+          checkoutButton.textContent =
+            "訂單建立中⋯";
+
+          const items = cart.map(function (item) {
+            return {
+              product_id: item.product_id,
+              quantity: item.quantity,
+              size: item.size,
+              color: item.color
+            };
+          });
+
+          const { data, error } = await db.rpc(
+            "create_order",
+            {
+              p_customer_name: name,
+              p_phone: phone,
+              p_shipping_method:
+                shippingMethod.value,
+              p_shipping_address: address,
+              p_note: note,
+              p_items: items
+            }
           );
-          return;
-        }
 
-        let orderNumber = "";
+          checkoutButton.disabled = false;
+          checkoutButton.textContent =
+            "確認成立訂單";
 
-        if (Array.isArray(data) && data.length) {
-          orderNumber =
-            data[0].order_number ||
-            data[0].order_no ||
-            "";
-        } else if (data && typeof data === "object") {
-          orderNumber =
-            data.order_number ||
-            data.order_no ||
-            "";
-        } else if (typeof data === "string") {
-          orderNumber = data;
-        }
+          if (error) {
+            showMessage(
+              "訂單建立失敗：" + error.message
+            );
+            return;
+          }
 
-        cart = [];
-        saveCart();
+          const orderNumber =
+            data?.order_number || "";
 
-        document
-          .getElementById("cartLayout")
-          .classList.add("hidden");
+          cart = [];
+          saveCart();
 
-        document
-          .getElementById("successBox")
-          .classList.remove("hidden");
+          document
+            .getElementById("cartLayout")
+            .classList.add("hidden");
 
-        document
-          .getElementById("successOrderNumber")
-          .textContent =
-            orderNumber
+          document
+            .getElementById("successBox")
+            .classList.remove("hidden");
+
+          document
+            .getElementById("successOrderNumber")
+            .textContent = orderNumber
               ? "訂單編號：" + orderNumber
               : "訂單已成功建立";
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      }
-    );
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        }
+      );
 
     loadCart();
     updateShippingFields();
