@@ -288,45 +288,11 @@
 
   <div class="products">
 
-    <a class="product" href="#">
-      <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=85">
-      <div class="product-info">
-        <div class="product-name">韓系簡約長版洋裝</div>
-        <div class="price">NT$ 1,280</div>
-      </div>
-    </a>
-
-
-    <a class="product" href="#">
-      <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=800&q=85">
-      <div class="product-info">
-        <div class="product-name">韓系寬鬆針織上衣</div>
-        <div class="price">NT$ 980</div>
-      </div>
-    </a>
-
-
-    <a class="product" href="#">
-      <img src="https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=800&q=85">
-      <div class="product-info">
-        <div class="product-name">簡約高腰長裙</div>
-        <div class="price">NT$ 1,180</div>
-      </div>
-    </a>
-
-
-    <a class="product" href="#">
-      <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=85">
-      <div class="product-info">
-        <div class="product-name">韓系質感外套</div>
-        <div class="price">NT$ 1,680</div>
-      </div>
-    </a>
     <a class="product" href="product1.html">
   <img src="image-1944593136204205.jpg">
   <div class="product-info">
-    <div class="product-name">美式復古 U領單排扣高腰傘擺背心短洋裝</div>
-    <div class="price">NT$ 2,300</div>
+    <div class="product-name" id="product-name-1">美式復古 U領單排扣高腰傘擺背心短洋裝</div>
+<div class="price" id="product-price-1">NT$ 2,300</div>
   </div>
 </a>
 
@@ -409,6 +375,14 @@ async function loadProducts() {
   }
 
   console.log('Supabase 商品資料：', data);
+
+  if (data && data.length > 0) {
+    const product = data[0];
+
+    document.getElementById('product-name-1').textContent = product.name;
+    document.getElementById('product-price-1').textContent =
+      'NT$ ' + Number(product.price).toLocaleString();
+  }
 }
 
 loadProducts();
