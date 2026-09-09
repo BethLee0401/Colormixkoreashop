@@ -758,6 +758,50 @@ addVariantRow();
       $("formTitle").textContent = "編輯商品";
       $("formMsg").textContent =
         "如不更換照片，照片欄位保持空白即可。";
+      $("variantRows").innerHTML = "";
+
+const { data: variants, error: variantError } =
+  await db
+    .from("product_variants")
+    .select("*")
+    .eq("product_id", product.id)
+    .order("id", { ascending: true });
+
+if (variantError) {
+  $("formMsg").textContent =
+    "讀取尺寸庫存失敗：" + variantError.message;
+} else if (variants && variants.length) {
+  variants.forEach(function (variant) {
+    addVariantRow(variant);
+  });
+} else {
+  const oldSizes = String(product.size || "")
+    .split(/[\/／,，、]/)
+    .map(function (value) {
+      return value.trim();
+    })
+    .filter(Boolean);
+
+  const oldColors = String(product.color || "")
+    .split(/[\/／,，、]/)
+    .map(function (value) {
+      return value.trim();
+    })
+    .filter(Boolean);
+
+  const sizes = oldSizes.length ? oldSizes : [""];
+  const colors = oldColors.length ? oldColors : [""];
+
+  sizes.forEach(function (size) {
+    colors.forEach(function (color) {
+      addVariantRow({
+        size: size,
+        color: color,
+        stock: 0
+      });
+    });
+  });
+}
 
       window.scrollTo({
         top: 0,
