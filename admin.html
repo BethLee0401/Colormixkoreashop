@@ -486,7 +486,45 @@ await loadOrders();
         return;
       }
 
-      rows.forEach(function (product) {
+      const totalPages = Math.max(
+  1,
+  Math.ceil(rows.length / productsPerPage)
+);
+
+if (currentProductPage > totalPages) {
+  currentProductPage = totalPages;
+}
+
+const startIndex =
+  (currentProductPage - 1) * productsPerPage;
+
+$("productPagination").innerHTML = `
+  <button
+    class="light"
+    type="button"
+    onclick="changeProductPage(${currentProductPage - 1})"
+    ${currentProductPage === 1 ? "disabled" : ""}
+  >
+    上一頁
+  </button>
+
+  <span style="padding:11px 4px;">
+    第 ${currentProductPage} 頁／共 ${totalPages} 頁
+  </span>
+
+  <button
+    class="light"
+    type="button"
+    onclick="changeProductPage(${currentProductPage + 1})"
+    ${currentProductPage === totalPages ? "disabled" : ""}
+  >
+    下一頁
+  </button>
+`;
+
+rows
+  .slice(startIndex, startIndex + productsPerPage)
+  .forEach(function (product) {
         const pictures =
           normalizeImages(product.image_urls);
 
