@@ -735,6 +735,26 @@ document.getElementById("productPrice").innerHTML =
       "</span>"
     : money(finalPrice);
 
+      const stockQuantity =
+  Number(product.stock_quantity || 0);
+
+const stockStatus =
+  document.getElementById("stockStatus");
+
+if (product.product_type === "stock") {
+  if (stockQuantity > 0) {
+    stockStatus.textContent =
+      "現貨｜剩餘 " + stockQuantity + " 件";
+    stockStatus.style.color = "#b23b34";
+  } else {
+    stockStatus.textContent =
+      "追加商品｜到貨後依訂單順序出貨";
+    stockStatus.style.color = "#555";
+  }
+} else {
+  stockStatus.textContent = "連線商品";
+  stockStatus.style.color = "#555";
+}
       document.getElementById("productDescription").textContent =
         product.descripion ||
         "COLORMIX 精選正韓服飾，簡約好搭，輕鬆穿出日常質感。";
