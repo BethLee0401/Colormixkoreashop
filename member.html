@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>會員中心｜COLORMIX</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #222;
+      background: #f8f6f2;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      height: 72px;
+      padding: 0 6%;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 22px;
+      font-size: 14px;
+    }
+
+    .container {
+      width: min(620px, calc(100% - 32px));
+      margin: 55px auto;
+    }
+
+    .card {
+      padding: 34px;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      font-size: 27px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      font-size: 20px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #bbb;
+    }
+
+    .tab {
+      padding: 14px;
+      border: 0;
+      background: transparent;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      font-weight: 700;
+      border-bottom: 3px solid #222;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid #aaa;
+      border-radius: 0;
+      background: #fff;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #222;
+      outline-offset: 1px;
+    }
+
+    .main-btn {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      border: 1px solid #222;
+      background: #222;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .main-btn:hover {
+      background: #444;
+    }
+
+    .main-btn:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .text-btn {
+      display: block;
+      margin: 18px auto 0;
+      padding: 5px;
+      border: 0;
+      background: transparent;
+      color: #555;
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .message {
+      display: none;
+      margin: 18px 0;
+      padding: 12px 14px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message.error {
+      color: #9a1c1c;
+      border-color: #d8a2a2;
+      background: #fff5f5;
+    }
+
+    .message.success {
+      color: #276137;
+      border-color: #a8cbb0;
+      background: #f4fff6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .member-top {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .member-email {
+      margin: 5px 0 18px;
+      color: #666;
+      font-size: 14px;
+      word-break: break-all;
+    }
+
+    .member-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .small-btn {
+      padding: 10px 16px;
+      border: 1px solid #222;
+      background: #fff;
+      color: #222;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .small-btn.dark {
+      background: #222;
+      color: #fff;
+    }
+
+    .empty {
+      padding: 35px 10px;
+      color: #777;
+      text-align: center;
+      border: 1px dashed #bbb;
+    }
+
+    .order-card {
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+
+    .order-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .order-number {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .order-date {
+      margin-top: 5px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .status {
+      padding: 5px 9px;
+      background: #eee;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 11px 0;
+      border-top: 1px solid #eee;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .order-total {
+      margin-top: 12px;
+      padding-top: 14px;
+      border-top: 1px solid #aaa;
+      text-align: right;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .shipping {
+      margin-top: 8px;
+      color: #666;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        height: 64px;
+        padding: 0 18px;
+      }
+
+      .logo {
+        font-size: 18px;
+        letter-spacing: 3px;
+      }
+
+      .header-links {
+        gap: 13px;
+        font-size: 13px;
+      }
+
+      .container {
+        margin: 28px auto;
+      }
+
+      .card {
+        padding: 25px 20px;
+      }
+
+      .order-header {
+        display: block;
+      }
+
+      .status {
+        display: inline-block;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <a class="logo" href="index.html">COLORMIX</a>
+
+    <nav class="header-links">
+      <a href="index.html">商品</a>
+      <a href="cart.html">購物車</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- 登入／註冊 -->
+    <section id="authCard" class="card">
+      <h1>會員中心</h1>
+
+      <div class="tabs">
+        <button id="loginTab" class="tab active" type="button">
+          會員登入
+        </button>
+
+        <button id="registerTab" class="tab" type="button">
+          加入會員
+        </button>
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <!-- 登入表單 -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">電子信箱</label>
+          <input
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">密碼</label>
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            minlength="6"
+            required
+          >
+        </div>
+
+        <button id="loginButton" class="main-btn" type="submit">
+          登入
+        </button>
+
+        <button id="forgotButton" class="text-btn" type="button">
+          忘記密碼
+        </button>
+      </form>
+
+      <!-- 註冊表單 -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label for="registerEmail">電子信箱</label>
+          <input
+            id="registerEmail"
+            type="email"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">設定密碼</label>
+          <input
+            id="registerPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="registerPasswordAgain">再次輸入密碼</label>
+          <input
+            id="registerPasswordAgain"
+            type="password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+
+        <button id="registerButton" class="main-btn" type="submit">
+          註冊會員
+        </button>
+      </form>
+
+      <!-- 重設密碼 -->
+      <form id="resetForm" class="hidden">
+        <h2>設定新密碼</h2>
+
+        <div class="form-group">
+          <label for="newPassword">新密碼</label>
+          <input
+            id="newPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="newPasswordAgain">再次輸入新密碼</label>
+          <input
+            id="newPasswordAgain"
+            type="password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          >
+        </div>
+
+        <button id="resetButton" class="main-btn" type="submit">
+          確認修改密碼
+        </button>
+      </form>
+    </section>
+
+    <!-- 登入後的會員資料 -->
+    <section id="memberCard" class="card hidden">
+      <div class="member-top">
+        <h1>我的會員中心</h1>
+
+        <div id="memberEmail" class="member-email"></div>
+
+        <div class="member-actions">
+          <a class="small-btn dark" href="index.html">
+            繼續購物
+          </a>
+
+          <button id="logoutButton" class="small-btn" type="button">
+            登出
+          </button>
+        </div>
+      </div>
+
+      <h2>我的訂單</h2>
+
+      <div id="orderMessage" class="message"></div>
+      <div id="orders">
+        <div class="empty">訂單載入中⋯</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://qwcpgwbaormtgpkjlaio.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+
+    const db = supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const authCard = document.getElementById("authCard");
+    const memberCard = document.getElementById("memberCard");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+    const resetForm = document.getElementById("resetForm");
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+    const message = document.getElementById("message");
+    const orderMessage = document.getElementById("orderMessage");
+    const ordersElement = document.getElementById("orders");
+
+    function showMessage(text, type = "success") {
+      message.textContent = text;
+      message.className = "message " + type;
+      message.style.display = "block";
+    }
+
+    function hideMessage() {
+      message.style.display = "none";
+    }
+
+    function showOrderMessage(text, type = "error") {
+      orderMessage.textContent = text;
+      orderMessage.className = "message " + type;
+      orderMessage.style.display = "block";
+    }
+
+    function showLogin() {
+      hideMessage();
+
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+      resetForm.classList.add("hidden");
+    }
+
+    function showRegister() {
+      hideMessage();
+
+      registerTab.classList.add("active");
+      loginTab.classList.remove("active");
+
+      registerForm.classList.remove("hidden");
+      loginForm.classList.add("hidden");
+      resetForm.classList.add("hidden");
+    }
+
+    loginTab.addEventListener("click", showLogin);
+    registerTab.addEventListener("click", showRegister);
+
+    loginForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      hideMessage();
+
+      const button = document.getElementById("loginButton");
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      button.disabled = true;
+      button.textContent = "登入中⋯";
+
+      const { error } = await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      button.disabled = false;
+      button.textContent = "登入";
+
+      if (error) {
+        showMessage(
+          "登入失敗，請確認信箱和密碼是否正確。",
+          "error"
+        );
+        return;
+      }
+
+      await showMember();
+    });
+
+    registerForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      hideMessage();
+
+      const button = document.getElementById("registerButton");
+      const email =
+        document.getElementById("registerEmail").value.trim();
+      const password =
+        document.getElementById("registerPassword").value;
+      const passwordAgain =
+        document.getElementById("registerPasswordAgain").value;
+
+      if (password !== passwordAgain) {
+        showMessage("兩次輸入的密碼不一致。", "error");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "註冊中⋯";
+
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo:
+            "https://colormixkoreashop.vercel.app/member.html"
+        }
+      });
+
+      button.disabled = false;
+      button.textContent = "註冊會員";
+
+      if (error) {
+        showMessage("註冊失敗：" + error.message, "error");
+        return;
+      }
+
+      if (data.session) {
+        await showMember();
+      } else {
+        showMessage(
+          "註冊成功！請到電子信箱點擊驗證連結，再回來登入。",
+          "success"
+        );
+      }
+    });
+
+    document
+      .getElementById("forgotButton")
+      .addEventListener("click", async function () {
+        const email =
+          document.getElementById("loginEmail").value.trim();
+
+        if (!email) {
+          showMessage("請先輸入註冊使用的電子信箱。", "error");
+          return;
+        }
+
+        const { error } = await db.auth.resetPasswordForEmail(
+          email,
+          {
+            redirectTo:
+              "https://colormixkoreashop.vercel.app/member.html?reset=1"
+          }
+        );
+
+        if (error) {
+          showMessage("寄送失敗：" + error.message, "error");
+          return;
+        }
+
+        showMessage(
+          "密碼重設信已寄出，請到電子信箱查看。",
+          "success"
+        );
+      });
+
+    resetForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const password =
+        document.getElementById("newPassword").value;
+      const passwordAgain =
+        document.getElementById("newPasswordAgain").value;
+
+      if (password !== passwordAgain) {
+        showMessage("兩次輸入的新密碼不一致。", "error");
+        return;
+      }
+
+      const button = document.getElementById("resetButton");
+      button.disabled = true;
+      button.textContent = "修改中⋯";
+
+      const { error } = await db.auth.updateUser({
+        password
+      });
+
+      button.disabled = false;
+      button.textContent = "確認修改密碼";
+
+      if (error) {
+        showMessage("修改失敗：" + error.message, "error");
+        return;
+      }
+
+      history.replaceState(
+        {},
+        "",
+        "member.html"
+      );
+
+      showMessage("密碼修改成功，請使用新密碼登入。", "success");
+
+      await db.auth.signOut();
+      showLogin();
+    });
+
+    document
+      .getElementById("logoutButton")
+      .addEventListener("click", async function () {
+        await db.auth.signOut();
+
+        memberCard.classList.add("hidden");
+        authCard.classList.remove("hidden");
+        showLogin();
+      });
+
+    function money(value) {
+      return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+
+      return new Date(value).toLocaleString("zh-TW", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function statusText(status) {
+      const labels = {
+        pending_payment: "等待轉帳",
+        payment_pending: "等待轉帳",
+        paid: "已付款",
+        preparing: "準備出貨",
+        shipped: "已出貨",
+        completed: "已完成",
+        cancelled: "已取消"
+      };
+
+      return labels[status] || status || "處理中";
+    }
+
+    function shippingText(method) {
+      const labels = {
+        family: "全家店到店",
+        familymart: "全家店到店",
+        seven: "7-ELEVEN 店到店",
+        "7-11": "7-ELEVEN 店到店",
+        post: "郵寄宅配"
+      };
+
+      return labels[method] || method || "";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadOrders() {
+      ordersElement.innerHTML =
+        '<div class="empty">訂單載入中⋯</div>';
+
+      const { data, error } = await db
+        .from("orders")
+        .select(`
+          *,
+          order_items (*)
+        `)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        ordersElement.innerHTML = "";
+        showOrderMessage(
+          "目前無法載入訂單紀錄：" + error.message
+        );
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        ordersElement.innerHTML =
+          '<div class="empty">目前還沒有購買紀錄</div>';
+        return;
+      }
+
+      ordersElement.innerHTML = data.map(function (order) {
+        const items = order.order_items || [];
+
+        const itemsHtml = items.map(function (item) {
+          const name =
+            item.product_name ||
+            item.name ||
+            ("商品 #" + (item.product_id || ""));
+
+          const details = [
+            item.size ? "尺寸：" + item.size : "",
+            item.color ? "顏色：" + item.color : "",
+            "數量：" + (item.quantity || 1)
+          ].filter(Boolean).join("　");
+
+          const amount =
+            item.subtotal ??
+            (Number(item.price || 0) *
+              Number(item.quantity || 1));
+
+          return `
+            <div class="order-item">
+              <div>
+                <strong>${escapeHtml(name)}</strong><br>
+                <span>${escapeHtml(details)}</span>
+              </div>
+
+              <div>${money(amount)}</div>
+            </div>
+          `;
+        }).join("");
+
+        const orderNumber =
+          order.order_number ||
+          ("#" + order.id);
+
+        const shippingFee =
+          order.shipping_fee ?? 0;
+
+        const total =
+          order.total ??
+          order.total_amount ??
+          0;
+
+        return `
+          <article class="order-card">
+            <div class="order-header">
+              <div>
+                <div class="order-number">
+                  訂單編號：${escapeHtml(orderNumber)}
+                </div>
+
+                <div class="order-date">
+                  ${escapeHtml(formatDate(order.created_at))}
+                </div>
+              </div>
+
+              <span class="status">
+                ${escapeHtml(statusText(order.status))}
+              </span>
+            </div>
+
+            ${itemsHtml}
+
+            <div class="shipping">
+              ${escapeHtml(shippingText(order.shipping_method))}
+              ・運費 ${money(shippingFee)}
+            </div>
+
+            <div class="order-total">
+              訂單總額 ${money(total)}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function showMember() {
+      const {
+        data: { user }
+      } = await db.auth.getUser();
+
+      if (!user) return;
+
+      authCard.classList.add("hidden");
+      memberCard.classList.remove("hidden");
+
+      document.getElementById("memberEmail").textContent =
+        "會員帳號：" + user.email;
+
+      await loadOrders();
+
+      const params = new URLSearchParams(location.search);
+      const returnPage = params.get("return");
+
+      if (returnPage === "cart.html") {
+        location.href = "cart.html";
+      }
+    }
+
+    async function initialize() {
+      const params = new URLSearchParams(location.search);
+
+      if (params.get("reset") === "1") {
+        loginForm.classList.add("hidden");
+        registerForm.classList.add("hidden");
+        resetForm.classList.remove("hidden");
+        loginTab.classList.remove("active");
+        registerTab.classList.remove("active");
+        return;
+      }
+
+      const {
+        data: { session }
+      } = await db.auth.getSession();
+
+      if (session) {
+        await showMember();
+      } else {
+        showLogin();
+      }
+    }
+
+    db.auth.onAuthStateChange(function (event) {
+      if (event === "PASSWORD_RECOVERY") {
+        authCard.classList.remove("hidden");
+        memberCard.classList.add("hidden");
+        loginForm.classList.add("hidden");
+        registerForm.classList.add("hidden");
+        resetForm.classList.remove("hidden");
+        loginTab.classList.remove("active");
+        registerTab.classList.remove("active");
+      }
+    });
+
+    initialize();
+  </script>
+</body>
+</html>
