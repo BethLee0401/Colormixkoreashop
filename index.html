@@ -552,7 +552,9 @@
               </div>
 
               <div class="price">
-                NT$ ${Number(product.price || 0).toLocaleString("zh-TW")} || 0).toLocaleString("zh-TW")}
+                ${product.product_type === "stock"
+  ? '現貨85折 NT$ ' + salePrice(product).toLocaleString("zh-TW")
+  : 'NT$ ' + salePrice(product).toLocaleString("zh-TW")} || 0).toLocaleString("zh-TW")}
               </div>
             </div>
           </a>
