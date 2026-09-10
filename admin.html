@@ -1160,6 +1160,23 @@ async function loadOrders() {
         </div>
       `;
     }).join("");
+    $("memberPagination").innerHTML =
+  Array.from(
+    { length: totalMemberPages },
+    function (_, index) {
+      const page = index + 1;
+
+      return `
+        <button
+          type="button"
+          class="${page === currentMemberPage ? "" : "light"}"
+          onclick="changeMemberPage(${page})"
+        >
+          ${page}
+        </button>
+      `;
+    }
+  ).join("");
 
     return `
       <div class="card" style="background:#fafafa;">
