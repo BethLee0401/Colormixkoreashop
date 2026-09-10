@@ -1232,6 +1232,38 @@ ${order.payment_last5
   });
 }
 
+    $("orderList").addEventListener("click", async function (event) {
+  const button = event.target.closest(".admin-payment-save");
+
+  if (!button) return;
+
+  const input = document.querySelector(
+    `.admin-payment-last5[data-id="${button.dataset.id}"]`
+  );
+
+  const last5 = input.value.trim();
+
+  if (!/^[0-9]{5}$/.test(last5)) {
+    window.alert("請輸入正確的轉帳後五碼");
+    return;
+  }
+
+  const { error } = await db
+    .from("orders")
+    .update({
+      payment_last5: last5,
+      payment_reported_at: new Date().toISOString()
+    })
+    .eq("id", button.dataset.id);
+
+  if (error) {
+    window.alert("儲存失敗：" + error.message);
+    return;
+  }
+
+  window.alert("轉帳後五碼已儲存");
+  await loadOrders();
+});
 $("reloadOrders").onclick = loadOrders;
     function showAdminPage(page) {
   const sections =
