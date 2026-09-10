@@ -876,7 +876,37 @@
         `;
       }).join("");
     }
+ordersElement.addEventListener("click", async function (event) {
+  const button = event.target.closest(".payment-report-button");
 
+  if (!button) return;
+
+  const input = button.parentElement.querySelector(".payment-last5");
+  const last5 = input.value.trim();
+
+  if (!/^[0-9]{5}$/.test(last5)) {
+    showOrderMessage("請輸入正確的轉帳後五碼", "error");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "回報中⋯";
+
+  const { data, error } = await db.rpc("report_payment", {
+    p_order_number: button.dataset.orderNumber,
+    p_payment_last5: last5
+  });
+
+  if (error || data !== true) {
+    button.disabled = false;
+    button.textContent = "回報付款";
+    showOrderMessage("回報失敗，請稍後再試", "error");
+    return;
+  }
+
+  showOrderMessage("付款資料已回報成功", "success");
+  await loadOrders();
+});
     async function showMember() {
       const {
         data: { user }
