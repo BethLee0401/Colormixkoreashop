@@ -1281,45 +1281,138 @@ ${order.payment_last5
   await loadOrders();
 });
 $("reloadOrders").onclick = loadOrders;
-    function showAdminPage(page) {
+
+async function loadMembers() {
+  $("memberList").textContent = "會員資料載入中⋯";
+
+  const [
+    { data: members, error: memberError },
+    { data: orders, error: orderError }
+  ] = await Promise.all([
+    db
+      .from("member_profiles")
+      .select("*")
+      .order("created_at", { ascending: false }),
+
+    db
+      .from("orders")
+      .select("user_id,total,status")
+  ]);
+
+  if (memberError) {
+    $("memberList").textContent =
+      "會員資料讀取失敗：" + memberError.message;
+    return;
+  }
+
+  if (orderError) {
+    $("memberList").textContent =
+      "訂單資料讀取失敗：" + orderError.message;
+    return;
+  }
+
+  if (!members || !members.length) {
+    $("memberList").textContent = "目前沒有會員資料";
+    return;
+  }
+
+  const currentYear = new Date().getFullYear();
+
+  $("memberList").innerHTML = members.map(function (member) {
+    const memberOrders = (orders || []).filter(function (order) {
+      return order.user_id === member.user_id;
+    });
+
+    const completedOrders = memberOrders.filter(function (order) {
+      return order.status !== "cancelled";
+    });
+
+    const totalSpent = completedOrders.reduce(function (sum, order) {
+      return sum + Number(order.total || 0);
+    }, 0);
+
+    const age = member.birth_year
+      ? currentYear - Number(member.birth_year)
+      : "";
+
+    const styles = Array.isArray(member.style_preferences)
+      ? member.style_preferences.join("、")
+      : "";
+
+    return `
+      <article class="item" style="display:block;">
+        <div class="item-name">
+          ${escapeHtml(member.name || "未填姓名")}
+        </div>
+
+        <div>會員信箱：${escapeHtml(member.email || "")}</div>
+        <div>電話：${escapeHtml(member.phone || "")}</div>
+        <div>地址：${escapeHtml(member.address || "")}</div>
+
+        <div>
+          出生年份：
+          ${escapeHtml(member.birth_year || "未填")}
+          ${age ? "｜約 " + escapeHtml(age) + " 歲" : ""}
+        </div>
+
+        <div>
+          常穿尺碼：${escapeHtml(member.usual_size || "未填")}
+        </div>
+
+        <div>
+          喜歡風格：${escapeHtml(styles || "未填")}
+        </div>
+
+        <div style="margin-top:10px;font-weight:700;">
+          訂單數量：${memberOrders.length} 筆
+          ｜累積消費：NT$ ${totalSpent.toLocaleString("zh-TW")}
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+$("reloadMembers").onclick = loadMembers;
+
+function showAdminPage(page) {
   const sections =
     document.querySelectorAll("#dashboard > section");
 
-  const showProductPage = page === "products";
+  sections.forEach(function (section) {
+    section.classList.add("admin-page-hidden");
+  });
 
-  if (sections[0]) {
-    sections[0].classList.toggle(
-      "admin-page-hidden",
-      !showProductPage
-    );
+  $("showProducts").classList.remove("menu-active");
+  $("showOrders").classList.remove("menu-active");
+  $("showMembers").classList.remove("menu-active");
+
+  if (page === "products") {
+    if (sections[0]) {
+      sections[0].classList.remove("admin-page-hidden");
+    }
+
+    if (sections[1]) {
+      sections[1].classList.remove("admin-page-hidden");
+    }
+
+    $("showProducts").classList.add("menu-active");
+    return;
   }
 
-  if (sections[1]) {
-    sections[1].classList.toggle(
-      "admin-page-hidden",
-      !showProductPage
-    );
-  }
+  if (page === "orders") {
+    const orderSection =
+      $("orderList").closest("section");
 
-  if (sections[2]) {
-    sections[2].classList.toggle(
-      "admin-page-hidden",
-      showProductPage
-    );
-  }
-
-  $("showProducts").classList.toggle(
-    "menu-active",
-    showProductPage
-  );
-
-  $("showOrders").classList.toggle(
-    "menu-active",
-    !showProductPage
-  );
-
-  if (!showProductPage) {
+    orderSection.classList.remove("admin-page-hidden");
+    $("showOrders").classList.add("menu-active");
     loadOrders();
+    return;
+  }
+
+  if (page === "members") {
+    $("membersSection").classList.remove("admin-page-hidden");
+    $("showMembers").classList.add("menu-active");
+    loadMembers();
   }
 }
 
@@ -1329,6 +1422,10 @@ $("showProducts").onclick = function () {
 
 $("showOrders").onclick = function () {
   showAdminPage("orders");
+};
+
+$("showMembers").onclick = function () {
+  showAdminPage("members");
 };
 
 showAdminPage("products");
