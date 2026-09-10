@@ -456,6 +456,13 @@ label[for="color"],
     };
 
     let rows = [];
+    let currentMemberPage = 1;
+const membersPerPage = 15;
+
+function changeMemberPage(page) {
+  currentMemberPage = page;
+  loadMembers();
+}
 let currentProductPage = 1;
 const productsPerPage = 5;
 
