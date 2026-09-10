@@ -861,7 +861,13 @@
         document.getElementById("catalogSubtitle").textContent =
           filterTitles[currentFilter][1];
       }
-
+if (currentSearch) {
+  products = products.filter(function (product) {
+    return String(product.name || "")
+      .toLowerCase()
+      .includes(currentSearch);
+  });
+}
       const list =
         document.getElementById("productList");
 
