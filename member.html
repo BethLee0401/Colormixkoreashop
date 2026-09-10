@@ -742,9 +742,12 @@
       "註冊成功！請到電子信箱點擊驗證連結，再回來登入。",
       "success"
     );
-  }
+   }
 });
-      .addEventListener("click", async function () {
+
+document
+  .getElementById("forgotButton")
+  .addEventListener("click", async function () {
         const email =
           document.getElementById("loginEmail").value.trim();
 
