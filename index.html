@@ -933,7 +933,14 @@ if (currentSearch) {
             behavior: "smooth"
           });
       });
+document
+  .getElementById("productSearch")
+  .addEventListener("input", function (event) {
+    currentSearch =
+      event.target.value.trim().toLowerCase();
 
+    renderProducts();
+  });
     async function loadProducts() {
       const list =
         document.getElementById("productList");
