@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/</loc>
+  </url>
+
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/index.html</loc>
+  </url>
+
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/product.html?id=1</loc>
+  </url>
+
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/product.html?id=2</loc>
+  </url>
+
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/shopping-guide.html</loc>
+  </url>
+
+  <url>
+    <loc>https://colormixkoreashop.vercel.app/privacy.html</loc>
+  </url>
+</urlset>
