@@ -764,8 +764,29 @@ if (product.product_type === "stock") {
         product.descripion ||
         "COLORMIX 精選正韓服飾，簡約好搭，輕鬆穿出日常質感。";
 
-      const sizes = parseOptions(product.size);
-      const colors = parseOptions(product.color);
+     const sizes = variants.length
+  ? [
+      ...new Set(
+        variants
+          .map(function (variant) {
+            return variant.size;
+          })
+          .filter(Boolean)
+      )
+    ]
+  : parseOptions(product.size);
+
+const colors = variants.length
+  ? [
+      ...new Set(
+        variants
+          .map(function (variant) {
+            return variant.color;
+          })
+          .filter(Boolean)
+      )
+    ]
+  : parseOptions(product.color);
 
       createOptionButtons(
         "sizeButtons",
