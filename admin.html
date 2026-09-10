@@ -1329,7 +1329,24 @@ async function loadMembers() {
 
   const currentYear = new Date().getFullYear();
 
-  $("memberList").innerHTML = members.map(function (member) {
+const totalMemberPages = Math.max(
+  1,
+  Math.ceil(members.length / membersPerPage)
+);
+
+if (currentMemberPage > totalMemberPages) {
+  currentMemberPage = totalMemberPages;
+}
+
+const startIndex =
+  (currentMemberPage - 1) * membersPerPage;
+
+const pageMembers = members.slice(
+  startIndex,
+  startIndex + membersPerPage
+);
+
+$("memberList").innerHTML = pageMembers.map(function (member) {
     const memberOrders = (orders || []).filter(function (order) {
       return order.user_id === member.user_id;
     });
