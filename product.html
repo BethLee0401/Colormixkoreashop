@@ -580,6 +580,58 @@ function money(value) {
       }
     }
 
+    function updateSelectedVariantStatus() {
+  const stockStatus =
+    document.getElementById("stockStatus");
+
+  const addButton =
+    document.getElementById("addButton");
+
+  const selectedVariant = variants.find(function (variant) {
+    const sizeMatches =
+      !variant.size ||
+      variant.size === selectedSize ||
+      selectedSize === "單一規格";
+
+    const colorMatches =
+      !variant.color ||
+      variant.color === selectedColor ||
+      selectedColor === "單一顏色";
+
+    return sizeMatches && colorMatches;
+  });
+
+  if (variants.length && !selectedVariant) {
+    stockStatus.textContent = "此尺寸與顏色無法選購";
+    stockStatus.style.color = "#a93636";
+    addButton.disabled = true;
+    return;
+  }
+
+  addButton.disabled = false;
+
+  if (product.product_type !== "stock") {
+    stockStatus.textContent = "連線商品";
+    stockStatus.style.color = "#555";
+    return;
+  }
+
+  const stock = Number(
+    selectedVariant?.stock ??
+    product.stock_quantity ??
+    0
+  );
+
+  if (stock > 0) {
+    stockStatus.textContent =
+      "現貨｜此規格剩餘 " + stock + " 件";
+    stockStatus.style.color = "#b23b34";
+  } else {
+    stockStatus.textContent =
+      "追加商品｜到貨後依訂單順序出貨";
+    stockStatus.style.color = "#555";
+  }
+}
     function renderImages(images) {
       const mainImage =
         document.getElementById("mainImage");
