@@ -400,6 +400,89 @@
           >
         </div>
 
+        <div class="form-group">
+  <label for="registerName">姓名</label>
+  <input
+    id="registerName"
+    type="text"
+    autocomplete="name"
+    required
+  >
+</div>
+
+<div class="form-group">
+  <label for="registerPhone">電話</label>
+  <input
+    id="registerPhone"
+    type="tel"
+    autocomplete="tel"
+    required
+  >
+</div>
+
+<div class="form-group">
+  <label for="registerAddress">常用寄送地址</label>
+  <input
+    id="registerAddress"
+    type="text"
+    autocomplete="street-address"
+    required
+  >
+</div>
+
+<div class="form-group">
+  <label for="registerBirthYear">出生年份</label>
+  <input
+    id="registerBirthYear"
+    type="number"
+    min="1900"
+    max="2026"
+    placeholder="例如：1997"
+    required
+  >
+</div>
+
+<div class="form-group">
+  <label for="registerSize">常穿尺碼</label>
+  <select id="registerSize" required>
+    <option value="">請選擇</option>
+    <option value="XS">XS</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+    <option value="Free">Free Size</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label>喜歡的穿搭風格（可複選）</label>
+
+  <label>
+    <input type="checkbox" name="stylePreference" value="韓系休閒">
+    韓系休閒
+  </label>
+
+  <label>
+    <input type="checkbox" name="stylePreference" value="簡約氣質">
+    簡約氣質
+  </label>
+
+  <label>
+    <input type="checkbox" name="stylePreference" value="甜美">
+    甜美
+  </label>
+
+  <label>
+    <input type="checkbox" name="stylePreference" value="個性">
+    個性
+  </label>
+
+  <label>
+    <input type="checkbox" name="stylePreference" value="性感">
+    性感
+  </label>
+</div>
         <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:18px;">
   <input
     id="privacyAgree"
