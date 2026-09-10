@@ -1172,6 +1172,21 @@ async function loadOrders() {
           ? `<p>備註：${escapeHtml(order.note)}</p>`
           : ""}
 
+${order.payment_last5
+  ? `
+    <p style="color:#287a3d;font-weight:700;">
+      已回報付款｜轉帳後五碼：
+      ${escapeHtml(order.payment_last5)}<br>
+      回報時間：
+      ${new Date(order.payment_reported_at).toLocaleString("zh-TW")}
+    </p>
+  `
+  : `
+    <p style="color:#a93636;font-weight:700;">
+      尚未回報付款
+    </p>
+  `
+}
         <div>${itemHtml}</div>
 
         <p>
