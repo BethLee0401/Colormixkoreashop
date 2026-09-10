@@ -489,20 +489,32 @@ function changeProductPage(page) {
     }
 
     async function session() {
-      const {
-        data: { session }
-      } = await db.auth.getSession();
+  const {
+    data: { session }
+  } = await db.auth.getSession();
 
-      const loggedIn = Boolean(session);
+  let isAdmin = false;
 
-      $("loginBox").classList.toggle("hidden", loggedIn);
-      $("dashboard").classList.toggle("hidden", !loggedIn);
+  if (session) {
+    const { data, error } = await db.rpc("is_admin");
 
-      if (loggedIn) {
-        await load();
-await loadOrders();
-      }
-    }
+    isAdmin = !error && data === true;
+  }
+
+  $("loginBox").classList.toggle("hidden", isAdmin);
+  $("dashboard").classList.toggle("hidden", !isAdmin);
+
+  if (session && !isAdmin) {
+    $("loginMsg").textContent = "此帳號沒有後台管理權限";
+    await db.auth.signOut();
+    return;
+  }
+
+  if (isAdmin) {
+    await load();
+    await loadOrders();
+  }
+}
 
     $("login").onclick = async function () {
       $("loginMsg").textContent = "";
