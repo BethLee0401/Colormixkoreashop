@@ -464,11 +464,23 @@
 </div>
 
 <div class="form-group">
-  <label for="registerAddress">常用寄送地址</label>
+  <label for="registerCity">常用寄送地址</label>
+
+  <div class="address-grid">
+    <select id="registerCity" required>
+      <option value="">選擇縣市</option>
+    </select>
+
+    <select id="registerDistrict" required disabled>
+      <option value="">選擇區域</option>
+    </select>
+  </div>
+
   <input
-    id="registerAddress"
+    id="registerAddressDetail"
     type="text"
     autocomplete="street-address"
+    placeholder="路名、段、巷、弄、號、樓層之幾"
     required
   >
 </div>
