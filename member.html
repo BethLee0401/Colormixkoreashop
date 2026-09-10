@@ -303,6 +303,49 @@
         margin-top: 10px;
       }
     }
+    .style-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.style-option {
+  display: block;
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+}
+
+.style-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.style-option span {
+  display: block;
+  padding: 10px 8px;
+  color: #5f554c;
+  background: #f8f3ed;
+  border: 1px solid #ded3c8;
+  border-radius: 12px;
+  font-size: 14px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.style-option span:hover {
+  background: #efe5da;
+  border-color: #bda995;
+}
+
+.style-option input:checked + span {
+  color: #fff;
+  background: #292522;
+  border-color: #292522;
+  box-shadow: 0 3px 8px rgba(41, 37, 34, 0.18);
+}
   </style>
 </head>
 
