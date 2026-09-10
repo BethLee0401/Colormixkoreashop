@@ -871,6 +871,7 @@
             <div class="order-total">
               訂單總額 ${money(total)}
             </div>
+            ${paymentReportHtml(order, orderNumber)}
           </article>
         `;
       }).join("");
