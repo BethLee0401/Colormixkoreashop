@@ -660,54 +660,90 @@
     });
 
     registerForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      hideMessage();
+  event.preventDefault();
+  hideMessage();
 
-      const button = document.getElementById("registerButton");
-      const email =
-        document.getElementById("registerEmail").value.trim();
-      const password =
-        document.getElementById("registerPassword").value;
-      const passwordAgain =
-        document.getElementById("registerPasswordAgain").value;
+  const button = document.getElementById("registerButton");
 
-      if (password !== passwordAgain) {
-        showMessage("兩次輸入的密碼不一致。", "error");
-        return;
-      }
+  const email =
+    document.getElementById("registerEmail").value.trim();
 
-      button.disabled = true;
-      button.textContent = "註冊中⋯";
+  const password =
+    document.getElementById("registerPassword").value;
 
-      const { data, error } = await db.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            "https://colormixkoreashop.vercel.app/member.html"
-        }
-      });
+  const passwordAgain =
+    document.getElementById("registerPasswordAgain").value;
 
-      button.disabled = false;
-      button.textContent = "註冊會員";
+  const name =
+    document.getElementById("registerName").value.trim();
 
-      if (error) {
-        showMessage("註冊失敗：" + error.message, "error");
-        return;
-      }
+  const phone =
+    document.getElementById("registerPhone").value.trim();
 
-      if (data.session) {
-        await showMember();
-      } else {
-        showMessage(
-          "註冊成功！請到電子信箱點擊驗證連結，再回來登入。",
-          "success"
-        );
-      }
-    });
+  const address =
+    document.getElementById("registerAddress").value.trim();
 
-    document
-      .getElementById("forgotButton")
+  const birthYear =
+    Number(document.getElementById("registerBirthYear").value);
+
+  const usualSize =
+    document.getElementById("registerSize").value;
+
+  const stylePreferences = Array.from(
+    document.querySelectorAll(
+      'input[name="stylePreference"]:checked'
+    )
+  ).map(function (item) {
+    return item.value;
+  });
+
+  if (password !== passwordAgain) {
+    showMessage("兩次輸入的密碼不一致。", "error");
+    return;
+  }
+
+  if (!name || !phone || !address || !birthYear || !usualSize) {
+    showMessage("請完整填寫會員基本資料。", "error");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "註冊中⋯";
+
+  const { data, error } = await db.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name: name,
+        phone: phone,
+        address: address,
+        birth_year: birthYear,
+        usual_size: usualSize,
+        style_preferences: stylePreferences
+      },
+      emailRedirectTo:
+        "https://colormixkoreashop.vercel.app/member.html"
+    }
+  });
+
+  button.disabled = false;
+  button.textContent = "註冊會員";
+
+  if (error) {
+    showMessage("註冊失敗：" + error.message, "error");
+    return;
+  }
+
+  if (data.session) {
+    await showMember();
+  } else {
+    showMessage(
+      "註冊成功！請到電子信箱點擊驗證連結，再回來登入。",
+      "success"
+    );
+  }
+});
       .addEventListener("click", async function () {
         const email =
           document.getElementById("loginEmail").value.trim();
