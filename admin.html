@@ -1068,9 +1068,26 @@ await saveVariants(
     </p>
   `
   : `
-    <p style="color:#a93636;font-weight:700;">
-      尚未回報付款
-    </p>
+    <div style="margin:15px 0;">
+  <input
+    class="admin-payment-last5"
+    data-id="${order.id}"
+    type="text"
+    inputmode="numeric"
+    maxlength="5"
+    placeholder="代填轉帳後五碼"
+    style="padding:10px;width:190px;"
+  >
+
+  <button
+    class="admin-payment-save"
+    data-id="${order.id}"
+    type="button"
+    style="padding:10px 14px;"
+  >
+    儲存後五碼
+  </button>
+</div>
   `
 }
       const { error } = await db
