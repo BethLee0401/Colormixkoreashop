@@ -431,13 +431,11 @@
 </div>
 
 <div class="form-group">
-  <label for="registerBirthYear">出生年份</label>
+  <label for="registerBirthDate">出生年月日</label>
   <input
-    id="registerBirthYear"
-    type="number"
-    min="1900"
-    max="2026"
-    placeholder="例如：1997"
+    id="registerBirthDate"
+    type="date"
+    autocomplete="bday"
     required
   >
 </div>
@@ -458,30 +456,52 @@
 <div class="form-group">
   <label>喜歡的穿搭風格（可複選）</label>
 
-  <label>
-    <input type="checkbox" name="stylePreference" value="韓系休閒">
-    韓系休閒
-  </label>
+  <div class="style-grid">
+    <label class="style-option">
+      <input
+        type="checkbox"
+        name="stylePreference"
+        value="韓系休閒"
+      >
+      <span>韓系休閒</span>
+    </label>
 
-  <label>
-    <input type="checkbox" name="stylePreference" value="簡約氣質">
-    簡約氣質
-  </label>
+    <label class="style-option">
+      <input
+        type="checkbox"
+        name="stylePreference"
+        value="簡約氣質"
+      >
+      <span>簡約氣質</span>
+    </label>
 
-  <label>
-    <input type="checkbox" name="stylePreference" value="甜美">
-    甜美
-  </label>
+    <label class="style-option">
+      <input
+        type="checkbox"
+        name="stylePreference"
+        value="甜美"
+      >
+      <span>甜美</span>
+    </label>
 
-  <label>
-    <input type="checkbox" name="stylePreference" value="個性">
-    個性
-  </label>
+    <label class="style-option">
+      <input
+        type="checkbox"
+        name="stylePreference"
+        value="個性"
+      >
+      <span>個性</span>
+    </label>
 
-  <label>
-    <input type="checkbox" name="stylePreference" value="性感">
-    性感
-  </label>
+    <label class="style-option">
+      <input
+        type="checkbox"
+        name="stylePreference"
+        value="性感"
+      >
+      <span>性感</span>
+    </label>
+  </div>
 </div>
         <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:18px;">
   <input
