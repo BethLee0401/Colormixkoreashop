@@ -711,6 +711,17 @@ function money(value) {
       }
 
       product = data;
+      const { data: variantData, error: variantError } =
+  await db
+    .from("product_variants")
+    .select("*")
+    .eq("product_id", product.id)
+    .eq("active", true)
+    .order("id", { ascending: true });
+
+variants = variantError
+  ? []
+  : (variantData || []);
 
       document.title =
         product.name + "｜COLORMIX";
