@@ -740,6 +740,37 @@
         .replaceAll("'", "&#039;");
     }
 
+    function paymentReportHtml(order, orderNumber) {
+  if (order.payment_last5) {
+    return `
+      <div style="margin-top:15px;color:#287a3d;font-weight:700;">
+        已回報轉帳後五碼：${escapeHtml(order.payment_last5)}
+      </div>
+    `;
+  }
+
+  return `
+    <div style="margin-top:15px;">
+      <input
+        class="payment-last5"
+        type="text"
+        inputmode="numeric"
+        maxlength="5"
+        placeholder="請輸入轉帳後五碼"
+        style="padding:10px;width:190px;"
+      >
+
+      <button
+        class="payment-report-button"
+        type="button"
+        data-order-number="${escapeHtml(orderNumber)}"
+        style="padding:10px 14px;"
+      >
+        回報付款
+      </button>
+    </div>
+  `;
+}
     async function loadOrders() {
       ordersElement.innerHTML =
         '<div class="empty">訂單載入中⋯</div>';
