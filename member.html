@@ -3,1198 +3,431 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>會員中心｜COLORMIX</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --gold: #b49a6c;
+      --field: #f1ece5;
+      --cream: #eee8e1;
+      --ink: #352e2b;
+      --wine: #75444b;
+      --muted: #776b65;
+      --line: #d8cec3;
+      --white: #fbf9f6;
     }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      color: #222;
-      background: #f8f6f2;
-      font-family: Arial, "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(145deg, #f2ede7 0%, #e7dfd7 100%);
+      font-family: "Noto Sans TC", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
     .header {
-      height: 72px;
+      min-height: 68px;
       padding: 0 6%;
-      background: #fff;
-      border-bottom: 1px solid #ddd;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: rgba(251, 249, 246, .95);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
     }
-
     .logo {
+      font-family: "Noto Serif TC", serif;
       font-size: 22px;
-      font-weight: 700;
+      font-weight: 900;
       letter-spacing: 4px;
     }
-
-    .header-links {
-      display: flex;
-      gap: 22px;
-      font-size: 14px;
-    }
-
-    .container {
-      width: min(620px, calc(100% - 32px));
-      margin: 55px auto;
-    }
-
+    .header-links { display: flex; gap: 20px; font-weight: 700; }
+    .header-links a:hover { color: var(--wine); }
+    .container { width: min(680px, calc(100% - 28px)); margin: 38px auto 64px; }
     .card {
-      padding: 34px;
-      background: #fff;
-      border: 1px solid #ddd;
+      padding: 30px;
+      background: rgba(251, 249, 246, .98);
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(73, 55, 38, .09);
     }
-
-    h1 {
-      margin: 0 0 28px;
-      font-size: 27px;
-      text-align: center;
-      letter-spacing: 2px;
+    h1, h2, h3, .tab, .main-btn, .small-btn {
+      font-family: "Noto Serif TC", "Noto Sans TC", serif;
     }
-
-    h2 {
-      margin: 0 0 20px;
-      font-size: 20px;
-    }
-
+    h1 { margin: 0 0 22px; font-size: 25px; text-align: center; letter-spacing: 2px; }
+    h2 { margin: 0 0 16px; font-size: 19px; }
+    .section-title::before { content: ""; display: inline-block; width: 22px; height: 1px; margin: 0 9px 5px 0; background: var(--gold); }
     .tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 28px;
-      border-bottom: 1px solid #bbb;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 6px;
+      background: #e9e2da;
+      border-radius: 10px;
     }
-
     .tab {
-      padding: 14px;
+      padding: 10px;
       border: 0;
+      border-radius: 8px;
       background: transparent;
-      font-size: 16px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
     }
-
-    .tab.active {
-      font-weight: 700;
-      border-bottom: 3px solid #222;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    input {
+    .tab.active { color: #fff; background: var(--wine); box-shadow: 0 5px 12px rgba(76, 45, 50, .16); }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 700; }
+    input:not([type="checkbox"]):not([type="radio"]), select {
       width: 100%;
-      height: 48px;
-      padding: 0 14px;
-      border: 1px solid #aaa;
-      border-radius: 0;
-      background: #fff;
-      font-size: 16px;
+      min-height: 44px;
+      padding: 9px 12px;
+      border: 1px solid #cfc2b5;
+      border-radius: 8px;
+      background: var(--field);
+      color: var(--ink);
+      font-size: 15px;
     }
-
-    input:focus {
-      outline: 2px solid #222;
-      outline-offset: 1px;
+    input:focus, select:focus { outline: 3px solid rgba(117, 68, 75, .12); border-color: var(--wine); background: #f8f5f1; }
+    .two-columns, .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .style-grid, .delivery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .style-option, .delivery-option { position: relative; margin: 0; cursor: pointer; }
+    .style-option input, .delivery-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .style-option span, .delivery-option span {
+      display: block;
+      padding: 9px 7px;
+      border: 1px solid #cfc3b8;
+      border-radius: 8px;
+      background: #f3eee8;
+      text-align: center;
+      font-size: 14px;
+      transition: .16s ease;
     }
-
+    .style-option input:checked + span, .delivery-option input:checked + span {
+      color: #fff;
+      background: var(--wine);
+      border-color: var(--wine);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+    }
+    .delivery-grid { grid-template-columns: repeat(3, 1fr); }
+    .locator-row { display: flex; gap: 8px; margin: 8px 0 10px; }
+    .locator-link {
+      flex: 1;
+      padding: 9px 10px;
+      border: 1px solid #bca98f;
+      border-radius: 8px;
+      background: #f5f0ea;
+      color: #654b4f;
+      text-align: center;
+      font-weight: 700;
+    }
+    .hint { margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .agree { display: flex; gap: 8px; align-items: flex-start; margin: 17px 0; font-weight: 500; }
+    .agree input { margin-top: 6px; accent-color: var(--wine); }
+    .agree a { text-decoration: underline; font-weight: 700; }
     .main-btn {
       width: 100%;
-      height: 50px;
-      margin-top: 8px;
-      border: 1px solid #222;
-      background: #222;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .main-btn:hover {
-      background: #444;
-    }
-
-    .main-btn:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
-
-    .text-btn {
-      display: block;
-      margin: 18px auto 0;
-      padding: 5px;
+      min-height: 47px;
       border: 0;
-      background: transparent;
-      color: #555;
-      font-size: 14px;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .message {
-      display: none;
-      margin: 18px 0;
-      padding: 12px 14px;
-      border: 1px solid #bbb;
-      background: #fafafa;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .message.error {
-      color: #9a1c1c;
-      border-color: #d8a2a2;
-      background: #fff5f5;
-    }
-
-    .message.success {
-      color: #276137;
-      border-color: #a8cbb0;
-      background: #f4fff6;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .member-top {
-      margin-bottom: 25px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .member-email {
-      margin: 5px 0 18px;
-      color: #666;
-      font-size: 14px;
-      word-break: break-all;
-    }
-
-    .member-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .small-btn {
-      padding: 10px 16px;
-      border: 1px solid #222;
-      background: #fff;
-      color: #222;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .small-btn.dark {
-      background: #222;
+      border-radius: 8px;
+      background: var(--wine);
       color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(48, 41, 36, .16);
     }
-
-    .empty {
-      padding: 35px 10px;
-      color: #777;
-      text-align: center;
-      border: 1px dashed #bbb;
-    }
-
-    .order-card {
-      margin-bottom: 18px;
-      padding: 20px;
-      border: 1px solid #ccc;
-    }
-
-    .order-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .order-number {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .order-date {
-      margin-top: 5px;
-      color: #777;
-      font-size: 13px;
-    }
-
-    .status {
-      padding: 5px 9px;
-      background: #eee;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .order-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 11px 0;
-      border-top: 1px solid #eee;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .order-total {
-      margin-top: 12px;
-      padding-top: 14px;
-      border-top: 1px solid #aaa;
-      text-align: right;
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .shipping {
-      margin-top: 8px;
-      color: #666;
-      font-size: 13px;
-      text-align: right;
-    }
-
+    .main-btn:hover { background: #63373e; }
+    .main-btn:disabled { opacity: .6; cursor: wait; }
+    .text-btn { display: block; margin: 16px auto 0; border: 0; background: transparent; color: var(--muted); text-decoration: underline; cursor: pointer; }
+    .message { display: none; margin: 15px 0; padding: 11px 13px; border-radius: 11px; font-size: 14px; }
+    .message.error { color: #922; background: #fff0ef; border: 1px solid #f0b7b2; }
+    .message.success { color: #276137; background: #effaf0; border: 1px solid #b5d7b8; }
+    .hidden { display: none !important; }
+    .member-top { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 2px dashed var(--line); }
+    .member-email { margin: -12px 0 14px; color: var(--muted); text-align: center; word-break: break-all; }
+    .member-actions { display: flex; justify-content: center; gap: 9px; }
+    .small-btn { padding: 8px 14px; border: 1px solid var(--ink); border-radius: 7px; background: #fff; font-weight: 700; cursor: pointer; }
+    .small-btn.dark { background: var(--ink); color: #fff; }
+    .profile-box { margin-bottom: 24px; padding: 16px; background: #f1ece6; border: 1px solid #d7cbc0; border-radius: 10px; }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+    .profile-item { font-size: 14px; }
+    .profile-item strong { display: block; color: var(--wine); font-size: 12px; }
+    .empty { padding: 28px 10px; color: var(--muted); text-align: center; border: 2px dashed var(--line); border-radius: 15px; }
+    .order-card { margin-bottom: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .order-header { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .order-number { font-weight: 800; }
+    .order-date, .shipping { color: var(--muted); font-size: 12px; }
+    .status { padding: 4px 9px; border-radius: 99px; color: #fff; background: var(--wine); font-size: 12px; white-space: nowrap; }
+    .order-item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px dashed var(--line); font-size: 13px; }
+    .order-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); text-align: right; font-weight: 800; }
+    .shipping { margin-top: 7px; text-align: right; }
     @media (max-width: 600px) {
-      .header {
-        height: 64px;
-        padding: 0 18px;
-      }
-
-      .logo {
-        font-size: 18px;
-        letter-spacing: 3px;
-      }
-
-      .header-links {
-        gap: 13px;
-        font-size: 13px;
-      }
-
-      .container {
-        margin: 28px auto;
-      }
-
-      .card {
-        padding: 25px 20px;
-      }
-
-      .order-header {
-        display: block;
-      }
-
-      .status {
-        display: inline-block;
-        margin-top: 10px;
-      }
+      .header { padding: 0 16px; }
+      .logo { font-size: 18px; }
+      .header-links { gap: 12px; font-size: 13px; }
+      .container { margin-top: 24px; }
+      .card { padding: 22px 16px; border-radius: 20px; }
+      .two-columns, .address-grid, .profile-grid { grid-template-columns: 1fr; }
+      .delivery-grid { grid-template-columns: 1fr; }
+      .order-header { display: block; }
     }
-    .style-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.style-option {
-  display: block;
-  position: relative;
-  margin: 0;
-  cursor: pointer;
-}
-
-.style-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.style-option span {
-  display: block;
-  padding: 10px 8px;
-  color: #5f554c;
-  background: #f8f3ed;
-  border: 1px solid #ded3c8;
-  border-radius: 12px;
-  font-size: 14px;
-  text-align: center;
-  transition: 0.2s;
-}
-
-.style-option span:hover {
-  background: #efe5da;
-  border-color: #bda995;
-}
-
-.style-option input:checked + span {
-  color: #fff;
-  background: #292522;
-  border-color: #292522;
-  box-shadow: 0 3px 8px rgba(41, 37, 34, 0.18);
-}
-    .address-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.address-grid select {
-  søker? Actually typo. Need correct. 
-  .address-grid select {
-  font-size: 17px;
-  padding: 13px 12px;
-}
   </style>
 </head>
-
 <body>
   <header class="header">
     <a class="logo" href="index.html">COLORMIX</a>
-
     <nav class="header-links">
       <a href="index.html">商品</a>
+      <a href="shopping-guide.html">購物須知</a>
       <a href="cart.html">購物車</a>
     </nav>
   </header>
 
   <main class="container">
-
-    <!-- 登入／註冊 -->
     <section id="authCard" class="card">
-      <h1>會員中心</h1>
-
+        <h1>會員中心</h1>
       <div class="tabs">
-        <button id="loginTab" class="tab active" type="button">
-          會員登入
-        </button>
-
-        <button id="registerTab" class="tab" type="button">
-          加入會員
-        </button>
+        <button id="loginTab" class="tab active" type="button">會員登入</button>
+        <button id="registerTab" class="tab" type="button">加入會員</button>
       </div>
-
       <div id="message" class="message"></div>
 
-      <!-- 登入表單 -->
       <form id="loginForm">
         <div class="form-group">
           <label for="loginEmail">電子信箱</label>
-          <input
-            id="loginEmail"
-            type="email"
-            autocomplete="email"
-            required
-          >
+          <input id="loginEmail" type="email" autocomplete="email" required>
         </div>
-
         <div class="form-group">
           <label for="loginPassword">密碼</label>
-          <input
-            id="loginPassword"
-            type="password"
-            autocomplete="current-password"
-            minlength="6"
-            required
-          >
+          <input id="loginPassword" type="password" autocomplete="current-password" minlength="6" required>
         </div>
-
-        <button id="loginButton" class="main-btn" type="submit">
-          登入
-        </button>
-
-        <button id="forgotButton" class="text-btn" type="button">
-          忘記密碼
-        </button>
+        <button id="loginButton" class="main-btn" type="submit">登入</button>
+        <button id="forgotButton" class="text-btn" type="button">忘記密碼</button>
       </form>
 
-      <!-- 註冊表單 -->
       <form id="registerForm" class="hidden">
-        <div class="form-group">
-          <label for="registerEmail">電子信箱</label>
-          <input
-            id="registerEmail"
-            type="email"
-            autocomplete="email"
-            required
-          >
+        <div class="two-columns">
+          <div class="form-group">
+            <label for="registerEmail">電子信箱</label>
+            <input id="registerEmail" type="email" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label for="registerName">姓名</label>
+            <input id="registerName" type="text" autocomplete="name" required>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label for="registerPassword">設定密碼</label>
-          <input
-            id="registerPassword"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-          >
+        <div class="two-columns">
+          <div class="form-group">
+            <label for="registerPassword">設定密碼</label>
+            <input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPasswordAgain">再次輸入密碼</label>
+            <input id="registerPasswordAgain" type="password" autocomplete="new-password" minlength="6" required>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label for="registerPasswordAgain">再次輸入密碼</label>
-          <input
-            id="registerPasswordAgain"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-          >
+        <div class="two-columns">
+          <div class="form-group">
+            <label for="registerPhone">電話</label>
+            <input id="registerPhone" type="tel" autocomplete="tel" required>
+          </div>
+          <div class="form-group">
+            <label for="registerBirthDate">出生年月日</label>
+            <input id="registerBirthDate" type="date" autocomplete="bday" required>
+          </div>
         </div>
-
         <div class="form-group">
-  <label for="registerName">姓名</label>
-  <input
-    id="registerName"
-    type="text"
-    autocomplete="name"
-    required
-  >
-</div>
-
-<div class="form-group">
-  <label for="registerPhone">電話</label>
-  <input
-    id="registerPhone"
-    type="tel"
-    autocomplete="tel"
-    required
-  >
-</div>
-
-<div class="form-group">
-  <label for="registerCity">常用寄送地址</label>
-
- <div class="address-grid city-selector-set">
-  <select id="registerCity" class="county" required>
-     
-    </select>
-
-    <select id="registerDistrict" class="district" required>
-      <option value="">選擇區域</option>
-    </select>
-  </div>
-
-  <input
-    id="registerAddressDetail"
-    type="text"
-    autocomplete="street-address"
-    placeholder="路名、段、巷、弄、號、樓層之幾"
-    required
-  >
-</div>
-
-<div class="form-group">
-  <label for="registerBirthDate">出生年月日</label>
-  <input
-    id="registerBirthDate"
-    type="date"
-    autocomplete="bday"
-    required
-  >
-</div>
-
-<div class="form-group">
-  <label for="registerSize">常穿尺碼</label>
-  <select id="registerSize" required>
-    <option value="">請選擇</option>
-    <option value="XS">XS</option>
-    <option value="S">S</option>
-    <option value="M">M</option>
-    <option value="L">L</option>
-    <option value="XL">XL</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label>喜歡的穿搭風格（可複選）</label>
-
-  <div class="style-grid">
-    <label class="style-option">
-      <input
-        type="checkbox"
-        name="stylePreference"
-        value="韓系休閒"
-      >
-      <span>韓系休閒</span>
-    </label>
-
-    <label class="style-option">
-      <input
-        type="checkbox"
-        name="stylePreference"
-        value="簡約氣質"
-      >
-      <span>簡約氣質</span>
-    </label>
-
-    <label class="style-option">
-      <input
-        type="checkbox"
-        name="stylePreference"
-        value="甜美"
-      >
-      <span>甜美</span>
-    </label>
-
-    <label class="style-option">
-      <input
-        type="checkbox"
-        name="stylePreference"
-        value="個性"
-      >
-      <span>個性</span>
-    </label>
-
-    <label class="style-option">
-      <input
-        type="checkbox"
-        name="stylePreference"
-        value="性感"
-      >
-      <span>性感</span>
-    </label>
-  </div>
-</div>
-        <label style="display:flex;gap:8px;align-items:flex-start;margin-bottom:18px;">
-  <input
-    id="privacyAgree"
-    type="checkbox"
-    required
-    style="width:auto;margin-top:6px;"
-  >
-
-  <span>
-    我已閱讀並同意
-    <a href="privacy.html" target="_blank" style="text-decoration:underline;">
-      隱私權政策
-    </a>
-  </span>
-</label>
-        <button id="registerButton" class="main-btn" type="submit">
-          註冊會員
-        </button>
+          <label for="registerSize">常穿尺碼</label>
+          <select id="registerSize" required>
+            <option value="">請選擇</option>
+            <option value="XS">XS</option><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>喜歡的穿搭風格（可複選）</label>
+          <div class="style-grid">
+            <label class="style-option"><input type="checkbox" name="stylePreference" value="韓系休閒"><span>韓系休閒</span></label>
+            <label class="style-option"><input type="checkbox" name="stylePreference" value="簡約氣質"><span>簡約氣質</span></label>
+            <label class="style-option"><input type="checkbox" name="stylePreference" value="甜美"><span>甜美</span></label>
+            <label class="style-option"><input type="checkbox" name="stylePreference" value="個性"><span>個性</span></label>
+            <label class="style-option"><input type="checkbox" name="stylePreference" value="性感"><span>性感</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>常用收件方式</label>
+          <div class="delivery-grid">
+            <label class="delivery-option"><input type="radio" name="deliveryPreference" value="home" checked><span>宅配地址</span></label>
+            <label class="delivery-option"><input type="radio" name="deliveryPreference" value="family"><span>全家門市</span></label>
+            <label class="delivery-option"><input type="radio" name="deliveryPreference" value="seven"><span>7‑ELEVEN</span></label>
+          </div>
+        </div>
+        <div id="homeAddressFields">
+          <div class="form-group">
+            <label>常用寄送地址</label>
+            <div class="address-grid city-selector-set">
+              <select id="registerCity" class="county"></select>
+              <select id="registerDistrict" class="district"><option value="">選擇區域</option></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <input id="registerAddressDetail" type="text" autocomplete="street-address" placeholder="路名、段、巷、弄、門牌、樓層之幾">
+          </div>
+        </div>
+        <div id="storeFields" class="hidden">
+          <div class="locator-row">
+            <a id="familyLocator" class="locator-link hidden" href="https://www.family.com.tw/Marketing/Map" target="_blank" rel="noopener">查詢全家門市 ↗</a>
+            <a id="sevenLocator" class="locator-link hidden" href="https://emap.pcsc.com.tw/" target="_blank" rel="noopener">查詢7‑ELEVEN門市 ↗</a>
+          </div>
+          <div class="two-columns">
+            <div class="form-group"><label for="registerStoreName">門市名稱</label><input id="registerStoreName" type="text" placeholder="例如：向上店"></div>
+            <div class="form-group"><label for="registerStoreNumber">門市店號</label><input id="registerStoreNumber" type="text" placeholder="請填門市店號"></div>
+          </div>
+          <p class="hint">請先使用官方門市查詢，再回來填入門市名稱與店號。</p>
+        </div>
+        <label class="agree"><input id="privacyAgree" type="checkbox" required><span>我已閱讀並同意 <a href="privacy.html" target="_blank">隱私權政策</a></span></label>
+        <button id="registerButton" class="main-btn" type="submit">註冊會員</button>
       </form>
 
-      <!-- 重設密碼 -->
       <form id="resetForm" class="hidden">
         <h2>設定新密碼</h2>
-
-        <div class="form-group">
-          <label for="newPassword">新密碼</label>
-          <input
-            id="newPassword"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="newPasswordAgain">再次輸入新密碼</label>
-          <input
-            id="newPasswordAgain"
-            type="password"
-            autocomplete="new-password"
-            minlength="6"
-            required
-          >
-        </div>
-
-        <button id="resetButton" class="main-btn" type="submit">
-          確認修改密碼
-        </button>
+        <div class="form-group"><label for="newPassword">新密碼</label><input id="newPassword" type="password" autocomplete="new-password" minlength="6" required></div>
+        <div class="form-group"><label for="newPasswordAgain">再次輸入新密碼</label><input id="newPasswordAgain" type="password" autocomplete="new-password" minlength="6" required></div>
+        <button id="resetButton" class="main-btn" type="submit">確認修改密碼</button>
       </form>
     </section>
 
-    <!-- 登入後的會員資料 -->
     <section id="memberCard" class="card hidden">
       <div class="member-top">
         <h1>我的會員中心</h1>
-
         <div id="memberEmail" class="member-email"></div>
-
         <div class="member-actions">
-          <a class="small-btn dark" href="index.html">
-            繼續購物
-          </a>
-
-          <button id="logoutButton" class="small-btn" type="button">
-            登出
-          </button>
+          <a class="small-btn dark" href="index.html">繼續購物</a>
+          <button id="logoutButton" class="small-btn" type="button">登出</button>
         </div>
       </div>
-
-      <h2>我的訂單</h2>
-
+      <h2 class="section-title">我的基本資料</h2>
+      <div id="profileBox" class="profile-box">會員資料載入中⋯</div>
+      <h2 class="section-title">我的訂單</h2>
       <div id="orderMessage" class="message"></div>
-      <div id="orders">
-        <div class="empty">訂單載入中⋯</div>
-      </div>
+      <div id="orders"><div class="empty">訂單載入中⋯</div></div>
     </section>
-
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/tw-city-selector@2.1.1/dist/tw-city-selector.min.js"></script>
-
   <script>
-    const SUPABASE_URL =
-      "https://qwcpgwbaormtgpkjlaio.supabase.co";
+    const SUPABASE_URL = "https://qwcpgwbaormtgpkjlaio.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    new TwCitySelector({ el: ".city-selector-set", elCounty: ".county", elDistrict: ".district" });
 
-    const SUPABASE_KEY =
-      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
+    const $ = id => document.getElementById(id);
+    const authCard = $("authCard"), memberCard = $("memberCard"), loginForm = $("loginForm"), registerForm = $("registerForm"), resetForm = $("resetForm");
+    const loginTab = $("loginTab"), registerTab = $("registerTab"), message = $("message"), orderMessage = $("orderMessage"), ordersElement = $("orders");
+    $("registerBirthDate").max = new Date().toISOString().slice(0, 10);
 
-    new TwCitySelector({
-  el: ".city-selector-set",
-  elCounty: ".county",
-  elDistrict: ".district"
-});
-    const db = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+    function showMessage(text, type="success") { message.textContent=text; message.className="message "+type; message.style.display="block"; }
+    function hideMessage() { message.style.display="none"; }
+    function showOrderMessage(text, type="error") { orderMessage.textContent=text; orderMessage.className="message "+type; orderMessage.style.display="block"; }
+    function showLogin() { hideMessage(); loginTab.classList.add("active"); registerTab.classList.remove("active"); loginForm.classList.remove("hidden"); registerForm.classList.add("hidden"); resetForm.classList.add("hidden"); }
+    function showRegister() { hideMessage(); registerTab.classList.add("active"); loginTab.classList.remove("active"); registerForm.classList.remove("hidden"); loginForm.classList.add("hidden"); resetForm.classList.add("hidden"); }
+    loginTab.addEventListener("click", showLogin); registerTab.addEventListener("click", showRegister);
 
-    const authCard = document.getElementById("authCard");
-    const memberCard = document.getElementById("memberCard");
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    const resetForm = document.getElementById("resetForm");
-    const loginTab = document.getElementById("loginTab");
-    const registerTab = document.getElementById("registerTab");
-    const message = document.getElementById("message");
-    const orderMessage = document.getElementById("orderMessage");
-    const ordersElement = document.getElementById("orders");
-
-    function showMessage(text, type = "success") {
-      message.textContent = text;
-      message.className = "message " + type;
-      message.style.display = "block";
+    function updateDeliveryFields() {
+      const method = document.querySelector('input[name="deliveryPreference"]:checked').value;
+      $("homeAddressFields").classList.toggle("hidden", method !== "home");
+      $("storeFields").classList.toggle("hidden", method === "home");
+      $("familyLocator").classList.toggle("hidden", method !== "family");
+      $("sevenLocator").classList.toggle("hidden", method !== "seven");
     }
+    document.querySelectorAll('input[name="deliveryPreference"]').forEach(item => item.addEventListener("change", updateDeliveryFields));
 
-    function hideMessage() {
-      message.style.display = "none";
-    }
-
-    function showOrderMessage(text, type = "error") {
-      orderMessage.textContent = text;
-      orderMessage.className = "message " + type;
-      orderMessage.style.display = "block";
-    }
-
-    function showLogin() {
-      hideMessage();
-
-      loginTab.classList.add("active");
-      registerTab.classList.remove("active");
-
-      loginForm.classList.remove("hidden");
-      registerForm.classList.add("hidden");
-      resetForm.classList.add("hidden");
-    }
-
-    function showRegister() {
-      hideMessage();
-
-      registerTab.classList.add("active");
-      loginTab.classList.remove("active");
-
-      registerForm.classList.remove("hidden");
-      loginForm.classList.add("hidden");
-      resetForm.classList.add("hidden");
-    }
-
-    loginTab.addEventListener("click", showLogin);
-    registerTab.addEventListener("click", showRegister);
-
-    loginForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      hideMessage();
-
-      const button = document.getElementById("loginButton");
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      button.disabled = true;
-      button.textContent = "登入中⋯";
-
-      const { error } = await db.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      button.disabled = false;
-      button.textContent = "登入";
-
-      if (error) {
-        showMessage(
-          "登入失敗，請確認信箱和密碼是否正確。",
-          "error"
-        );
-        return;
-      }
-
+    loginForm.addEventListener("submit", async event => {
+      event.preventDefault(); hideMessage(); const button=$("loginButton"); button.disabled=true; button.textContent="登入中⋯";
+      const { error } = await db.auth.signInWithPassword({ email:$("loginEmail").value.trim(), password:$("loginPassword").value });
+      button.disabled=false; button.textContent="登入";
+      if (error) return showMessage("登入失敗，請確認信箱和密碼是否正確。", "error");
       await showMember();
     });
 
-    registerForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-  hideMessage();
-
-  const button = document.getElementById("registerButton");
-
-  const email =
-    document.getElementById("registerEmail").value.trim();
-
-  const password =
-    document.getElementById("registerPassword").value;
-
-  const passwordAgain =
-    document.getElementById("registerPasswordAgain").value;
-
-  const name =
-    document.getElementById("registerName").value.trim();
-
-  const phone =
-    document.getElementById("registerPhone").value.trim();
-
-  const address =
-    document.getElementById("registerAddress").value.trim();
-
-  const birthYear =
-    Number(document.getElementById("registerBirthYear").value);
-
-  const usualSize =
-    document.getElementById("registerSize").value;
-
-  const stylePreferences = Array.from(
-    document.querySelectorAll(
-      'input[name="stylePreference"]:checked'
-    )
-  ).map(function (item) {
-    return item.value;
-  });
-
-  if (password !== passwordAgain) {
-    showMessage("兩次輸入的密碼不一致。", "error");
-    return;
-  }
-
-  if (!name || !phone || !address || !birthYear || !usualSize) {
-    showMessage("請完整填寫會員基本資料。", "error");
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "註冊中⋯";
-
-  const { data, error } = await db.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name: name,
-        phone: phone,
-        address: address,
-        birth_year: birthYear,
-        usual_size: usualSize,
-        style_preferences: stylePreferences
-      },
-      emailRedirectTo:
-        "https://colormixkoreashop.vercel.app/member.html"
-    }
-  });
-
-  button.disabled = false;
-  button.textContent = "註冊會員";
-
-  if (error) {
-    showMessage("註冊失敗：" + error.message, "error");
-    return;
-  }
-
-  if (data.session) {
-    await showMember();
-  } else {
-    showMessage(
-      "註冊成功！請到電子信箱點擊驗證連結，再回來登入。",
-      "success"
-    );
-   }
-});
-
-document
-  .getElementById("forgotButton")
-  .addEventListener("click", async function () {
-        const email =
-          document.getElementById("loginEmail").value.trim();
-
-        if (!email) {
-          showMessage("請先輸入註冊使用的電子信箱。", "error");
-          return;
-        }
-
-        const { error } = await db.auth.resetPasswordForEmail(
-          email,
-          {
-            redirectTo:
-              "https://colormixkoreashop.vercel.app/member.html?reset=1"
-          }
-        );
-
-        if (error) {
-          showMessage("寄送失敗：" + error.message, "error");
-          return;
-        }
-
-        showMessage(
-          "密碼重設信已寄出，請到電子信箱查看。",
-          "success"
-        );
-      });
-
-    resetForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-
-      const password =
-        document.getElementById("newPassword").value;
-      const passwordAgain =
-        document.getElementById("newPasswordAgain").value;
-
-      if (password !== passwordAgain) {
-        showMessage("兩次輸入的新密碼不一致。", "error");
-        return;
-      }
-
-      const button = document.getElementById("resetButton");
-      button.disabled = true;
-      button.textContent = "修改中⋯";
-
-      const { error } = await db.auth.updateUser({
-        password
-      });
-
-      button.disabled = false;
-      button.textContent = "確認修改密碼";
-
-      if (error) {
-        showMessage("修改失敗：" + error.message, "error");
-        return;
-      }
-
-      history.replaceState(
-        {},
-        "",
-        "member.html"
-      );
-
-      showMessage("密碼修改成功，請使用新密碼登入。", "success");
-
-      await db.auth.signOut();
-      showLogin();
+    registerForm.addEventListener("submit", async event => {
+      event.preventDefault(); hideMessage();
+      const email=$("registerEmail").value.trim(), password=$("registerPassword").value, passwordAgain=$("registerPasswordAgain").value;
+      const name=$("registerName").value.trim(), phone=$("registerPhone").value.trim(), birthDate=$("registerBirthDate").value, usualSize=$("registerSize").value;
+      const styles=Array.from(document.querySelectorAll('input[name="stylePreference"]:checked')).map(item=>item.value);
+      const deliveryPreference=document.querySelector('input[name="deliveryPreference"]:checked').value;
+      const city=$("registerCity").value, district=$("registerDistrict").value, detail=$("registerAddressDetail").value.trim();
+      const storeName=$("registerStoreName").value.trim(), storeNumber=$("registerStoreNumber").value.trim();
+      const address=deliveryPreference==="home" ? city+district+detail : "";
+      if (password!==passwordAgain) return showMessage("兩次輸入的密碼不一致。", "error");
+      if (!name || !phone || !birthDate || !usualSize) return showMessage("請完整填寫會員基本資料。", "error");
+      if (deliveryPreference==="home" && (!city || !district || !detail)) return showMessage("請完整填寫宅配地址。", "error");
+      if (deliveryPreference!=="home" && (!storeName || !storeNumber)) return showMessage("請填寫門市名稱與店號。", "error");
+      const button=$("registerButton"); button.disabled=true; button.textContent="註冊中⋯";
+      const { data,error }=await db.auth.signUp({ email,password,options:{ data:{ name,phone,address,birth_date:birthDate,usual_size:usualSize,style_preferences:styles,shipping_preference:deliveryPreference,store_name:storeName,store_number:storeNumber },emailRedirectTo:"https://colormixkoreashop.vercel.app/member.html" }});
+      button.disabled=false; button.textContent="註冊會員";
+      if (error) return showMessage("註冊失敗："+error.message,"error");
+      if (data.session) await showMember(); else showMessage("註冊成功！請到電子信箱點擊驗證連結，再回來登入。","success");
     });
 
-    document
-      .getElementById("logoutButton")
-      .addEventListener("click", async function () {
-        await db.auth.signOut();
+    $("forgotButton").addEventListener("click", async () => {
+      const email=$("loginEmail").value.trim(); if(!email) return showMessage("請先輸入註冊使用的電子信箱。","error");
+      const { error }=await db.auth.resetPasswordForEmail(email,{redirectTo:"https://colormixkoreashop.vercel.app/member.html?reset=1"});
+      if(error) return showMessage("寄送失敗："+error.message,"error"); showMessage("密碼重設信已寄出，請到電子信箱查看。","success");
+    });
 
-        memberCard.classList.add("hidden");
-        authCard.classList.remove("hidden");
-        showLogin();
-      });
+    resetForm.addEventListener("submit", async event => {
+      event.preventDefault(); const password=$("newPassword").value, again=$("newPasswordAgain").value;
+      if(password!==again) return showMessage("兩次輸入的新密碼不一致。","error");
+      const button=$("resetButton"); button.disabled=true; button.textContent="修改中⋯";
+      const { error }=await db.auth.updateUser({password}); button.disabled=false; button.textContent="確認修改密碼";
+      if(error) return showMessage("修改失敗："+error.message,"error"); history.replaceState({},"","member.html"); showMessage("密碼修改成功，請使用新密碼登入。","success"); await db.auth.signOut(); showLogin();
+    });
 
-    function money(value) {
-      return "NT$ " + Number(value || 0).toLocaleString("zh-TW");
+    $("logoutButton").addEventListener("click", async()=>{ await db.auth.signOut(); memberCard.classList.add("hidden"); authCard.classList.remove("hidden"); showLogin(); });
+    function money(value){ return "NT$ "+Number(value||0).toLocaleString("zh-TW"); }
+    function formatDate(value){ return value ? new Date(value).toLocaleString("zh-TW",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : ""; }
+    function statusText(status){ return ({pending_payment:"等待轉帳",payment_pending:"等待轉帳",paid:"已付款",preparing:"準備出貨",shipped:"已出貨",completed:"已完成",cancelled:"已取消"})[status]||status||"處理中"; }
+    function shippingText(method){ return ({family:"全家店到店",familymart:"全家店到店",seven:"7-ELEVEN 店到店","7-11":"7-ELEVEN 店到店",post:"郵寄宅配"})[method]||method||""; }
+    function escapeHtml(value){ return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function calculateAge(date){ if(!date)return ""; const today=new Date(),birth=new Date(date); let age=today.getFullYear()-birth.getFullYear(); if(today.getMonth()<birth.getMonth()||(today.getMonth()===birth.getMonth()&&today.getDate()<birth.getDate()))age--; return age; }
+
+    async function loadProfile(user){
+      const {data,error}=await db.from("member_profiles").select("*").eq("user_id",user.id).maybeSingle();
+      if(error){ $("profileBox").textContent="目前無法載入會員資料"; return; }
+      if(!data){ $("profileBox").textContent="尚未建立基本資料"; return; }
+      const styles=Array.isArray(data.style_preferences)?data.style_preferences.join("、"):"";
+      const delivery=data.shipping_preference==="family"?"全家門市":data.shipping_preference==="seven"?"7‑ELEVEN門市":"宅配地址";
+      $("profileBox").innerHTML=`<div class="profile-grid"><div class="profile-item"><strong>姓名</strong>${escapeHtml(data.name)}</div><div class="profile-item"><strong>電話</strong>${escapeHtml(data.phone)}</div><div class="profile-item"><strong>出生年月日／年齡</strong>${escapeHtml(data.birth_date||"")} ${data.birth_date?"（"+calculateAge(data.birth_date)+"歲）":""}</div><div class="profile-item"><strong>常穿尺碼</strong>${escapeHtml(data.usual_size||"")}</div><div class="profile-item"><strong>喜歡風格</strong>${escapeHtml(styles||"未填")}</div><div class="profile-item"><strong>常用收件方式</strong>${escapeHtml(delivery)}</div><div class="profile-item" style="grid-column:1/-1"><strong>常用地址／門市</strong>${escapeHtml(data.address||[data.store_name,data.store_number].filter(Boolean).join("／")||"未填")}</div></div>`;
     }
 
-    function formatDate(value) {
-      if (!value) return "";
-
-      return new Date(value).toLocaleString("zh-TW", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    function statusText(status) {
-      const labels = {
-        pending_payment: "等待轉帳",
-        payment_pending: "等待轉帳",
-        paid: "已付款",
-        preparing: "準備出貨",
-        shipped: "已出貨",
-        completed: "已完成",
-        cancelled: "已取消"
-      };
-
-      return labels[status] || status || "處理中";
-    }
-
-    function shippingText(method) {
-      const labels = {
-        family: "全家店到店",
-        familymart: "全家店到店",
-        seven: "7-ELEVEN 店到店",
-        "7-11": "7-ELEVEN 店到店",
-        post: "郵寄宅配"
-      };
-
-      return labels[method] || method || "";
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function paymentReportHtml(order, orderNumber) {
-  if (order.payment_last5) {
-    return `
-      <div style="margin-top:15px;color:#287a3d;font-weight:700;">
-        已回報轉帳後五碼：${escapeHtml(order.payment_last5)}
-      </div>
-    `;
-  }
-
-  return `
-    <div style="margin-top:15px;">
-      <input
-        class="payment-last5"
-        type="text"
-        inputmode="numeric"
-        maxlength="5"
-        placeholder="請輸入轉帳後五碼"
-        style="padding:10px;width:190px;"
-      >
-
-      <button
-        class="payment-report-button"
-        type="button"
-        data-order-number="${escapeHtml(orderNumber)}"
-        style="padding:10px 14px;"
-      >
-        回報付款
-      </button>
-    </div>
-  `;
-}
-    async function loadOrders() {
-      ordersElement.innerHTML =
-        '<div class="empty">訂單載入中⋯</div>';
-
-      const { data, error } = await db
-        .from("orders")
-        .select(`
-          *,
-          order_items (*)
-        `)
-        .order("created_at", {
-          ascending: false
-        });
-
-      if (error) {
-        ordersElement.innerHTML = "";
-        showOrderMessage(
-          "目前無法載入訂單紀錄：" + error.message
-        );
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        ordersElement.innerHTML =
-          '<div class="empty">目前還沒有購買紀錄</div>';
-        return;
-      }
-
-      ordersElement.innerHTML = data.map(function (order) {
-        const items = order.order_items || [];
-
-        const itemsHtml = items.map(function (item) {
-          const name =
-            item.product_name ||
-            item.name ||
-            ("商品 #" + (item.product_id || ""));
-
-          const details = [
-            item.size ? "尺寸：" + item.size : "",
-            item.color ? "顏色：" + item.color : "",
-            "數量：" + (item.quantity || 1)
-          ].filter(Boolean).join("　");
-
-          const amount =
-            item.subtotal ??
-            (Number(item.price || 0) *
-              Number(item.quantity || 1));
-
-          return `
-            <div class="order-item">
-              <div>
-                <strong>${escapeHtml(name)}</strong><br>
-                <span>${escapeHtml(details)}</span>
-              </div>
-
-              <div>${money(amount)}</div>
-            </div>
-          `;
-        }).join("");
-
-        const orderNumber =
-          order.order_number ||
-          ("#" + order.id);
-
-        const shippingFee =
-          order.shipping_fee ?? 0;
-
-        const total =
-          order.total ??
-          order.total_amount ??
-          0;
-
-        return `
-          <article class="order-card">
-            <div class="order-header">
-              <div>
-                <div class="order-number">
-                  訂單編號：${escapeHtml(orderNumber)}
-                </div>
-
-                <div class="order-date">
-                  ${escapeHtml(formatDate(order.created_at))}
-                </div>
-              </div>
-
-              <span class="status">
-                ${escapeHtml(statusText(order.status))}
-              </span>
-            </div>
-
-            ${itemsHtml}
-
-            <div class="shipping">
-              ${escapeHtml(shippingText(order.shipping_method))}
-              ・運費 ${money(shippingFee)}
-            </div>
-
-            <div class="order-total">
-              訂單總額 ${money(total)}
-            </div>
-            ${paymentReportHtml(order, orderNumber)}
-          </article>
-        `;
+    function paymentReportHtml(order,number){ if(order.payment_last5)return `<div style="margin-top:12px;color:#276137;font-weight:700">已回報轉帳後五碼：${escapeHtml(order.payment_last5)}</div>`; return `<div style="margin-top:12px"><input class="payment-last5" type="text" inputmode="numeric" maxlength="5" placeholder="請輸入轉帳後五碼" style="max-width:190px"><button class="payment-report-button small-btn" type="button" data-order-number="${escapeHtml(number)}">回報付款</button></div>`; }
+    async function loadOrders(){
+      ordersElement.innerHTML='<div class="empty">訂單載入中⋯</div>';
+      const {data,error}=await db.from("orders").select(`*,order_items (*)`).order("created_at",{ascending:false});
+      if(error){ ordersElement.innerHTML=""; return showOrderMessage("目前無法載入訂單紀錄："+error.message); }
+      if(!data||!data.length){ ordersElement.innerHTML='<div class="empty">目前還沒有購買紀錄</div>'; return; }
+      ordersElement.innerHTML=data.map(order=>{
+        const items=(order.order_items||[]).map(item=>{ const name=item.product_name||item.name||("商品 #"+(item.product_id||"")); const details=[item.size?"尺寸："+item.size:"",item.color?"顏色："+item.color:"","數量："+(item.quantity||1)].filter(Boolean).join("　"); const amount=item.subtotal??Number(item.price||0)*Number(item.quantity||1); return `<div class="order-item"><div><strong>${escapeHtml(name)}</strong><br><span>${escapeHtml(details)}</span></div><div>${money(amount)}</div></div>`; }).join("");
+        const number=order.order_number||("#"+order.id),fee=order.shipping_fee??0,total=order.total??order.total_amount??0;
+        return `<article class="order-card"><div class="order-header"><div><div class="order-number">訂單編號：${escapeHtml(number)}</div><div class="order-date">${escapeHtml(formatDate(order.created_at))}</div></div><span class="status">${escapeHtml(statusText(order.status))}</span></div>${items}<div class="shipping">${escapeHtml(shippingText(order.shipping_method))}・運費 ${money(fee)}</div><div class="order-total">訂單總額 ${money(total)}</div>${paymentReportHtml(order,number)}</article>`;
       }).join("");
     }
-ordersElement.addEventListener("click", async function (event) {
-  const button = event.target.closest(".payment-report-button");
 
-  if (!button) return;
+    ordersElement.addEventListener("click",async event=>{ const button=event.target.closest(".payment-report-button"); if(!button)return; const input=button.parentElement.querySelector(".payment-last5"),last5=input.value.trim(); if(!/^[0-9]{5}$/.test(last5))return showOrderMessage("請輸入正確的轉帳後五碼","error"); button.disabled=true; button.textContent="回報中⋯"; const {data,error}=await db.rpc("report_payment",{p_order_number:button.dataset.orderNumber,p_payment_last5:last5}); if(error||data!==true){button.disabled=false;button.textContent="回報付款";return showOrderMessage("回報失敗，請稍後再試","error");} showOrderMessage("付款資料已回報成功","success"); await loadOrders(); });
 
-  const input = button.parentElement.querySelector(".payment-last5");
-  const last5 = input.value.trim();
-
-  if (!/^[0-9]{5}$/.test(last5)) {
-    showOrderMessage("請輸入正確的轉帳後五碼", "error");
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "回報中⋯";
-
-  const { data, error } = await db.rpc("report_payment", {
-    p_order_number: button.dataset.orderNumber,
-    p_payment_last5: last5
-  });
-
-  if (error || data !== true) {
-    button.disabled = false;
-    button.textContent = "回報付款";
-    showOrderMessage("回報失敗，請稍後再試", "error");
-    return;
-  }
-
-  showOrderMessage("付款資料已回報成功", "success");
-  await loadOrders();
-});
-    async function showMember() {
-      const {
-        data: { user }
-      } = await db.auth.getUser();
-
-      if (!user) return;
-
-      authCard.classList.add("hidden");
-      memberCard.classList.remove("hidden");
-
-      document.getElementById("memberEmail").textContent =
-        "會員帳號：" + user.email;
-
-      await loadOrders();
-
-      const params = new URLSearchParams(location.search);
-      const returnPage = params.get("return");
-
-      if (returnPage === "cart.html") {
-        location.href = "cart.html";
-      }
-    }
-
-    async function initialize() {
-      const params = new URLSearchParams(location.search);
-
-      if (params.get("reset") === "1") {
-        loginForm.classList.add("hidden");
-        registerForm.classList.add("hidden");
-        resetForm.classList.remove("hidden");
-        loginTab.classList.remove("active");
-        registerTab.classList.remove("active");
-        return;
-      }
-
-      const {
-        data: { session }
-      } = await db.auth.getSession();
-
-      if (session) {
-        await showMember();
-      } else {
-        showLogin();
-      }
-    }
-
-    db.auth.onAuthStateChange(function (event) {
-      if (event === "PASSWORD_RECOVERY") {
-        authCard.classList.remove("hidden");
-        memberCard.classList.add("hidden");
-        loginForm.classList.add("hidden");
-        registerForm.classList.add("hidden");
-        resetForm.classList.remove("hidden");
-        loginTab.classList.remove("active");
-        registerTab.classList.remove("active");
-      }
-    });
-
+    async function showMember(){ const {data:{user}}=await db.auth.getUser(); if(!user)return; authCard.classList.add("hidden"); memberCard.classList.remove("hidden"); $("memberEmail").textContent="會員帳號："+user.email; await Promise.all([loadProfile(user),loadOrders()]); const returnPage=new URLSearchParams(location.search).get("return"); if(returnPage==="cart.html")location.href="cart.html"; }
+    async function initialize(){ const params=new URLSearchParams(location.search); if(params.get("reset")==="1"){loginForm.classList.add("hidden");registerForm.classList.add("hidden");resetForm.classList.remove("hidden");loginTab.classList.remove("active");registerTab.classList.remove("active");return;} const {data:{session}}=await db.auth.getSession(); if(session)await showMember();else showLogin(); }
+    db.auth.onAuthStateChange(event=>{ if(event==="PASSWORD_RECOVERY"){authCard.classList.remove("hidden");memberCard.classList.add("hidden");loginForm.classList.add("hidden");registerForm.classList.add("hidden");resetForm.classList.remove("hidden");loginTab.classList.remove("active");registerTab.classList.remove("active");} });
     initialize();
   </script>
 </body>
