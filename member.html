@@ -647,6 +647,11 @@
     const SUPABASE_KEY =
       "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
 
+    new TwCitySelector({
+  el: ".city-selector-set",
+  elCounty: ".county",
+  elDistrict: ".district"
+});
     const db = supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
