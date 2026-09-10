@@ -766,8 +766,15 @@
             </div>
 
             <div class="product-type">
-              ${isStock ? "IN STOCK" : "LIVE COLLECTION"}
-            </div>
+              ${
+  isStock
+    ? (
+        Number(product.stock_quantity || 0) > 0
+          ? "IN STOCK｜現貨"
+          : "RESTOCK｜追加"
+      )
+    : "LIVE COLLECTION"
+}
 
             <div class="price">
               ${priceHtml}
