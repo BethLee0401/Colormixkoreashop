@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>購物須知｜COLORMIX</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      color: #222;
+      background: #f8f6f2;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      line-height: 1.8;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248, 246, 242, 0.97);
+      border-bottom: 1px solid #e5e1da;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 3px;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 70px 20px 90px;
+    }
+
+    .page-title {
+      margin-bottom: 50px;
+      text-align: center;
+    }
+
+    .page-title small {
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    .page-title h1 {
+      margin-top: 8px;
+      font-size: 32px;
+      letter-spacing: 3px;
+    }
+
+    .notice-box {
+      margin-bottom: 25px;
+      padding: 28px 30px;
+      background: #fff;
+      border: 1px solid #ddd8d0;
+    }
+
+    .notice-box h2 {
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ddd8d0;
+      font-size: 19px;
+      letter-spacing: 1px;
+    }
+
+    .notice-box p {
+      margin-bottom: 9px;
+      color: #444;
+      font-size: 15px;
+    }
+
+    .notice-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .important {
+      color: #b5342c;
+      font-weight: 700;
+    }
+
+    .contact-buttons {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .contact-button {
+      padding: 14px;
+      border: 1px solid #222;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .contact-button.facebook {
+      background: #222;
+      color: #fff;
+    }
+
+    footer {
+      padding: 50px 20px;
+      background: #222;
+      color: #fff;
+      text-align: center;
+    }
+
+    footer .logo {
+      margin-bottom: 15px;
+    }
+
+    footer p {
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    .social-links {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    .social-links a {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 650px) {
+      .nav {
+        padding: 18px;
+      }
+
+      .logo {
+        font-size: 18px;
+      }
+
+      .menu {
+        gap: 14px;
+        font-size: 12px;
+      }
+
+      .menu .desktop-link {
+        display: none;
+      }
+
+      main {
+        padding: 50px 15px 70px;
+      }
+
+      .page-title {
+        margin-bottom: 35px;
+      }
+
+      .page-title h1 {
+        font-size: 26px;
+      }
+
+      .notice-box {
+        padding: 22px 18px;
+      }
+
+      .contact-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="nav">
+      <a href="index.html" class="logo">COLORMIX</a>
+
+      <div class="menu">
+        <a class="desktop-link" href="index.html">商品</a>
+        <a href="shopping-guide.html">購物須知</a>
+        <a href="member.html">會員中心</a>
+        <a href="cart.html">購物車</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-title">
+      <small>SHOPPING GUIDE</small>
+      <h1>購物須知</h1>
+    </div>
+
+    <section class="notice-box">
+      <h2>訂購流程</h2>
+
+      <p>1. 登入會員後，選擇商品尺寸、顏色及數量。</p>
+      <p>2. 將商品加入購物車，填寫姓名、電話及寄送資料。</p>
+      <p>3. 訂單成立後，請透過 Facebook 或 Instagram 私訊店家。</p>
+      <p>4. 取得轉帳帳號並完成匯款後，店家將依序安排出貨。</p>
+    </section>
+
+    <section class="notice-box">
+      <h2>現貨商品</h2>
+
+      <p>現貨商品售價為商品原價的 85 折。</p>
+      <p>若現貨規格售完，商品將顯示為「追加」。</p>
+      <p>追加商品仍維持 85 折價格，並於到貨後依訂單順序出貨。</p>
+    </section>
+
+    <section class="notice-box">
+      <h2>連線商品</h2>
+
+      <p>連線商品為海外代購，依商品原價販售。</p>
+
+      <p class="important">
+        等待時間約 7～30 天，不含國定假日及物流延誤。
+      </p>
+
+      <p>
+        商品可能因海外供應商缺貨而取消，若發生缺貨情況，
+        店家將主動通知並辦理退款。
+      </p>
+
+      <p>
+        下單前請確認尺寸、顏色及可接受等待時間。
+        退換貨與瑕疵處理依相關法令辦理。
+      </p>
+    </section>
+
+    <section class="notice-box">
+      <h2>運費說明</h2>
+
+      <p>全家取貨：NT$60</p>
+      <p>7-ELEVEN 取貨：NT$60</p>
+      <p>郵寄宅配：NT$80</p>
+
+      <p class="important">
+        折扣後商品金額滿 NT$10,000 享免運優惠。
+      </p>
+    </section>
+
+    <section class="notice-box">
+      <h2>退換貨說明</h2>
+
+      <p>
+        收到商品後 7 天內可提出退貨或換貨申請。
+      </p>
+
+      <p class="important">
+        每筆訂單限更換一次。
+      </p>
+
+      <p>
+        七天鑑賞期並非試穿期，退換商品須保持全新、未下水、
+        無污漬、無香水或其他異味，並保留完整吊牌、包裝及配件。
+      </p>
+
+      <p>
+        商品若有使用、清洗、人為損壞、吊牌拆除或包裝不完整，
+        可能影響退換貨權益。
+      </p>
+
+      <p>
+        若收到瑕疵、錯誤或缺少的商品，請保留完整開箱影片及照片，
+        並立即私訊店家協助處理。
+      </p>
+
+      <p>
+        商品退換貨及其他消費權益，依相關法令辦理。
+      </p>
+    </section>
+
+    <section class="notice-box">
+      <h2>聯絡店家</h2>
+
+      <p>
+        如有訂單、匯款或商品問題，請透過以下方式私訊店家。
+      </p>
+
+      <div class="contact-buttons">
+        <a
+          class="contact-button facebook"
+          href="https://m.me/100063898780134"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Facebook 私訊
+        </a>
+
+        <a
+          class="contact-button"
+          href="https://ig.me/m/colormix637"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram 私訊
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="logo">COLORMIX</div>
+    <p>Selected Korean Fashion</p>
+
+    <div class="social-links">
+      <a
+        href="https://www.facebook.com/share/1DdW5b2iau/?mibextid=wwXIfr"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Facebook
+      </a>
+
+      <a
+        href="https://www.instagram.com/colormix637"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Instagram
+      </a>
+    </div>
+  </footer>
+</body>
+</html>
