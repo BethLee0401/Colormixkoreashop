@@ -603,46 +603,7 @@ storageKey: "colormix-member-session"
     `;
   }).join("");
 
-  clearInterval(
-    window.cancelOrderCountdownTimer
-  );
-
-  function updateCancelCountdowns() {
-    document
-      .querySelectorAll(".cancel-order-button")
-      .forEach(function (button) {
-        const remaining =
-          Number(button.dataset.deadline) -
-          Date.now();
-
-        const area =
-          button.closest(".cancel-order-area");
-
-        if (remaining <= 0) {
-          if (area) {
-            area.remove();
-          }
-          return;
-        }
-
-        const seconds =
-          Math.ceil(remaining / 1000);
-
-        const countdown =
-          area.querySelector(".cancel-countdown");
-
-        countdown.textContent =
-          "剩餘 " + seconds + " 秒可取消";
-      });
-  }
-
-  updateCancelCountdowns();
-
-  window.cancelOrderCountdownTimer =
-    setInterval(
-      updateCancelCountdowns,
-      1000
-    );
+  
 }
 
 ordersElement.addEventListener(
