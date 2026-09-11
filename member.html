@@ -568,7 +568,7 @@ storageKey: "colormix-member-session"
       60000;
 
     const canCancel =
-      order.status === "pending" &&
+     ["pending", "pending_payment", "payment_pending"].includes(order.status) &&
       !order.payment_last5 &&
       Date.now() < cancelDeadline;
 
