@@ -395,7 +395,18 @@ select {
   <script>
     const SUPABASE_URL = "https://qwcpgwbaormtgpkjlaio.supabase.co";
     const SUPABASE_KEY = "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
-    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage
+    }
+  }
+);
     new TwCitySelector({ el: ".city-selector-set", elCounty: ".county", elDistrict: ".district" });
 
     const $ = id => document.getElementById(id);
