@@ -609,52 +609,6 @@ storageKey: "colormix-member-session"
 ordersElement.addEventListener(
   "click",
   async function (event) {
-    const cancelButton =
-      event.target.closest(
-        ".cancel-order-button"
-      );
-
-    if (cancelButton) {
-      const orderNumber =
-        cancelButton.dataset.orderNumber;
-
-      const confirmed = window.confirm(
-        "確定要取消訂單「" +
-        orderNumber +
-        "」嗎？"
-      );
-
-      if (!confirmed) return;
-
-      cancelButton.disabled = true;
-      cancelButton.textContent = "取消中⋯";
-
-      const { data, error } = await db.rpc(
-        "cancel_own_order",
-        {
-          p_order_number: orderNumber
-        }
-      );
-
-      if (error || data !== true) {
-        cancelButton.disabled = false;
-        cancelButton.textContent = "取消訂單";
-
-        return showOrderMessage(
-          error?.message ||
-          "取消失敗，請稍後再試",
-          "error"
-        );
-      }
-
-      showOrderMessage(
-        "訂單已取消，現貨庫存已恢復。",
-        "success"
-      );
-
-      await loadOrders();
-      return;
-    }
 
     const paymentButton =
       event.target.closest(
