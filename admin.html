@@ -1373,10 +1373,12 @@ ${order.payment_last5
     }
 
     window.alert("訂單已永久刪除");
-    await loadOrders();
+       await loadOrders();
     return;
   }
-    $("orderList").addEventListener("click", async function (event) {
+});
+
+$("orderList").addEventListener("click", async function (event) {
   const button = event.target.closest(".admin-payment-save");
 
   if (!button) return;
