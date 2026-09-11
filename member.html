@@ -491,19 +491,307 @@ storageKey: "colormix-member-session"
     }
 
     function paymentReportHtml(order,number){ if(order.payment_last5)return `<div style="margin-top:12px;color:#276137;font-weight:700">已回報轉帳後五碼：${escapeHtml(order.payment_last5)}</div>`; return `<div style="margin-top:12px"><input class="payment-last5" type="text" inputmode="numeric" maxlength="5" placeholder="請輸入轉帳後五碼" style="max-width:190px"><button class="payment-report-button small-btn" type="button" data-order-number="${escapeHtml(number)}">回報付款</button></div>`; }
-    async function loadOrders(){
-      ordersElement.innerHTML='<div class="empty">訂單載入中⋯</div>';
-      const {data,error}=await db.from("orders").select(`*,order_items (*)`).order("created_at",{ascending:false});
-      if(error){ ordersElement.innerHTML=""; return showOrderMessage("目前無法載入訂單紀錄："+error.message); }
-      if(!data||!data.length){ ordersElement.innerHTML='<div class="empty">目前還沒有購買紀錄</div>'; return; }
-      ordersElement.innerHTML=data.map(order=>{
-        const items=(order.order_items||[]).map(item=>{ const name=item.product_name||item.name||("商品 #"+(item.product_id||"")); const details=[item.size?"尺寸："+item.size:"",item.color?"顏色："+item.color:"","數量："+(item.quantity||1)].filter(Boolean).join("　"); const amount=item.subtotal??Number(item.price||0)*Number(item.quantity||1); return `<div class="order-item"><div><strong>${escapeHtml(name)}</strong><br><span>${escapeHtml(details)}</span></div><div>${money(amount)}</div></div>`; }).join("");
-        const number=order.order_number||("#"+order.id),fee=order.shipping_fee??0,total=order.total??order.total_amount??0;
-        return `<article class="order-card"><div class="order-header"><div><div class="order-number">訂單編號：${escapeHtml(number)}</div><div class="order-date">${escapeHtml(formatDate(order.created_at))}</div></div><span class="status">${escapeHtml(statusText(order.status))}</span></div>${items}<div class="shipping">${escapeHtml(shippingText(order.shipping_method))}・運費 ${money(fee)}</div><div class="order-total">訂單總額 ${money(total)}</div>${paymentReportHtml(order,number)}</article>`;
-      }).join("");
+
+    async function loadOrders() {
+  ordersElement.innerHTML =
+    '<div class="empty">訂單載入中⋯</div>';
+
+  const { data, error } = await db
+    .from("orders")
+    .select(`*,order_items (*)`)
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+    ordersElement.innerHTML = "";
+
+    return showOrderMessage(
+      "目前無法載入訂單紀錄：" +
+      error.message
+    );
+  }
+
+  if (!data || !data.length) {
+    ordersElement.innerHTML =
+      '<div class="empty">目前還沒有購買紀錄</div>';
+    return;
+  }
+
+  ordersElement.innerHTML = data.map(function (order) {
+    const items = (order.order_items || [])
+      .map(function (item) {
+        const name =
+          item.product_name ||
+          item.name ||
+          ("商品 #" + (item.product_id || ""));
+
+        const details = [
+          item.size ? "尺寸：" + item.size : "",
+          item.color ? "顏色：" + item.color : "",
+          "數量：" + (item.quantity || 1)
+        ]
+          .filter(Boolean)
+          .join("　");
+
+        const amount =
+          item.subtotal ??
+          Number(item.price || 0) *
+          Number(item.quantity || 1);
+
+        return `
+          <div class="order-item">
+            <div>
+              <strong>${escapeHtml(name)}</strong><br>
+              <span>${escapeHtml(details)}</span>
+            </div>
+
+            <div>${money(amount)}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    const number =
+      order.order_number || ("#" + order.id);
+
+    const fee =
+      order.shipping_fee ?? 0;
+
+    const total =
+      order.total ??
+      order.total_amount ??
+      0;
+
+    const cancelDeadline =
+      new Date(order.created_at).getTime() +
+      60000;
+
+    const canCancel =
+      order.status === "pending" &&
+      !order.payment_last5 &&
+      Date.now() < cancelDeadline;
+
+    const cancelHtml = canCancel
+      ? `
+        <div
+          class="cancel-order-area"
+          style="
+            margin-top:14px;
+            padding-top:14px;
+            border-top:1px solid #ded3ca;
+          "
+        >
+          <button
+            type="button"
+            class="cancel-order-button"
+            data-order-number="${escapeHtml(number)}"
+            data-deadline="${cancelDeadline}"
+            style="
+              padding:9px 14px;
+              border:1px solid #8d555c;
+              background:#ffffff;
+              color:#75444b;
+              cursor:pointer;
+            "
+          >
+            取消訂單
+          </button>
+
+          <span
+            class="cancel-countdown"
+            style="
+              margin-left:8px;
+              color:#8a7771;
+              font-size:13px;
+            "
+          ></span>
+        </div>
+      `
+      : "";
+
+    return `
+      <article class="order-card">
+        <div class="order-header">
+          <div>
+            <div class="order-number">
+              訂單編號：${escapeHtml(number)}
+            </div>
+
+            <div class="order-date">
+              ${escapeHtml(formatDate(order.created_at))}
+            </div>
+          </div>
+
+          <span class="status">
+            ${escapeHtml(statusText(order.status))}
+          </span>
+        </div>
+
+        ${items}
+
+        <div class="shipping">
+          ${escapeHtml(
+            shippingText(order.shipping_method)
+          )}
+          ・運費 ${money(fee)}
+        </div>
+
+        <div class="order-total">
+          訂單總額 ${money(total)}
+        </div>
+
+        ${paymentReportHtml(order, number)}
+        ${cancelHtml}
+      </article>
+    `;
+  }).join("");
+
+  clearInterval(
+    window.cancelOrderCountdownTimer
+  );
+
+  function updateCancelCountdowns() {
+    document
+      .querySelectorAll(".cancel-order-button")
+      .forEach(function (button) {
+        const remaining =
+          Number(button.dataset.deadline) -
+          Date.now();
+
+        const area =
+          button.closest(".cancel-order-area");
+
+        if (remaining <= 0) {
+          if (area) {
+            area.remove();
+          }
+          return;
+        }
+
+        const seconds =
+          Math.ceil(remaining / 1000);
+
+        const countdown =
+          area.querySelector(".cancel-countdown");
+
+        countdown.textContent =
+          "剩餘 " + seconds + " 秒可取消";
+      });
+  }
+
+  updateCancelCountdowns();
+
+  window.cancelOrderCountdownTimer =
+    setInterval(
+      updateCancelCountdowns,
+      1000
+    );
+}
+
+ordersElement.addEventListener(
+  "click",
+  async function (event) {
+    const cancelButton =
+      event.target.closest(
+        ".cancel-order-button"
+      );
+
+    if (cancelButton) {
+      const orderNumber =
+        cancelButton.dataset.orderNumber;
+
+      const confirmed = window.confirm(
+        "確定要取消訂單「" +
+        orderNumber +
+        "」嗎？"
+      );
+
+      if (!confirmed) return;
+
+      cancelButton.disabled = true;
+      cancelButton.textContent = "取消中⋯";
+
+      const { data, error } = await db.rpc(
+        "cancel_own_order",
+        {
+          p_order_number: orderNumber
+        }
+      );
+
+      if (error || data !== true) {
+        cancelButton.disabled = false;
+        cancelButton.textContent = "取消訂單";
+
+        return showOrderMessage(
+          error?.message ||
+          "取消失敗，請稍後再試",
+          "error"
+        );
+      }
+
+      showOrderMessage(
+        "訂單已取消，現貨庫存已恢復。",
+        "success"
+      );
+
+      await loadOrders();
+      return;
     }
 
-    ordersElement.addEventListener("click",async event=>{ const button=event.target.closest(".payment-report-button"); if(!button)return; const input=button.parentElement.querySelector(".payment-last5"),last5=input.value.trim(); if(!/^[0-9]{5}$/.test(last5))return showOrderMessage("請輸入正確的轉帳後五碼","error"); button.disabled=true; button.textContent="回報中⋯"; const {data,error}=await db.rpc("report_payment",{p_order_number:button.dataset.orderNumber,p_payment_last5:last5}); if(error||data!==true){button.disabled=false;button.textContent="回報付款";return showOrderMessage("回報失敗，請稍後再試","error");} showOrderMessage("付款資料已回報成功","success"); await loadOrders(); });
+    const paymentButton =
+      event.target.closest(
+        ".payment-report-button"
+      );
+
+    if (!paymentButton) return;
+
+    const input =
+      paymentButton.parentElement
+        .querySelector(".payment-last5");
+
+    const last5 =
+      input.value.trim();
+
+    if (!/^[0-9]{5}$/.test(last5)) {
+      return showOrderMessage(
+        "請輸入正確的轉帳後五碼",
+        "error"
+      );
+    }
+
+    paymentButton.disabled = true;
+    paymentButton.textContent = "回報中⋯";
+
+    const { data, error } = await db.rpc(
+      "report_payment",
+      {
+        p_order_number:
+          paymentButton.dataset.orderNumber,
+        p_payment_last5: last5
+      }
+    );
+
+    if (error || data !== true) {
+      paymentButton.disabled = false;
+      paymentButton.textContent = "回報付款";
+
+      return showOrderMessage(
+        "回報失敗，請稍後再試",
+        "error"
+      );
+    }
+
+    showOrderMessage(
+      "付款資料已回報成功",
+      "success"
+    );
+
+    await loadOrders();
+  }
+);
+    
+    { const button=event.target.closest(".payment-report-button"); if(!button)return; const input=button.parentElement.querySelector(".payment-last5"),last5=input.value.trim(); if(!/^[0-9]{5}$/.test(last5))return showOrderMessage("請輸入正確的轉帳後五碼","error"); button.disabled=true; button.textContent="回報中⋯"; const {data,error}=await db.rpc("report_payment",{p_order_number:button.dataset.orderNumber,p_payment_last5:last5}); if(error||data!==true){button.disabled=false;button.textContent="回報付款";return showOrderMessage("回報失敗，請稍後再試","error");} showOrderMessage("付款資料已回報成功","success"); await loadOrders(); });
 
     async function showMember(){ const {data:{user}}=await db.auth.getUser(); if(!user)return; authCard.classList.add("hidden"); memberCard.classList.remove("hidden"); $("memberEmail").textContent="會員帳號："+user.email; await Promise.all([loadProfile(user),loadOrders()]); const returnPage=new URLSearchParams(location.search).get("return"); if(returnPage==="cart.html")location.href="cart.html"; }
     async function initialize(){ const params=new URLSearchParams(location.search); if(params.get("reset")==="1"){loginForm.classList.add("hidden");registerForm.classList.add("hidden");resetForm.classList.remove("hidden");loginTab.classList.remove("active");registerTab.classList.remove("active");return;} const {data:{session}}=await db.auth.getSession(); if(session)await showMember();else showLogin(); }
