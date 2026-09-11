@@ -1227,6 +1227,22 @@ ${order.payment_last5
           </strong>
         </p>
 
+<button
+  type="button"
+  class="delete-order"
+  data-id="${order.id}"
+  data-number="${escapeHtml(order.order_number)}"
+  style="
+    margin:12px 0;
+    padding:10px 14px;
+    border:0;
+    background:#a93434;
+    color:#ffffff;
+    cursor:pointer;
+  "
+>
+  刪除訂單
+</button>
         <label>訂單狀態</label>
         <select class="order-status" data-id="${order.id}">
           ${Object.entries(statusNames).map(function ([value, label]) {
