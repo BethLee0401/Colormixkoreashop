@@ -949,22 +949,81 @@
       });
     }
 
-    async function checkLogin() {
-      const {
-        data: { user }
-      } = await db.auth.getUser();
+  async function fillCheckoutFromProfile(user) {
+  if (!user) return;
 
-      currentUser = user;
+  const { data: profile, error } = await db
+    .from("member_profiles")
+    .select(
+      "name, phone, address, shipping_preference, store_name, store_number"
+    )
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-      document
-        .getElementById("loginNotice")
-        .classList.toggle("hidden", Boolean(user));
+  if (error) {
+    console.error("讀取會員資料失敗：", error);
+    return;
+  }
 
-      checkoutButton.disabled =
-        !user || cart.length === 0;
+  if (!profile) return;
 
-      renderCart();
-    }
+  document.getElementById("customerName").value =
+    profile.name || "";
+
+  document.getElementById("customerPhone").value =
+    profile.phone || "";
+
+  let savedMethod = profile.shipping_preference;
+
+  if (
+    savedMethod !== "family" &&
+    savedMethod !== "seven" &&
+    savedMethod !== "post"
+  ) {
+    savedMethod = "post";
+  }
+
+  shippingMethod.value = savedMethod;
+  updateShippingFields();
+
+  if (
+    savedMethod === "family" ||
+    savedMethod === "seven"
+  ) {
+    const storeInformation = [
+      profile.store_name,
+      profile.store_number
+    ]
+      .filter(Boolean)
+      .join("／");
+
+    shippingAddress.value =
+      storeInformation || profile.address || "";
+  } else {
+    shippingAddress.value = profile.address || "";
+  }
+}
+
+async function checkLogin() {
+  const {
+    data: { user }
+  } = await db.auth.getUser();
+
+  currentUser = user;
+
+  if (user) {
+    await fillCheckoutFromProfile(user);
+  }
+
+  document
+    .getElementById("loginNotice")
+    .classList.toggle("hidden", Boolean(user));
+
+  checkoutButton.disabled =
+    !user || cart.length === 0;
+
+  renderCart();
+}
 
     shippingMethod.addEventListener(
       "change",
