@@ -710,10 +710,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const db = supabase.createClient(
-      "https://qwcpgwbaormtgpkjlaio.supabase.co",
-      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
-    );
+   const db = supabase.createClient(
+  "https://qwcpgwbaormtgpkjlaio.supabase.co",
+  "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage
+    }
+  }
+);
 
     const CART_KEY = "colormix_cart";
 
