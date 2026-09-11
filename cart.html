@@ -950,7 +950,7 @@
     }
 
   async function fillCheckoutFromProfile(user) {
-  if (!user) return;
+  if (!user) return null;
 
   const { data: profile, error } = await db
     .from("member_profiles")
@@ -962,10 +962,10 @@
 
   if (error) {
     console.error("讀取會員資料失敗：", error);
-    return;
+    return null;
   }
 
-  if (!profile) return;
+  if (!profile) return null;
 
   document.getElementById("customerName").value =
     profile.name || "";
@@ -974,6 +974,10 @@
     profile.phone || "";
 
   let savedMethod = profile.shipping_preference;
+
+  if (savedMethod === "home") {
+    savedMethod = "post";
+  }
 
   if (
     savedMethod !== "family" &&
@@ -1002,25 +1006,55 @@
   } else {
     shippingAddress.value = profile.address || "";
   }
+
+  return profile;
 }
 
 async function checkLogin() {
   const {
-    data: { user }
-  } = await db.auth.getUser();
+    data: { session },
+    error
+  } = await db.auth.getSession();
 
-  currentUser = user;
+  if (error) {
+    console.error("讀取登入狀態失敗：", error);
+  }
 
-  if (user) {
-    await fillCheckoutFromProfile(user);
+  currentUser = session?.user || null;
+
+  let profile = null;
+
+  if (currentUser) {
+    profile = await fillCheckoutFromProfile(
+      currentUser
+    );
+  }
+
+  const memberLink =
+    document.querySelector(
+      'header a[href="member.html"]'
+    );
+
+  if (memberLink) {
+    if (currentUser && profile?.name) {
+      memberLink.textContent =
+        "歡迎，" + profile.name + "會員";
+    } else if (currentUser) {
+      memberLink.textContent = "會員中心";
+    } else {
+      memberLink.textContent = "登入／加入會員";
+    }
   }
 
   document
     .getElementById("loginNotice")
-    .classList.toggle("hidden", Boolean(user));
+    .classList.toggle(
+      "hidden",
+      Boolean(currentUser)
+    );
 
   checkoutButton.disabled =
-    !user || cart.length === 0;
+    !currentUser || cart.length === 0;
 
   renderCart();
 }
