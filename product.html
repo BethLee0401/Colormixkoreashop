@@ -470,9 +470,17 @@
       "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l";
 
     const db = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage
+    }
+  }
+);
 
     const CART_KEY = "colormix_cart";
 
