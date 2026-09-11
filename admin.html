@@ -1276,6 +1276,102 @@ ${order.payment_last5
   });
 }
 
+      const deleteButton =
+    event.target.closest(".delete-order");
+
+  if (deleteButton) {
+    const orderId = deleteButton.dataset.id;
+    const orderNumber =
+      deleteButton.dataset.number;
+
+    const password = window.prompt(
+      "請輸入後台管理員密碼，確認刪除訂單：\n" +
+      orderNumber
+    );
+
+    if (password === null) return;
+
+    if (!password.trim()) {
+      window.alert("請輸入管理員密碼");
+      return;
+    }
+
+    const {
+      data: { session }
+    } = await db.auth.getSession();
+
+    if (!session?.user?.email) {
+      window.alert("登入已失效，請重新登入後台");
+      return;
+    }
+
+    deleteButton.disabled = true;
+    deleteButton.textContent = "驗證密碼中⋯";
+
+    const { error: passwordError } =
+      await db.auth.signInWithPassword({
+        email: session.user.email,
+        password: password
+      });
+
+    if (passwordError) {
+      window.alert("管理員密碼錯誤");
+
+      deleteButton.disabled = false;
+      deleteButton.textContent = "刪除訂單";
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "密碼正確。\n\n確定永久刪除訂單「" +
+      orderNumber +
+      "」嗎？"
+    );
+
+    if (!confirmed) {
+      deleteButton.disabled = false;
+      deleteButton.textContent = "刪除訂單";
+      return;
+    }
+
+    deleteButton.textContent = "刪除中⋯";
+
+    const { error: itemError } = await db
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+
+    if (itemError) {
+      window.alert(
+        "刪除商品明細失敗：" +
+        itemError.message
+      );
+
+      deleteButton.disabled = false;
+      deleteButton.textContent = "刪除訂單";
+      return;
+    }
+
+    const { error: orderError } = await db
+      .from("orders")
+      .delete()
+      .eq("id", orderId);
+
+    if (orderError) {
+      window.alert(
+        "刪除訂單失敗：" +
+        orderError.message
+      );
+
+      deleteButton.disabled = false;
+      deleteButton.textContent = "刪除訂單";
+      return;
+    }
+
+    window.alert("訂單已永久刪除");
+    await loadOrders();
+    return;
+  }
     $("orderList").addEventListener("click", async function (event) {
   const button = event.target.closest(".admin-payment-save");
 
