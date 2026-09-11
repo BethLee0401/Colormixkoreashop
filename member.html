@@ -567,49 +567,6 @@ storageKey: "colormix-member-session"
       new Date(order.created_at).getTime() +
       60000;
 
-    const canCancel =
-     ["pending", "pending_payment", "payment_pending"].includes(order.status) &&
-      !order.payment_last5 &&
-      Date.now() < cancelDeadline;
-
-    const cancelHtml = canCancel
-      ? `
-        <div
-          class="cancel-order-area"
-          style="
-            margin-top:14px;
-            padding-top:14px;
-            border-top:1px solid #ded3ca;
-          "
-        >
-          <button
-            type="button"
-            class="cancel-order-button"
-            data-order-number="${escapeHtml(number)}"
-            data-deadline="${cancelDeadline}"
-            style="
-              padding:9px 14px;
-              border:1px solid #8d555c;
-              background:#ffffff;
-              color:#75444b;
-              cursor:pointer;
-            "
-          >
-            取消訂單
-          </button>
-
-          <span
-            class="cancel-countdown"
-            style="
-              margin-left:8px;
-              color:#8a7771;
-              font-size:13px;
-            "
-          ></span>
-        </div>
-      `
-      : "";
-
     return `
       <article class="order-card">
         <div class="order-header">
