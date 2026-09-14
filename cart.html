@@ -720,6 +720,7 @@ storageKey: "colormix-member-session"
           size: item.size || "",
           color: item.color || "",
           image: item.image || "",
+          is_preorder: Boolean(item.is_preorder),
           quantity: Math.max(
             1,
             Number(item.quantity || 1)
