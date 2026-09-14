@@ -1269,18 +1269,36 @@ async function checkLogin() {
             };
           });
 
-          const { data, error } = await db.rpc(
-            "create_order",
-            {
-              p_customer_name: name,
-              p_phone: phone,
-              p_shipping_method:
-                shippingMethod.value,
-              p_shipping_address: address,
-              p_note: note,
-              p_items: items
-            }
-          );
+        const paymentMethod =
+  document.getElementById("paymentMethod").value;
+
+if (
+  paymentMethod === "convenience_store_cod" &&
+  shippingMethod.value === "post"
+) {
+  checkoutButton.disabled = false;
+  checkoutButton.textContent =
+    "確認成立訂單";
+
+  showMessage(
+    "超商取貨付款必須選擇全家或 7-ELEVEN 店到店。"
+  );
+  return;
+}
+
+const { data, error } = await db.rpc(
+  "create_order_with_payment",
+  {
+    p_customer_name: name,
+    p_phone: phone,
+    p_shipping_method:
+      shippingMethod.value,
+    p_shipping_address: address,
+    p_note: note,
+    p_items: items,
+    p_payment_method: paymentMethod
+  }
+);
 
           checkoutButton.disabled = false;
           checkoutButton.textContent =
