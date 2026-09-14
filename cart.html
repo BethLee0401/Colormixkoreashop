@@ -857,7 +857,38 @@ storageKey: "colormix-member-session"
       }
     }
 
-    function renderCart() {
+    
+   function updatePaymentMethod() {
+  const paymentMethod =
+    document.getElementById("paymentMethod");
+
+  const paymentNotice =
+    document.getElementById("paymentNotice");
+
+  const codOption =
+    paymentMethod.querySelector(
+      'option[value="convenience_store_cod"]'
+    );
+
+  const hasPreorder = cart.some(function (item) {
+    return item.is_preorder === true;
+  });
+
+  codOption.disabled = hasPreorder;
+
+  if (hasPreorder) {
+    paymentMethod.value = "bank_transfer";
+
+    paymentNotice.textContent =
+      "此訂單含有預購商品，必須先完成銀行匯款，無法使用超商取貨付款。";
+  } else {
+    paymentNotice.textContent =
+      "此訂單全部為現貨，可選擇銀行匯款或超商取貨付款。";
+  }
+}
+
+function renderCart() {
+  updatePaymentMethod();
       if (!cart.length) {
         cartItemsElement.innerHTML = `
           <div class="empty">
