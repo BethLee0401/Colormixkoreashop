@@ -664,11 +664,13 @@ function money(value) {
     return;
   }
 
-  addButton.disabled = false;
+   addButton.disabled = false;
 
   if (product.product_type !== "stock") {
-    stockStatus.textContent = "連線商品";
-    stockStatus.style.color = "#555";
+    stockStatus.textContent =
+      "預購商品｜到貨後依訂單順序出貨";
+    stockStatus.style.color = "#8d555c";
+    addButton.textContent = "預購";
     return;
   }
 
@@ -682,10 +684,12 @@ function money(value) {
     stockStatus.textContent =
       "現貨｜此規格剩餘 " + stock + " 件";
     stockStatus.style.color = "#b23b34";
+    addButton.textContent = "加入購物車";
   } else {
     stockStatus.textContent =
-      "追加商品｜到貨後依訂單順序出貨";
-    stockStatus.style.color = "#555";
+      "預購商品｜到貨後依訂單順序出貨";
+    stockStatus.style.color = "#8d555c";
+    addButton.textContent = "預購";
   }
 }
     function renderImages(images) {
