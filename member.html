@@ -542,7 +542,22 @@ storageKey: "colormix-member-session"
         return `
           <div class="order-item">
             <div>
-              <strong>${escapeHtml(name)}</strong><br>
+             <strong>${escapeHtml(name)}</strong>
+<span
+  style="
+    display:inline-block;
+    margin-left:8px;
+    padding:3px 8px;
+    border-radius:20px;
+    background:${item.is_preorder ? "#8d555c" : "#d8ead8"};
+    color:${item.is_preorder ? "#ffffff" : "#315f37"};
+    font-size:12px;
+    font-weight:700;
+  "
+>
+  ${item.is_preorder ? "預購" : "現貨"}
+</span>
+<br>
               <span>${escapeHtml(details)}</span>
             </div>
 
