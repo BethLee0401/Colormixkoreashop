@@ -1152,7 +1152,22 @@ async function loadOrders() {
     const itemHtml = orderItems.map(function (item) {
       return `
         <div style="padding:8px 0;border-bottom:1px solid #eee;">
-          <strong>${escapeHtml(item.product_name)}</strong><br>
+          <strong>${escapeHtml(item.product_name)}</strong>
+<span
+  style="
+    display:inline-block;
+    margin-left:8px;
+    padding:3px 8px;
+    border-radius:20px;
+    background:${item.is_preorder ? "#8d555c" : "#d8ead8"};
+    color:${item.is_preorder ? "#ffffff" : "#315f37"};
+    font-size:12px;
+    font-weight:700;
+  "
+>
+  ${item.is_preorder ? "預購" : "現貨"}
+</span>
+<br>
           尺寸：${escapeHtml(item.size || "無")}　
           顏色：${escapeHtml(item.color || "無")}<br>
           NT$ ${Number(item.price || 0).toLocaleString("zh-TW")}
