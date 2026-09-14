@@ -492,6 +492,30 @@
           </div>
 
           <div class="form-group">
+
+            <div class="form-group">
+  <label for="paymentMethod">付款方式</label>
+
+  <select id="paymentMethod" required>
+    <option value="bank_transfer">
+      銀行匯款
+    </option>
+
+    <option value="convenience_store_cod">
+      超商取貨付款（僅限全現貨訂單）
+    </option>
+  </select>
+
+  <div
+    id="paymentNotice"
+    style="
+      margin-top:8px;
+      color:#8d555c;
+      font-size:14px;
+      line-height:1.6;
+    "
+  ></div>
+</div>
             <label id="addressLabel" for="shippingAddress">
               全家店名／店號
             </label>
