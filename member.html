@@ -490,8 +490,80 @@ storageKey: "colormix-member-session"
       $("profileBox").innerHTML=`<div class="profile-grid"><div class="profile-item"><strong>姓名</strong>${escapeHtml(data.name)}</div><div class="profile-item"><strong>電話</strong>${escapeHtml(data.phone)}</div><div class="profile-item"><strong>出生年月日／年齡</strong>${escapeHtml(data.birth_date||"")} ${data.birth_date?"（"+calculateAge(data.birth_date)+"歲）":""}</div><div class="profile-item"><strong>常穿尺碼</strong>${escapeHtml(data.usual_size||"")}</div><div class="profile-item"><strong>喜歡風格</strong>${escapeHtml(styles||"未填")}</div><div class="profile-item"><strong>常用收件方式</strong>${escapeHtml(delivery)}</div><div class="profile-item" style="grid-column:1/-1"><strong>常用地址／門市</strong>${escapeHtml(data.address||[data.store_name,data.store_number].filter(Boolean).join("／")||"未填")}</div></div>`;
     }
 
-    function paymentReportHtml(order,number){ if(order.payment_last5)return `<div style="margin-top:12px;color:#276137;font-weight:700">已回報轉帳後五碼：${escapeHtml(order.payment_last5)}</div>`; return `<div style="margin-top:12px"><input class="payment-last5" type="text" inputmode="numeric" maxlength="5" placeholder="請輸入轉帳後五碼" style="max-width:190px"><button class="payment-report-button small-btn" type="button" data-order-number="${escapeHtml(number)}">回報付款</button></div>`; }
+    function paymentReportHtml(order, number) {
+  if (
+    order.payment_method ===
+    "convenience_store_cod"
+  ) {
+    return `
+      <div
+        style="
+          margin-top:12px;
+          color:#8d555c;
+          font-weight:700;
+        "
+      >
+        付款方式：超商取貨付款<br>
+        <span
+          style="
+            color:#555;
+            font-size:14px;
+            font-weight:400;
+          "
+        >
+          商品送達門市後，請於期限內取貨並付款。
+        </span>
+      </div>
+    `;
+  }
 
+  if (order.payment_last5) {
+    return `
+      <div
+        style="
+          margin-top:12px;
+          color:#276137;
+          font-weight:700;
+        "
+      >
+        付款方式：銀行匯款<br>
+        已回報轉帳後五碼：
+        ${escapeHtml(order.payment_last5)}
+      </div>
+    `;
+  }
+
+  return `
+    <div style="margin-top:12px;">
+      <div
+        style="
+          margin-bottom:8px;
+          color:#8d555c;
+          font-weight:700;
+        "
+      >
+        付款方式：銀行匯款
+      </div>
+
+      <input
+        class="payment-last5"
+        type="text"
+        inputmode="numeric"
+        maxlength="5"
+        placeholder="請輸入轉帳後五碼"
+        style="max-width:190px;"
+      >
+
+      <button
+        class="payment-report-button small-btn"
+        type="button"
+        data-order-number="${escapeHtml(number)}"
+      >
+        回報付款
+      </button>
+    </div>
+  `;
+}
     async function loadOrders() {
   ordersElement.innerHTML =
     '<div class="empty">訂單載入中⋯</div>';
