@@ -582,6 +582,56 @@ function changeProductPage(page) {
         return;
       }
 
+            const { data: paidOrders, error: paidOrderError } =
+        await db
+          .from("orders")
+          .select("id")
+          .in("status", [
+            "paid",
+            "shipping",
+            "completed"
+          ]);
+
+      if (paidOrderError) {
+        $("list").textContent =
+          "付款訂單讀取失敗：" +
+          paidOrderError.message;
+        return;
+      }
+
+      const paidOrderIds = (paidOrders || [])
+        .map(function (order) {
+          return order.id;
+        });
+
+      let paidItems = [];
+
+      if (paidOrderIds.length) {
+        const { data: itemData, error: itemError } =
+          await db
+            .from("order_items")
+            .select("product_id,quantity")
+            .in("order_id", paidOrderIds);
+
+        if (itemError) {
+          $("list").textContent =
+            "已付款銷量讀取失敗：" +
+            itemError.message;
+          return;
+        }
+
+        paidItems = itemData || [];
+      }
+
+      const paidSoldCounts = {};
+
+      paidItems.forEach(function (item) {
+        const productId = Number(item.product_id);
+
+        paidSoldCounts[productId] =
+          Number(paidSoldCounts[productId] || 0) +
+          Number(item.quantity || 0);
+      });
       rows = data || [];
       $("list").innerHTML = "";
 
