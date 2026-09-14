@@ -731,6 +731,20 @@ rows
             <span class="tag">
               ${product.active ? "已上架" : "已下架"}
             </span>
+<div
+  style="
+    margin-top:10px;
+    color:#287a3d;
+    font-size:15px;
+    font-weight:700;
+  "
+>
+  已付款售出：
+  ${Number(
+    paidSoldCounts[Number(product.id)] || 0
+  )} 件
+</div>
+            
           </div>
 
           <div class="actions">
