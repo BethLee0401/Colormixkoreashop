@@ -1157,10 +1157,14 @@ async function checkLogin() {
   } = await db.auth.getSession();
 
   if (error) {
-    console.error("讀取登入狀態失敗：", error);
+    console.error(
+      "讀取登入狀態失敗：",
+      error
+    );
   }
 
   currentUser = session?.user || null;
+  canUseCod = false;
 
   let profile = null;
 
@@ -1168,6 +1172,27 @@ async function checkLogin() {
     profile = await fillCheckoutFromProfile(
       currentUser
     );
+
+    const {
+      data: completedOrders,
+      error: completedOrderError
+    } = await db
+      .from("orders")
+      .select("id")
+      .eq("user_id", currentUser.id)
+      .eq("status", "completed")
+      .limit(1);
+
+    if (completedOrderError) {
+      console.error(
+        "讀取交易紀錄失敗：",
+        completedOrderError
+      );
+    } else {
+      canUseCod =
+        Array.isArray(completedOrders) &&
+        completedOrders.length > 0;
+    }
   }
 
   const memberLink =
@@ -1182,7 +1207,8 @@ async function checkLogin() {
     } else if (currentUser) {
       memberLink.textContent = "會員中心";
     } else {
-      memberLink.textContent = "登入／加入會員";
+      memberLink.textContent =
+        "登入／加入會員";
     }
   }
 
@@ -1198,8 +1224,6 @@ async function checkLogin() {
 
   renderCart();
 }
-
-    shippingMethod.addEventListener(
       "change",
       updateShippingFields
     );
