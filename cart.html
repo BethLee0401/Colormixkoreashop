@@ -1231,11 +1231,12 @@ async function checkLogin() {
     !currentUser || cart.length === 0;
 
   renderCart();
-  shippingMethod.addEventListener(
 }
-      "change",
-      updateShippingFields
-    );
+
+shippingMethod.addEventListener(
+  "change",
+  updateShippingFields
+);
 
     document
       .getElementById("checkoutForm")
