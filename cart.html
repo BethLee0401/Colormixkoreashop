@@ -888,8 +888,7 @@ storageKey: "colormix-member-session"
   } else if (!canUseCod) {
     paymentMethod.value = "bank_transfer";
 
-    paymentNotice.textContent =
-      "完成至少一筆成功交易後，才會開放超商取貨付款。";
+paymentNotice.textContent = "";
   } else {
     paymentNotice.textContent =
       "您已有成功交易紀錄，本次全現貨訂單可選擇超商取貨付款。";
