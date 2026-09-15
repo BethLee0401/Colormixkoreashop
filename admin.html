@@ -1457,37 +1457,26 @@ ${order.payment_method === "convenience_store_cod"
 
     deleteButton.textContent = "刪除中⋯";
 
-    const { error: itemError } = await db
-      .from("order_items")
-      .delete()
-      .eq("order_id", orderId);
+   const {
+  data: deleteResult,
+  error: deleteError
+} = await db.rpc(
+  "admin_delete_order",
+  {
+    p_order_id: Number(orderId)
+  }
+);
 
-    if (itemError) {
-      window.alert(
-        "刪除商品明細失敗：" +
-        itemError.message
-      );
+if (deleteError || deleteResult !== true) {
+  window.alert(
+    "刪除訂單失敗：" +
+    (deleteError?.message || "請稍後再試")
+  );
 
-      deleteButton.disabled = false;
-      deleteButton.textContent = "刪除訂單";
-      return;
-    }
-
-    const { error: orderError } = await db
-      .from("orders")
-      .delete()
-      .eq("id", orderId);
-
-    if (orderError) {
-      window.alert(
-        "刪除訂單失敗：" +
-        orderError.message
-      );
-
-      deleteButton.disabled = false;
-      deleteButton.textContent = "刪除訂單";
-      return;
-    }
+  deleteButton.disabled = false;
+  deleteButton.textContent = "刪除訂單";
+  return;
+}
 
     window.alert("訂單已永久刪除");
        await loadOrders();
