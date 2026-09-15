@@ -1232,10 +1232,10 @@ async function checkLogin() {
   renderCart();
 }
 
-shippingMethod.addEventListener(
-  "change",
-  updateShippingFields
-);
+shippingMethod.addEventListener("change", function () {
+  shippingAddress.value = "";
+  updateShippingFields();
+});
 
     document
       .getElementById("checkoutForm")
