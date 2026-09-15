@@ -859,7 +859,7 @@ storageKey: "colormix-member-session"
     }
 
     
-   function updatePaymentMethod() {
+ function updatePaymentMethod() {
   const paymentMethod =
     document.getElementById("paymentMethod");
 
@@ -875,16 +875,24 @@ storageKey: "colormix-member-session"
     return item.is_preorder === true;
   });
 
-  codOption.disabled = hasPreorder;
+  const codDisabled =
+    hasPreorder || !canUseCod;
+
+  codOption.disabled = codDisabled;
 
   if (hasPreorder) {
     paymentMethod.value = "bank_transfer";
 
     paymentNotice.textContent =
       "此訂單含有預購商品，必須先完成銀行匯款，無法使用超商取貨付款。";
+  } else if (!canUseCod) {
+    paymentMethod.value = "bank_transfer";
+
+    paymentNotice.textContent =
+      "完成至少一筆成功交易後，才會開放超商取貨付款。";
   } else {
     paymentNotice.textContent =
-      "此訂單全部為現貨，可選擇銀行匯款或超商取貨付款。";
+      "您已有成功交易紀錄，本次全現貨訂單可選擇超商取貨付款。";
   }
 }
 
