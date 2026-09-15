@@ -940,7 +940,7 @@ if (
 }
 
 const { data, error } = await db.rpc(
-  "create_order_with_payment",
+  "create_order",
   {
     p_customer_name: name,
     p_phone: phone,
@@ -948,8 +948,7 @@ const { data, error } = await db.rpc(
       shippingMethod.value,
     p_shipping_address: address,
     p_note: note,
-    p_items: items,
-    p_payment_method: paymentMethod
+    p_items: items
   }
 );
 
