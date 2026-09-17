@@ -133,19 +133,20 @@
     }
 
     .hero {
-      min-height: 72vh;
-      padding: 50px 7%;
-      display: flex;
-      align-items: flex-end;
-      color: #fff;
-      background:
-        linear-gradient(
-          rgba(0, 0, 0, 0.08),
-          rgba(0, 0, 0, 0.28)
-        ),
-        url("hero.jpg")
-center / cover;
-    }
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.08),
+      rgba(0, 0, 0, 0.28)
+    ),
+    url("hero.jpg") center / contain no-repeat;
+  background-color: #d6d0c6;
+}
 
     .hero-content {
       max-width: 520px;
