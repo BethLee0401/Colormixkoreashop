@@ -1080,28 +1080,40 @@ function renderCart() {
     }
 
     function updateShippingFields() {
-      if (shippingMethod.value === "family") {
-        addressLabel.textContent =
-          "全家店名／店號";
+  const familyStoreLink =
+    document.getElementById("familyStoreLink");
+  const sevenStoreLink =
+    document.getElementById("sevenStoreLink");
 
-        shippingAddress.placeholder =
-          "請填寫全家門市名稱與店號";
-      } else if (shippingMethod.value === "seven") {
-        addressLabel.textContent =
-          "7-ELEVEN 店名／店號";
+  familyStoreLink.style.display = "none";
+  sevenStoreLink.style.display = "none";
 
-        shippingAddress.placeholder =
-          "請填寫 7-ELEVEN 門市名稱與店號";
-      } else {
-        addressLabel.textContent =
-          "完整收件地址";
+  if (shippingMethod.value === "family") {
+    addressLabel.textContent =
+      "全家店名／店號";
 
-        shippingAddress.placeholder =
-          "請填寫郵遞區號與完整地址";
-      }
+    shippingAddress.placeholder =
+      "請填寫全家門市名稱與店號";
 
-      renderSummary();
-    }
+    familyStoreLink.style.display = "inline-block";
+  } else if (shippingMethod.value === "seven") {
+    addressLabel.textContent =
+      "7-ELEVEN 店名／店號";
+
+    shippingAddress.placeholder =
+      "請填寫 7-ELEVEN 門市名稱與店號";
+
+    sevenStoreLink.style.display = "inline-block";
+  } else {
+    addressLabel.textContent =
+      "完整收件地址";
+
+    shippingAddress.placeholder =
+      "請填寫郵遞區號與完整地址";
+  }
+
+  renderSummary();
+}
 
     function showMessage(text) {
       const message =
