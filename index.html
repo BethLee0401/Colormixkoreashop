@@ -133,8 +133,7 @@
     }
 
     .hero {
-      min-height: 0;
-aspect-ratio: 16 / 9;
+      min-height: 72vh;
       padding: 50px 7%;
       display: flex;
       align-items: flex-end;
@@ -145,7 +144,7 @@ aspect-ratio: 16 / 9;
           rgba(0, 0, 0, 0.28)
         ),
         url("hero.jpg")
-center / contain no-repeat;
+center / cover;
     }
 
     .hero-content {
@@ -571,7 +570,23 @@ center / contain no-repeat;
   </header>
 
   <section class="hero">
-   
+    <div class="hero-content">
+      <small>KOREAN SELECTED FASHION</small>
+
+     <h1>正韓女裝<br>SEOUL DAILY</h1>
+
+<p>
+  精選正韓上衣、洋裝、長裙、褲裝與外套，
+  打造俐落有型、適合上班與日常生活的韓系穿搭。
+</p>
+      <button
+        id="shopButton"
+        class="hero-button"
+        type="button"
+      >
+        SHOP NOW
+      </button>
+    </div>
   </section>
 
   <section id="products" class="catalog">
