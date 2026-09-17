@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /member.html
+Disallow: /cart.html
+Disallow: /api/
+
+Sitemap: https://colormixkoreashop.vercel.app/sitemap.xml
