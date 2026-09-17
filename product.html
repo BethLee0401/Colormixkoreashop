@@ -983,6 +983,92 @@ const colors = variants.length
         ];
       }
 
+      const seoTitle =
+  product.name + "｜正韓女裝｜COLORMIX";
+
+const seoDescription = (
+  product.descripion ||
+  product.name +
+    "，COLORMIX 精選正韓女裝，提供尺寸、顏色、價格與現貨預購資訊。"
+)
+  .replace(/\s+/g, " ")
+  .trim()
+  .slice(0, 155);
+
+const canonicalUrl =
+  "https://colormixkoreashop.vercel.app/product.html?id=" +
+  encodeURIComponent(product.id);
+
+document.title = seoTitle;
+
+document.getElementById("metaDescription").content =
+  seoDescription;
+
+document.getElementById("ogTitle").content =
+  seoTitle;
+
+document.getElementById("ogDescription").content =
+  seoDescription;
+
+document.getElementById("ogImage").content =
+  images[0];
+
+document.getElementById("ogUrl").content =
+  canonicalUrl;
+
+let canonicalLink =
+  document.querySelector('link[rel="canonical"]');
+
+if (!canonicalLink) {
+  canonicalLink = document.createElement("link");
+  canonicalLink.rel = "canonical";
+  document.head.appendChild(canonicalLink);
+}
+
+canonicalLink.href = canonicalUrl;
+
+let productStructuredData =
+  document.getElementById("productStructuredData");
+
+if (!productStructuredData) {
+  productStructuredData =
+    document.createElement("script");
+
+  productStructuredData.id =
+    "productStructuredData";
+
+  productStructuredData.type =
+    "application/ld+json";
+
+  document.head.appendChild(
+    productStructuredData
+  );
+}
+
+productStructuredData.textContent =
+  JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: images,
+    description: seoDescription,
+    sku: String(product.id),
+    brand: {
+      "@type": "Brand",
+      name: "COLORMIX"
+    },
+    offers: {
+      "@type": "Offer",
+      url: canonicalUrl,
+      priceCurrency: "TWD",
+      price: String(finalPrice),
+      availability:
+        product.product_type === "stock" &&
+        Number(product.stock_quantity || 0) > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/PreOrder"
+    }
+  });
       renderImages(images);
 
       document.getElementById("loading").hidden = true;
