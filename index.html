@@ -133,7 +133,8 @@
     }
 
     .hero {
-      min-height: 72vh;
+      min-height: 0;
+aspect-ratio: 16 / 9;
       padding: 50px 7%;
       display: flex;
       align-items: flex-end;
@@ -144,7 +145,7 @@
           rgba(0, 0, 0, 0.28)
         ),
         url("hero.jpg")
-center / cover;
+center / contain no-repeat;
     }
 
     .hero-content {
