@@ -533,7 +533,7 @@
   href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  選擇全家取貨門市
+  查詢並填入全家門市
 </a>
 
 <a
@@ -541,7 +541,7 @@
   href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  選擇 7-ELEVEN 取貨門市
+  查詢並填入 7-ELEVEN 門市
 </a>
           </div>
 
@@ -685,6 +685,20 @@
     </section>
   </main>
 
+  <dialog id="storePicker" aria-labelledby="storePickerTitle" style="border:1px solid #ddd; border-radius:12px; width:min(92vw,480px); padding:24px; box-shadow:0 16px 45px #0003;">
+    <h2 id="storePickerTitle" style="margin-top:0;">選擇取貨門市</h2>
+    <p style="line-height:1.6;">先開啟官方門市查詢，找到門市後回到這裡填入店名和店號，再按「使用這間門市」。</p>
+    <p><a id="officialStoreMap" href="#" target="_blank" rel="noopener noreferrer">開啟官方門市查詢 ↗</a></p>
+    <form id="storePickerForm">
+      <div class="form-group"><label for="storeName">門市名稱</label><input id="storeName" type="text" maxlength="40" required placeholder="例如：台中○○店"></div>
+      <div class="form-group"><label for="storeCode">門市店號</label><input id="storeCode" type="text" inputmode="numeric" maxlength="6" required placeholder="官方查詢頁顯示的店號"></div>
+      <div class="form-group"><label for="storeLocation">門市地址（選填）</label><input id="storeLocation" type="text" maxlength="100" placeholder="可填入官方查詢頁顯示的地址"></div>
+      <p id="storePickerMessage" role="alert" style="color:#a93434;"></p>
+      <button type="submit">使用這間門市</button>
+      <button id="cancelStorePicker" type="button">取消</button>
+    </form>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -703,7 +717,6 @@ storageKey: "colormix-member-session"
 );
 
     const CART_KEY = "colormix_cart";
-    const CHECKOUT_DRAFT_KEY = "colormix_checkout_draft";
     const STORE_RESULT_KEY = "colormix_selected_store";
 
     let cart = [];
@@ -1121,55 +1134,59 @@ function renderCart() {
   renderSummary();
 }
 
-    function openStoreMap(event) {
-      event.preventDefault();
-      const method = shippingMethod.value;
-      if (method !== "family" && method !== "seven") return;
+    function storeCodeIsValid(method, code) {
+      return method === "family" ? /^\d{5,6}$/.test(code) : /^\d{6}$/.test(code);
+    }
 
-      const state = Array.from(crypto.getRandomValues(new Uint8Array(8)))
-        .map(function (value) { return value.toString(16).padStart(2, "0"); })
-        .join("");
-      const draft = {
-        state: state,
-        method: method,
-        name: document.getElementById("customerName").value,
-        phone: document.getElementById("customerPhone").value,
-        note: document.getElementById("orderNote").value,
-        payment: document.getElementById("paymentMethod").value
-      };
-      sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
-      sessionStorage.removeItem(STORE_RESULT_KEY);
-      // 綠界的電子地圖必須在同一個分頁開啟，iOS 也不支援 iframe 串接。
-      const collection = draft.payment === "convenience_store_cod" ? "Y" : "N";
-      location.href = "/api/store-map?method=" + method +
-        "&state=" + state + "&collection=" + collection;
+    function applySelectedStore(store) {
+      selectedStore = store;
+      shippingAddress.value = `${store.name}（${store.id}）${store.address || ""}`;
+      sessionStorage.setItem(STORE_RESULT_KEY, JSON.stringify(store));
+      updateShippingFields();
     }
 
     function restoreStoreSelection() {
-      let draft;
       let result;
-      try {
-        draft = JSON.parse(sessionStorage.getItem(CHECKOUT_DRAFT_KEY) || "null");
-        result = JSON.parse(sessionStorage.getItem(STORE_RESULT_KEY) || "null");
-      } catch (error) { return; }
-      if (!draft || !["family", "seven"].includes(draft.method)) return;
-
-      shippingMethod.value = draft.method;
-      document.getElementById("customerName").value = draft.name || "";
-      document.getElementById("customerPhone").value = draft.phone || "";
-      document.getElementById("orderNote").value = draft.note || "";
-      const paymentSelect = document.getElementById("paymentMethod");
-      const codOption = paymentSelect.querySelector('option[value="convenience_store_cod"]');
-      paymentSelect.value = draft.payment === "convenience_store_cod" && !codOption.disabled
-        ? draft.payment : "bank_transfer";
-      if (result && result.state === draft.state && result.method === draft.method &&
-          /^[A-Za-z0-9]{1,9}$/.test(result.id || "")) {
-        selectedStore = result;
-        shippingAddress.value = `${result.name}（${result.id}）${result.address}`;
-        sessionStorage.removeItem(STORE_RESULT_KEY);
+      try { result = JSON.parse(sessionStorage.getItem(STORE_RESULT_KEY) || "null"); }
+      catch (error) { return; }
+      if (result && result.method === shippingMethod.value &&
+          result.name && storeCodeIsValid(result.method, result.id)) {
+        applySelectedStore(result);
       }
-      updateShippingFields();
     }
+
+    function openStorePicker(event) {
+      event.preventDefault();
+      const method = shippingMethod.value;
+      if (method !== "family" && method !== "seven") return;
+      document.getElementById("storePickerTitle").textContent =
+        method === "family" ? "選擇全家取貨門市" : "選擇 7-ELEVEN 取貨門市";
+      document.getElementById("officialStoreMap").href = method === "family"
+        ? "https://www.family.com.tw/Marketing/zh/Map"
+        : "https://emap.pcsc.com.tw/";
+      document.getElementById("storeName").value = selectedStore?.name || "";
+      document.getElementById("storeCode").value = selectedStore?.id || "";
+      document.getElementById("storeLocation").value = selectedStore?.address || "";
+      document.getElementById("storePickerMessage").textContent = "";
+      document.getElementById("storePicker").showModal();
+    }
+
+    document.getElementById("storePickerForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const name = document.getElementById("storeName").value.trim();
+      const id = document.getElementById("storeCode").value.trim();
+      const address = document.getElementById("storeLocation").value.trim();
+      if (!name || !storeCodeIsValid(shippingMethod.value, id)) {
+        document.getElementById("storePickerMessage").textContent =
+          "請填寫門市名稱及官方查詢頁顯示的店號（全家 5 至 6 碼，7-ELEVEN 6 碼）。";
+        return;
+      }
+      applySelectedStore({ method: shippingMethod.value, id, name, address });
+      document.getElementById("storePicker").close();
+    });
+    document.getElementById("cancelStorePicker").addEventListener("click", function () {
+      document.getElementById("storePicker").close();
+    });
 
     function showMessage(text) {
       const message =
@@ -1316,13 +1333,12 @@ async function checkLogin() {
 shippingMethod.addEventListener("change", function () {
   selectedStore = null;
   sessionStorage.removeItem(STORE_RESULT_KEY);
-  sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
   shippingAddress.value = "";
   updateShippingFields();
 });
 
-document.getElementById("familyStoreLink").addEventListener("click", openStoreMap);
-document.getElementById("sevenStoreLink").addEventListener("click", openStoreMap);
+document.getElementById("familyStoreLink").addEventListener("click", openStorePicker);
+document.getElementById("sevenStoreLink").addEventListener("click", openStorePicker);
 
     document
       .getElementById("checkoutForm")
@@ -1490,7 +1506,6 @@ document
 
           cart = [];
           saveCart();
-          sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
           sessionStorage.removeItem(STORE_RESULT_KEY);
 
           document
