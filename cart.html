@@ -530,22 +530,18 @@
 
 <a
   id="familyStoreLink"
-  href="https://family.map.com.tw/"
-  target="_blank"
-  rel="noopener noreferrer"
+  href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  開啟全家門市查詢
+  選擇全家取貨門市
 </a>
 
 <a
   id="sevenStoreLink"
-  href="https://emap.pcsc.com.tw/"
-  target="_blank"
-  rel="noopener noreferrer"
+  href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  開啟 7-ELEVEN 門市查詢
+  選擇 7-ELEVEN 取貨門市
 </a>
           </div>
 
@@ -707,10 +703,13 @@ storageKey: "colormix-member-session"
 );
 
     const CART_KEY = "colormix_cart";
+    const CHECKOUT_DRAFT_KEY = "colormix_checkout_draft";
+    const STORE_RESULT_KEY = "colormix_selected_store";
 
     let cart = [];
     let currentUser = null;
     let canUseCod = false;
+    let selectedStore = null;
 
     const cartItemsElement =
       document.getElementById("cartItems");
@@ -1113,8 +1112,64 @@ function renderCart() {
       "請填寫郵遞區號與完整地址";
   }
 
+  shippingAddress.readOnly = shippingMethod.value !== "post";
+  if (shippingMethod.value !== "post" && !selectedStore) {
+    shippingAddress.value = "";
+    shippingAddress.placeholder = "請點選上方連結選擇門市";
+  }
+
   renderSummary();
 }
+
+    function openStoreMap(event) {
+      event.preventDefault();
+      const method = shippingMethod.value;
+      if (method !== "family" && method !== "seven") return;
+
+      const state = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+        .map(function (value) { return value.toString(16).padStart(2, "0"); })
+        .join("");
+      const draft = {
+        state: state,
+        method: method,
+        name: document.getElementById("customerName").value,
+        phone: document.getElementById("customerPhone").value,
+        note: document.getElementById("orderNote").value,
+        payment: document.getElementById("paymentMethod").value
+      };
+      sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+      sessionStorage.removeItem(STORE_RESULT_KEY);
+      // 綠界的電子地圖必須在同一個分頁開啟，iOS 也不支援 iframe 串接。
+      const collection = draft.payment === "convenience_store_cod" ? "Y" : "N";
+      location.href = "/api/store-map?method=" + method +
+        "&state=" + state + "&collection=" + collection;
+    }
+
+    function restoreStoreSelection() {
+      let draft;
+      let result;
+      try {
+        draft = JSON.parse(sessionStorage.getItem(CHECKOUT_DRAFT_KEY) || "null");
+        result = JSON.parse(sessionStorage.getItem(STORE_RESULT_KEY) || "null");
+      } catch (error) { return; }
+      if (!draft || !["family", "seven"].includes(draft.method)) return;
+
+      shippingMethod.value = draft.method;
+      document.getElementById("customerName").value = draft.name || "";
+      document.getElementById("customerPhone").value = draft.phone || "";
+      document.getElementById("orderNote").value = draft.note || "";
+      const paymentSelect = document.getElementById("paymentMethod");
+      const codOption = paymentSelect.querySelector('option[value="convenience_store_cod"]');
+      paymentSelect.value = draft.payment === "convenience_store_cod" && !codOption.disabled
+        ? draft.payment : "bank_transfer";
+      if (result && result.state === draft.state && result.method === draft.method &&
+          /^[A-Za-z0-9]{1,9}$/.test(result.id || "")) {
+        selectedStore = result;
+        shippingAddress.value = `${result.name}（${result.id}）${result.address}`;
+        sessionStorage.removeItem(STORE_RESULT_KEY);
+      }
+      updateShippingFields();
+    }
 
     function showMessage(text) {
       const message =
@@ -1174,15 +1229,8 @@ function renderCart() {
     savedMethod === "family" ||
     savedMethod === "seven"
   ) {
-    const storeInformation = [
-      profile.store_name,
-      profile.store_number
-    ]
-      .filter(Boolean)
-      .join("／");
-
-    shippingAddress.value =
-      storeInformation || profile.address || "";
+    // 每筆超商訂單都重新選擇門市，避免把舊地址當成已確認門市。
+    shippingAddress.value = "";
   } else {
     shippingAddress.value = profile.address || "";
   }
@@ -1266,9 +1314,15 @@ async function checkLogin() {
 }
 
 shippingMethod.addEventListener("change", function () {
+  selectedStore = null;
+  sessionStorage.removeItem(STORE_RESULT_KEY);
+  sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
   shippingAddress.value = "";
   updateShippingFields();
 });
+
+document.getElementById("familyStoreLink").addEventListener("click", openStoreMap);
+document.getElementById("sevenStoreLink").addEventListener("click", openStoreMap);
 
     document
       .getElementById("checkoutForm")
@@ -1302,6 +1356,12 @@ shippingMethod.addEventListener("change", function () {
 
           const address =
             shippingAddress.value.trim();
+
+          if (shippingMethod.value !== "post" &&
+              (!selectedStore || selectedStore.method !== shippingMethod.value)) {
+            showMessage("請先選擇取貨門市，再成立訂單。");
+            return;
+          }
 
           const note =
             document
@@ -1430,6 +1490,8 @@ document
 
           cart = [];
           saveCart();
+          sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+          sessionStorage.removeItem(STORE_RESULT_KEY);
 
           document
             .getElementById("cartLayout")
@@ -1492,7 +1554,7 @@ if (
 
     loadCart();
     updateShippingFields();
-    checkLogin();
+    checkLogin().then(restoreStoreSelection);
   </script>
 </body>
 </html>
