@@ -16,4 +16,6 @@
 
 `public.create_order` 原本在插入 `order_items` 前更新一次 `product_variants.stock`；啟用中的 `decrease_variant_stock_after_order` 觸發器會在插入後再扣一次。已從 `create_order` 移除前一次更新，由觸發器負責唯一的庫存扣除及商品總庫存同步。保存後重新讀取函式，確認重複更新已移除，商品、規格與訂單項目檢查仍保留。既有訂單的歷史庫存沒有自動回補；不能在缺少逐筆盤點時推算回補量。
 
+`admin_delete_order` 與 `cancel_unpaid_orders` 原本只回補規格庫存，未同步 `Products.stock_quantity`。已在回補後依啟用中的商品規格重新計算總庫存，並重新讀取兩個函式確認保存。歷史上已刪除或取消的訂單仍須盤點，無法由本次程式修正自動還原。
+
 目前 Supabase 只有正式專案，尚未以測試會員送出訂單並核對付款、歷史庫存與後台操作。驗證前請先建立隔離測試專案或測試資料；不得以真實顧客訂單當測試資料。
