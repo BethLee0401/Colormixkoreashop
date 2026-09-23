@@ -499,6 +499,66 @@
 #productSearch:focus {
   outline: 1px solid #222;
 }
+
+.quick-view {
+  width: min(900px, calc(100vw - 24px));
+  max-height: min(90vh, 850px);
+  padding: 0;
+  border: 0;
+  background: #f8f6f2;
+  box-shadow: 0 20px 65px #0005;
+  overflow-y: auto;
+}
+.quick-view::backdrop { background: #181818a6; }
+.quick-close {
+  position: sticky;
+  top: 10px;
+  z-index: 2;
+  float: right;
+  width: 38px;
+  height: 38px;
+  margin: 10px 10px -48px 0;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 12px #0002;
+  font-size: 25px;
+  line-height: 38px;
+  cursor: pointer;
+}
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.quick-image { width: 100%; height: 100%; min-height: 500px; object-fit: cover; background: #eee; }
+.quick-info { padding: 46px 36px; }
+.quick-info h2 { margin: 8px 0 16px; font-size: 25px; font-weight: 500; }
+.quick-price { margin-bottom: 16px; font-size: 20px; }
+.quick-desc, .quick-status { margin: 14px 0; color: #666; font-size: 14px; white-space: pre-line; }
+.quick-label { margin: 20px 0 8px; font-size: 13px; font-weight: 700; }
+.quick-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick-options button, .quick-quantity button {
+  min-width: 38px;
+  padding: 8px 12px;
+  border: 1px solid #bbb;
+  background: transparent;
+  cursor: pointer;
+}
+.quick-options button.selected { background: #222; border-color: #222; color: #fff; }
+.quick-quantity { display: flex; align-items: center; gap: 16px; }
+.quick-add {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  border: 0;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+}
+.quick-add:disabled { opacity: .45; cursor: not-allowed; }
+.quick-message { min-height: 25px; margin-top: 12px; color: #32603b; font-size: 13px; }
+@media (max-width: 650px) {
+  .quick-grid { display: block; }
+  .quick-image { height: 310px; min-height: 0; }
+  .quick-info { padding: 22px; }
+}
   </style>
   <script type="application/ld+json">
 {
@@ -697,6 +757,11 @@
 
     </div>
   </section>
+
+  <dialog id="quickView" class="quick-view" aria-labelledby="quickTitle">
+    <button id="quickClose" class="quick-close" type="button" aria-label="關閉商品視窗">×</button>
+    <div id="quickContent" role="status">商品載入中⋯</div>
+  </dialog>
 
   <section class="about">
     <div class="about-inner">
@@ -914,6 +979,7 @@ storageKey: "colormix-member-session"
       return `
         <a
           class="product"
+          data-product-id="${escapeHtml(product.id)}"
           href="product.html?id=${encodeURIComponent(product.id)}"
         >
           ${imageHtml}
@@ -942,6 +1008,198 @@ storageKey: "colormix-member-session"
         </a>
       `;
     }
+
+    const quickView = document.getElementById("quickView");
+    const quickContent = document.getElementById("quickContent");
+    let quickTrigger = null;
+    let quickRequest = 0;
+
+    function parseOptions(value) {
+      return String(value || "")
+        .split(/[\/／,，、]/)
+        .map(function (option) { return option.trim(); })
+        .filter(Boolean);
+    }
+
+    async function openQuickView(productId, trigger) {
+      quickTrigger = trigger;
+      const request = ++quickRequest;
+      quickContent.textContent = "商品載入中⋯";
+      quickView.showModal();
+
+      const { data: item, error } = await db
+        .from("Products")
+        .select("*")
+        .eq("id", productId)
+        .eq("active", true)
+        .single();
+
+      if (request !== quickRequest || !quickView.open) return;
+      if (error || !item) {
+        quickContent.textContent = "商品目前無法選購，請稍後再試。";
+        return;
+      }
+
+      const { data: variantData, error: variantError } = await db
+        .from("product_variants")
+        .select("*")
+        .eq("product_id", item.id)
+        .eq("active", true)
+        .order("id", { ascending: true });
+
+      if (request !== quickRequest || !quickView.open) return;
+      if (variantError) {
+        quickContent.textContent = "商品規格載入失敗，請稍後再試。";
+        return;
+      }
+
+      const variants = variantData || [];
+      const sizes = variants.length
+        ? [...new Set(variants.map(function (v) { return v.size; }).filter(Boolean))]
+        : parseOptions(item.size);
+      const colors = variants.length
+        ? [...new Set(variants.map(function (v) { return v.color; }).filter(Boolean))]
+        : parseOptions(item.color);
+      const displayedSizes = sizes.length ? sizes : ["單一規格"];
+      const displayedColors = colors.length ? colors : ["單一顏色"];
+      let selectedSize = variants[0]?.size || displayedSizes[0];
+      let selectedColor = variants[0]?.color || displayedColors[0];
+      let quantity = 1;
+      const photos = normalizeImages(item.image_urls);
+      const image = photos[0] || (Number(item.id) === 1
+        ? "image-1944593136204205.jpg" : "");
+      const price = salePrice(item);
+
+      quickContent.innerHTML = `
+        <div class="quick-grid">
+          ${image
+            ? `<img class="quick-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">`
+            : '<div class="quick-image no-image">尚未上傳照片</div>'}
+          <div class="quick-info">
+            <h2 id="quickTitle">${escapeHtml(item.name)}</h2>
+            <div class="quick-price">
+              ${item.product_type === "stock"
+                ? `<span class="original-price">原價 NT$ ${Number(item.price).toLocaleString("zh-TW")}</span><br>`
+                : ""}
+              NT$ ${price.toLocaleString("zh-TW")}
+            </div>
+            <p class="quick-desc">${escapeHtml(item.descripion || "")}</p>
+            <div class="quick-label">尺寸</div>
+            <div id="quickSizes" class="quick-options">${displayedSizes.map(function (size) {
+              return `<button type="button" data-size="${escapeHtml(size)}">${escapeHtml(size)}</button>`;
+            }).join("")}</div>
+            <div class="quick-label">顏色</div>
+            <div id="quickColors" class="quick-options">${displayedColors.map(function (color) {
+              return `<button type="button" data-color="${escapeHtml(color)}">${escapeHtml(color)}</button>`;
+            }).join("")}</div>
+            <div class="quick-label">數量</div>
+            <div class="quick-quantity">
+              <button id="quickMinus" type="button" aria-label="減少數量">−</button>
+              <span id="quickNumber">1</span>
+              <button id="quickPlus" type="button" aria-label="增加數量">＋</button>
+            </div>
+            <p id="quickStatus" class="quick-status"></p>
+            <button id="quickAdd" class="quick-add" type="button">加入購物車</button>
+            <p id="quickMessage" class="quick-message" role="status" aria-live="polite"></p>
+          </div>
+        </div>`;
+
+      function selectedVariant() {
+        return variants.find(function (v) {
+          return (!v.size || v.size === selectedSize || selectedSize === "單一規格") &&
+            (!v.color || v.color === selectedColor || selectedColor === "單一顏色");
+        });
+      }
+
+      function refresh() {
+        quickContent.querySelectorAll("[data-size]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.size === selectedSize);
+        });
+        quickContent.querySelectorAll("[data-color]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.color === selectedColor);
+        });
+        const choice = selectedVariant();
+        document.getElementById("quickNumber").textContent = quantity;
+        document.getElementById("quickAdd").disabled = variants.length > 0 && !choice;
+        document.getElementById("quickStatus").textContent =
+          variants.length > 0 && !choice ? "此尺寸與顏色無法選購" :
+          item.product_type === "stock" &&
+          Number(choice?.stock ?? item.stock_quantity ?? 0) >= quantity
+            ? "現貨可選購" : "預購｜到貨後出貨";
+      }
+
+      quickContent.querySelectorAll("[data-size]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          selectedSize = button.dataset.size;
+          refresh();
+        });
+      });
+      quickContent.querySelectorAll("[data-color]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          selectedColor = button.dataset.color;
+          refresh();
+        });
+      });
+      document.getElementById("quickMinus").addEventListener("click", function () {
+        quantity = Math.max(1, quantity - 1);
+        refresh();
+      });
+      document.getElementById("quickPlus").addEventListener("click", function () {
+        quantity = Math.min(99, quantity + 1);
+        refresh();
+      });
+      document.getElementById("quickAdd").addEventListener("click", function () {
+        const choice = selectedVariant();
+        if (variants.length > 0 && !choice) return;
+        let cart;
+        try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
+        catch (error) { cart = []; }
+        if (!Array.isArray(cart)) cart = [];
+
+        const existing = cart.find(function (entry) {
+          return Number(entry.product_id || entry.id) === Number(item.id) &&
+            entry.size === selectedSize && entry.color === selectedColor;
+        });
+        const finalQuantity = Number(existing?.quantity || 0) + quantity;
+        const preorder = item.product_type !== "stock" ||
+          Number(choice?.stock ?? item.stock_quantity ?? 0) < finalQuantity;
+
+        if (existing) {
+          existing.quantity = finalQuantity;
+          existing.is_preorder = preorder;
+        } else {
+          cart.push({
+            product_id: Number(item.id), name: item.name,
+            original_price: Number(item.price), price,
+            size: selectedSize, color: selectedColor, quantity,
+            image, is_preorder: preorder
+          });
+        }
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        updateCartCount();
+        document.getElementById("quickMessage").textContent =
+          `已加入 ${quantity} 件。按 × 關閉視窗可繼續選其他商品。`;
+      });
+      refresh();
+    }
+
+    document.getElementById("productList").addEventListener("click", function (event) {
+      const link = event.target.closest("a[data-product-id]");
+      if (!link || event.button !== 0 || event.metaKey || event.ctrlKey ||
+          event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      openQuickView(link.dataset.productId, link);
+    });
+    document.getElementById("quickClose").addEventListener("click", function () {
+      quickView.close();
+    });
+    quickView.addEventListener("close", function () {
+      ++quickRequest;
+      if (quickTrigger?.isConnected) quickTrigger.focus();
+    });
+    quickView.addEventListener("click", function (event) {
+      if (event.target === quickView) quickView.close();
+    });
 
     function renderProducts() {
       let products = allProducts;
