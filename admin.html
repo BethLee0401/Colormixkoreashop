@@ -449,7 +449,8 @@ label[for="color"],
   <script>
     const db = supabase.createClient(
       "https://qwcpgwbaormtgpkjlaio.supabase.co",
-      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l"
+      "sb_publishable_RpbXHPZD_JT1giXP4nd0mw_6MMIjs3l",
+      { auth: { storageKey: "colormix-member-session" } }
     );
 
     const $ = function (id) {
@@ -457,6 +458,7 @@ label[for="color"],
     };
 
     let rows = [];
+    let originalVariantStocks = new Map();
     let currentMemberPage = 1;
 const membersPerPage = 15;
 
@@ -537,7 +539,6 @@ function changeProductPage(page) {
 
   if (session && !isAdmin) {
     $("loginMsg").textContent = "此帳號沒有後台管理權限";
-    await db.auth.signOut();
     return;
   }
 
@@ -777,6 +778,10 @@ rows
 function addVariantRow(variant = {}) {
   const row = document.createElement("div");
   row.className = "variant-row";
+  row.dataset.variantId = variant.id || "";
+  row.dataset.originalSize = variant.size || "";
+  row.dataset.originalColor = variant.color || "";
+  row.dataset.originalStock = Number(variant.stock || 0);
 
   row.innerHTML = `
     <div>
@@ -851,6 +856,7 @@ $("addVariant").onclick = function () {
   addVariantRow();
 };
     function clearForm() {
+      originalVariantStocks = new Map();
       $("pid").value = "";
       $("name").value = "";
       $("price").value = "";
@@ -907,10 +913,14 @@ if (variantError) {
   $("formMsg").textContent =
     "讀取尺寸庫存失敗：" + variantError.message;
 } else if (variants && variants.length) {
+  originalVariantStocks = new Map(variants.map(function (variant) {
+    return [Number(variant.id), Number(variant.stock || 0)];
+  }));
   variants.forEach(function (variant) {
     addVariantRow(variant);
   });
 } else {
+  originalVariantStocks = new Map();
   const oldSizes = String(product.size || "")
     .split(/[\/／,，、]/)
     .map(function (value) {
@@ -984,6 +994,10 @@ function collectVariants() {
     document.querySelectorAll(".variant-row")
   ).map(function (row) {
     return {
+      id: row.dataset.variantId ? Number(row.dataset.variantId) : null,
+      originalSize: row.dataset.originalSize,
+      originalColor: row.dataset.originalColor,
+      originalStock: Number(row.dataset.originalStock),
       size: row
         .querySelector(".variant-size")
         .value
@@ -1007,36 +1021,95 @@ function collectVariants() {
 }
 
 async function saveVariants(productId, variants) {
-  const deleteResult = await db
+  const { data: existing, error: readError } = await db
     .from("product_variants")
-    .delete()
+    .select("id,size,color,stock")
     .eq("product_id", productId);
+  if (readError) throw readError;
 
-  if (deleteResult.error) {
-    throw deleteResult.error;
+  const existingById = new Map((existing || []).map(function (row) {
+    return [Number(row.id), row];
+  }));
+  const retainedIds = new Set();
+  let inventoryChanged = false;
+
+  for (const variant of variants) {
+    let current = variant.id ? existingById.get(variant.id) : null;
+    if (variant.id && !current) {
+      throw new Error("商品規格已被其他管理員變更，請重新載入後再儲存。");
+    }
+    if (!current) {
+      current = (existing || []).find(function (row) {
+        return !retainedIds.has(Number(row.id)) &&
+          row.size === variant.size && row.color === variant.color;
+      });
+    }
+
+    if (current) {
+      const currentId = Number(current.id);
+      retainedIds.add(currentId);
+      const changedStock = variant.stock !== variant.originalStock;
+      const changedLabels = current.size !== variant.size ||
+        current.color !== variant.color;
+      if (!variant.id && Number(current.stock) !== variant.stock) {
+        throw new Error("商品庫存已變動，請重新載入後再儲存。");
+      }
+      if (changedStock && Number(current.stock) !== variant.originalStock) {
+        throw new Error("商品庫存已變動，請重新載入後再儲存。");
+      }
+      if (changedLabels && !changedStock &&
+          Number(current.stock) !== variant.originalStock) {
+        throw new Error("商品庫存已變動，請重新載入後再儲存。");
+      }
+      if (changedStock || changedLabels) {
+        const changes = { size: variant.size, color: variant.color };
+        if (changedStock) changes.stock = variant.stock;
+        let query = db.from("product_variants")
+          .update(changes)
+          .eq("product_id", productId)
+          .eq("id", currentId)
+          .eq("stock", variant.originalStock)
+          .select("id");
+        const { data, error } = await query;
+        if (error) throw error;
+        if (data?.length !== 1) {
+          throw new Error("商品庫存已變動，請重新載入後再儲存。");
+        }
+        inventoryChanged = inventoryChanged || changedStock;
+      }
+      continue;
+    }
+
+    const { data, error } = await db.from("product_variants")
+      .insert({ product_id: Number(productId), size: variant.size,
+        color: variant.color, stock: variant.stock, active: true })
+      .select("id").single();
+    if (error) throw error;
+    retainedIds.add(Number(data.id));
+    inventoryChanged = true;
   }
 
-  if (!variants.length) {
-    return;
-  }
-
-  const rowsToSave = variants.map(function (variant) {
-    return {
-      product_id: Number(productId),
-      size: variant.size,
-      color: variant.color,
-      stock: variant.stock,
-      active: true
-    };
+  const removedIds = (existing || []).map(function (row) {
+    return Number(row.id);
+  }).filter(function (id) {
+    return !retainedIds.has(id);
   });
-
-  const insertResult = await db
-    .from("product_variants")
-    .insert(rowsToSave);
-
-  if (insertResult.error) {
-    throw insertResult.error;
+  for (const removedId of removedIds) {
+    const originalStock = originalVariantStocks.get(removedId);
+    const current = existingById.get(removedId);
+    if (originalStock === undefined || Number(current.stock) !== originalStock) {
+      throw new Error("商品庫存已變動，請重新載入後再儲存。");
+    }
+    const { data, error } = await db.from("product_variants")
+      .delete().eq("product_id", productId).eq("id", removedId)
+      .eq("stock", originalStock).select("id");
+    if (error) throw error;
+    if (data?.length !== 1) {
+      throw new Error("商品庫存已變動，請重新載入後再儲存。");
+    }
+    inventoryChanged = true;
   }
+  return inventoryChanged;
 }
     $("save").onclick = async function () {
       const saveButton = $("save");
@@ -1052,7 +1125,6 @@ async function saveVariants(productId, variants) {
           return String(item.id) === String(id);
         });
 
-        const addedImages = await uploadImages();
 const variants = collectVariants();
 
 if (!variants.length) {
@@ -1060,6 +1132,17 @@ if (!variants.length) {
     "請至少填寫一組尺寸、顏色與庫存數量"
   );
 }
+
+const variantKeys = variants.map(function (variant) {
+  if (!Number.isInteger(variant.stock) || variant.stock < 0) {
+    throw new Error("庫存必須是 0 以上的整數。");
+  }
+  return JSON.stringify([variant.size, variant.color]);
+});
+if (new Set(variantKeys).size !== variantKeys.length) {
+  throw new Error("尺寸與顏色組合不能重複。");
+}
+const addedImages = await uploadImages();
 
 const variantSizes = [
   ...new Set(
@@ -1084,12 +1167,6 @@ const variantColors = [
           name: $("name").value.trim(),
           price: Number($("price").value),
           product_type: $("productType").value,
-          stock_quantity: variants.reduce(
-  function (total, variant) {
-    return total + variant.stock;
-  },
-  0
-),
           category: $("category").value,
          size: variantSizes.join("／"),
 color: variantColors.join("／"),
@@ -1114,6 +1191,7 @@ if (id) {
     .select("id")
     .single();
 } else {
+  payload.stock_quantity = 0;
   result = await db
     .from("Products")
     .insert(payload)
@@ -1125,10 +1203,24 @@ if (result.error) {
   throw result.error;
 }
 
-await saveVariants(
+const inventoryChanged = await saveVariants(
   result.data.id,
   variants
 );
+if (inventoryChanged) {
+  const { data: savedVariants, error: stockError } = await db
+    .from("product_variants")
+    .select("stock,active")
+    .eq("product_id", result.data.id);
+  if (stockError) throw stockError;
+  const stockQuantity = (savedVariants || []).reduce(function (total, row) {
+    return total + (row.active ? Number(row.stock || 0) : 0);
+  }, 0);
+  const { error: totalError } = await db.from("Products")
+    .update({ stock_quantity: stockQuantity })
+    .eq("id", result.data.id);
+  if (totalError) throw totalError;
+}
 
         clearForm();
         await load();
