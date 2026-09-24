@@ -1161,6 +1161,11 @@ storageKey: "colormix-member-session"
             entry.size === selectedSize && entry.color === selectedColor;
         });
         const finalQuantity = Number(existing?.quantity || 0) + quantity;
+        if (finalQuantity > 99) {
+          document.getElementById("quickMessage").textContent =
+            "同一規格每筆訂單最多 99 件，請先到購物車調整數量。";
+          return;
+        }
         const preorder = item.product_type !== "stock" ||
           Number(choice?.stock ?? item.stock_quantity ?? 0) < finalQuantity;
 
