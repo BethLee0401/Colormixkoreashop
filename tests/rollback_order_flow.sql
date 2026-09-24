@@ -43,6 +43,27 @@ begin
     (product_id, size, color, stock, active)
   values (v_product_id, 'M', '黑', 5, true);
 
+  begin
+    perform public.create_order_with_payment(
+      '回滾流程測試', '0912345678', 'family', '測試門市（123456）',
+      '', jsonb_build_array(jsonb_build_object(
+        'product_id', v_product_id, 'quantity', 16,
+        'size', 'M', 'color', '黑'
+      )), 'bank_transfer'
+    );
+    raise exception 'FLOW_TEST_FAIL: order above 15 units was accepted';
+  exception when others then
+    if sqlerrm not like '%購物車最多 15 件%' then
+      raise;
+    end if;
+  end;
+  select count(*) into v_count from public.orders where user_id = v_user_id;
+  select stock into v_stock from public.product_variants
+  where product_id = v_product_id;
+  if v_count is distinct from 0 or v_stock is distinct from 5 then
+    raise exception 'FLOW_TEST_FAIL: rejected 16-unit order changed data';
+  end if;
+
   v_items := jsonb_build_array(jsonb_build_object(
     'product_id', v_product_id, 'quantity', 2,
     'size', 'M', 'color', '黑'
