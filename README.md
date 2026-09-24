@@ -3,7 +3,7 @@
 ## 購物流程
 
 - 首頁點商品可直接開啟視窗，選尺寸、顏色和數量並加入購物車；關閉後可繼續挑選。
-- `cart.html` 使用既有的 Supabase 會員登入與 `create_order_with_payment` RPC 建立訂單。正式資料庫的庫存重複扣除已於 2026-09-23 修正；完整訂單仍待隔離環境與測試帳號驗證。
+- `cart.html` 使用既有的 Supabase 會員登入與 `create_order_with_payment` RPC 建立訂單。正式資料庫已完成交易內回滾測試；顧客瀏覽器的完整下單仍待隔離環境與測試帳號驗證。
 - `admin.html` 保留商品上架／下架、原價和尺寸顏色庫存管理。
 
 ## 超商取貨（無需物流商帳號）
@@ -18,4 +18,8 @@
 
 `admin_delete_order` 與 `cancel_unpaid_orders` 原本只回補規格庫存，未同步 `Products.stock_quantity`。已在回補後依啟用中的商品規格重新計算總庫存，並重新讀取兩個函式確認保存。歷史上已刪除或取消的訂單仍須盤點，無法由本次程式修正自動還原。
 
-目前 Supabase 只有正式專案，尚未以測試會員送出訂單並核對付款、歷史庫存與後台操作。驗證前請先建立隔離測試專案或測試資料；不得以真實顧客訂單當測試資料。
+新訂單原本預設狀態「待聯絡」，但每 10 分鐘執行一次的 `cancel_unpaid_orders` 只處理 `pending` 等狀態，後台也使用 `pending`。已將 `orders.status` 預設值改為 `pending`；既有 2 筆「待聯絡」訂單保持原樣，不自動取消。資料庫設定記錄於 [`supabase/migrations/20260923_pending_order_status.sql`](supabase/migrations/20260923_pending_order_status.sql)。
+
+[`tests/rollback_order_flow.sql`](tests/rollback_order_flow.sql) 以交易內建立的會員、商品與訂單，驗證價格、運費、現貨扣庫存、24 小時取消、管理員刪單回補、符合資格的超商取貨付款及預購限制；最後刻意拋出例外使整筆交易回滾。執行結果為 `ROLLBACK_FLOW_PASS`，事後查詢商品、會員、訂單與管理員測試資料均為 0 筆。
+
+目前 Supabase 只有正式專案，尚未以瀏覽器中的測試會員完成實際結帳並核對顧客畫面；歷史庫存與 2 筆既有「待聯絡」訂單也需人工盤點。下一步應在隔離測試專案驗證顧客操作，不以真實顧客訂單當測試資料。
