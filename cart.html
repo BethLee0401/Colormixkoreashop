@@ -1091,12 +1091,14 @@ function renderCart() {
       cart[index].quantity = Math.min(99,
         Math.max(1, cart[index].quantity + amount));
 
+      clearMessage();
       saveCart();
       renderCart();
     }
 
     function removeItem(index) {
       cart.splice(index, 1);
+      clearMessage();
       saveCart();
       renderCart();
     }
@@ -1208,6 +1210,12 @@ function renderCart() {
         top: 0,
         behavior: "smooth"
       });
+    }
+
+    function clearMessage() {
+      const message = document.getElementById("message");
+      message.textContent = "";
+      message.style.display = "none";
     }
 
   async function fillCheckoutFromProfile(user) {
