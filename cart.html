@@ -446,6 +446,7 @@
       <div class="card">
         <h2>購買商品</h2>
         <div id="cartItems"></div>
+        <p id="cartLimitNotice" role="alert" hidden style="color:#a93434;">購物車最多 15 件，請減少數量後再結帳。</p>
       </div>
 
       <div class="card checkout-card">
@@ -783,10 +784,9 @@ storageKey: "colormix-member-session"
           color: item.color || "",
           image: item.image || "",
           is_preorder: Boolean(item.is_preorder),
-          quantity: Math.max(
-            1,
-            Number(item.quantity || 1)
-          )
+          quantity: Number.isFinite(Number(item.quantity))
+            ? Math.min(99, Math.max(1, Math.trunc(Number(item.quantity))))
+            : 1
         };
       }).filter(function (item) {
         return item.product_id;
@@ -798,6 +798,12 @@ storageKey: "colormix-member-session"
         CART_KEY,
         JSON.stringify(cart)
       );
+    }
+
+    function cartQuantity() {
+      return cart.reduce(function (total, item) {
+        return total + item.quantity;
+      }, 0);
     }
 
     function originalSubtotalAmount() {
@@ -930,6 +936,8 @@ paymentNotice.textContent = "";
 
 function renderCart() {
   updatePaymentMethod();
+      const overLimit = cartQuantity() > 15;
+      document.getElementById("cartLimitNotice").hidden = !overLimit;
       if (!cart.length) {
         cartItemsElement.innerHTML = `
           <div class="empty">
@@ -1071,16 +1079,17 @@ function renderCart() {
           `;
         }).join("");
 
-      checkoutButton.disabled = !currentUser;
+      checkoutButton.disabled = !currentUser || overLimit;
       renderSummary();
     }
 
     function changeQuantity(index, amount) {
-      cart[index].quantity += amount;
-
-      if (cart[index].quantity < 1) {
-        cart[index].quantity = 1;
+      if (amount > 0 && cartQuantity() >= 15) {
+        showMessage("購物車最多 15 件，請減少數量後再繼續選購。");
+        return;
       }
+      cart[index].quantity = Math.min(99,
+        Math.max(1, cart[index].quantity + amount));
 
       saveCart();
       renderCart();
@@ -1325,7 +1334,7 @@ async function checkLogin() {
     );
 
   checkoutButton.disabled =
-    !currentUser || cart.length === 0;
+    !currentUser || cart.length === 0 || cartQuantity() > 15;
 
   renderCart();
 }
@@ -1355,6 +1364,11 @@ document.getElementById("sevenStoreLink").addEventListener("click", openStorePic
 
           if (!cart.length) {
             showMessage("購物車目前沒有商品。");
+            return;
+          }
+
+          if (cartQuantity() > 15) {
+            showMessage("購物車最多 15 件，請減少數量後再結帳。");
             return;
           }
 
