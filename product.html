@@ -817,6 +817,15 @@ function money(value) {
   const finalQuantity =
     Number(sameItem?.quantity || 0) + quantity;
 
+  const cartTotal = cart.reduce(function (total, item) {
+    return total + Math.max(0, Number(item.quantity) || 0);
+  }, 0);
+
+  if (cartTotal + quantity > 15 || finalQuantity > 15) {
+    showNotice("購物車最多 15 件，請先到購物車調整數量。");
+    return;
+  }
+
   const isPreorder =
     product.product_type !== "stock" ||
     availableStock < finalQuantity;
@@ -1094,7 +1103,7 @@ productStructuredData.textContent =
     document
       .getElementById("plusButton")
       .addEventListener("click", function () {
-        quantity += 1;
+        quantity = Math.min(15, quantity + 1);
         document.getElementById("quantityNumber").textContent =
           quantity;
       });
