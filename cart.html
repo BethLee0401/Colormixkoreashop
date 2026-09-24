@@ -724,6 +724,7 @@ storageKey: "colormix-member-session"
     let currentUser = null;
     let canUseCod = false;
     let selectedStore = null;
+    let checkoutInProgress = false;
 
     const cartItemsElement =
       document.getElementById("cartItems");
@@ -1103,6 +1104,77 @@ function renderCart() {
       renderCart();
     }
 
+    async function refreshCartBeforeCheckout() {
+      const productIds = [...new Set(cart.map(function (item) {
+        return item.product_id;
+      }))];
+      const { data: products, error: productError } = await db
+        .from("Products")
+        .select("id,name,price,product_type,active,stock_quantity")
+        .in("id", productIds);
+      if (productError) throw productError;
+
+      const { data: variants, error: variantError } = await db
+        .from("product_variants")
+        .select("product_id,size,color,stock,active")
+        .in("product_id", productIds);
+      if (variantError) throw variantError;
+
+      const updated = cart.map(function (item) {
+        const product = (products || []).find(function (row) {
+          return Number(row.id) === item.product_id;
+        });
+        if (!product || product.active !== true) {
+          throw new Error(item.name + " 已下架，請從購物車移除後再結帳。");
+        }
+
+        const productVariants = (variants || []).filter(function (row) {
+          return Number(row.product_id) === item.product_id;
+        });
+        const variant = productVariants.find(function (row) {
+          return row.active === true &&
+            (!row.size || row.size === item.size || item.size === "單一規格") &&
+            (!row.color || row.color === item.color || item.color === "單一顏色");
+        });
+        if (productVariants.length && !variant) {
+          throw new Error(item.name + " 的尺寸或顏色已變更，請移除後重新選購。");
+        }
+
+        const originalPrice = Number(product.price);
+        if (!Number.isFinite(originalPrice) || originalPrice < 0) {
+          throw new Error(item.name + " 的價格目前無法確認，請稍後再試。");
+        }
+        const price = product.product_type === "stock"
+          ? Math.round(originalPrice * 0.85) : originalPrice;
+        const selectedQuantity = cart.reduce(function (total, row) {
+          return total + (row.product_id === item.product_id &&
+            row.size === item.size && row.color === item.color ? row.quantity : 0);
+        }, 0);
+        const isPreorder = product.product_type !== "stock" ||
+          Number(variant?.stock ?? product.stock_quantity ?? 0) < selectedQuantity;
+
+        return {
+          ...item,
+          name: product.name,
+          original_price: originalPrice,
+          price,
+          is_preorder: isPreorder
+        };
+      });
+
+      const changed = updated.some(function (item, index) {
+        const old = cart[index];
+        return item.name !== old.name || item.original_price !== old.original_price ||
+          item.price !== old.price || item.is_preorder !== old.is_preorder;
+      });
+      if (changed) {
+        cart = updated;
+        saveCart();
+        renderCart();
+      }
+      return changed;
+    }
+
     function updateShippingFields() {
   const familyStoreLink =
     document.getElementById("familyStoreLink");
@@ -1421,9 +1493,31 @@ document.getElementById("sevenStoreLink").addEventListener("click", openStorePic
             return;
           }
 
+          if (checkoutInProgress) return;
+          checkoutInProgress = true;
+
           checkoutButton.disabled = true;
           checkoutButton.textContent =
-            "訂單建立中⋯";
+            "檢查商品資訊⋯";
+
+          try {
+            if (await refreshCartBeforeCheckout()) {
+              showMessage("商品價格或庫存狀態已更新，請確認購物車金額後再次成立訂單。");
+              return;
+            }
+          } catch (refreshError) {
+            showMessage("無法確認商品資訊：" + refreshError.message);
+            return;
+          } finally {
+            checkoutInProgress = false;
+            checkoutButton.disabled = !currentUser || !cart.length || cartQuantity() > 15;
+            checkoutButton.textContent = "確認成立訂單";
+          }
+
+          if (checkoutInProgress) return;
+          checkoutInProgress = true;
+          checkoutButton.disabled = true;
+          checkoutButton.textContent = "訂單建立中⋯";
 
           const items = cart.map(function (item) {
             return {
@@ -1441,6 +1535,7 @@ if (
   paymentMethod === "convenience_store_cod" &&
   shippingMethod.value === "post"
 ) {
+  checkoutInProgress = false;
   checkoutButton.disabled = false;
   checkoutButton.textContent =
     "確認成立訂單";
@@ -1451,28 +1546,39 @@ if (
   return;
 }
 
-const { data, error } = await db.rpc(
-  "create_order_with_payment",
-  {
-    p_customer_name: name,
-    p_phone: phone,
-    p_shipping_method:
-      shippingMethod.value,
-    p_shipping_address: address,
-    p_note: note,
-    p_items: items,
-    p_payment_method: paymentMethod
-  }
-);
+let data, error;
+try {
+  ({ data, error } = await db.rpc(
+    "create_order_with_payment",
+    {
+      p_customer_name: name,
+      p_phone: phone,
+      p_shipping_method: shippingMethod.value,
+      p_shipping_address: address,
+      p_note: note,
+      p_items: items,
+      p_payment_method: paymentMethod
+    }
+  ));
+} catch (requestError) {
+  error = requestError;
+}
 
+          checkoutInProgress = false;
           checkoutButton.disabled = false;
           checkoutButton.textContent =
             "確認成立訂單";
 
           if (error) {
             showMessage(
-              "訂單建立失敗：" + error.message
+              "無法確認訂單結果：" + error.message +
+              "。請先到會員中心確認是否已有訂單，避免重複送出。"
             );
+            return;
+          }
+
+          if (!data?.order_number) {
+            showMessage("無法確認訂單是否成立。請先到會員中心查看訂單紀錄，避免重複送出。");
             return;
           }
 
