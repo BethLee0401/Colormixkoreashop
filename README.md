@@ -21,8 +21,8 @@
 
 新訂單原本預設狀態「待聯絡」，但每 10 分鐘執行一次的 `cancel_unpaid_orders` 只處理 `pending` 等狀態，後台也使用 `pending`。已將 `orders.status` 預設值改為 `pending`；既有 2 筆「待聯絡」訂單保持原樣，不自動取消。資料庫設定記錄於 [`supabase/migrations/20260923_pending_order_status.sql`](supabase/migrations/20260923_pending_order_status.sql)。
 
-[`tests/rollback_order_flow.sql`](tests/rollback_order_flow.sql) 以交易內建立的會員、商品與訂單，驗證價格、運費、現貨扣庫存、24 小時取消、管理員刪單回補、符合資格的超商取貨付款及預購限制；最後刻意拋出例外使整筆交易回滾。原版執行結果為 `ROLLBACK_FLOW_PASS`，事後查詢商品、會員、訂單與管理員測試資料均為 0 筆。新版新增 16 件訂單拒絕案例，須待資料庫限制套用後重跑。
+[`tests/rollback_order_flow.sql`](tests/rollback_order_flow.sql) 以交易內建立的會員、商品與訂單，驗證 16 件訂單拒絕、價格、運費、現貨扣庫存、24 小時取消、管理員刪單回補、符合資格的超商取貨付款及預購限制；最後刻意拋出例外使整筆交易回滾。2026-09-24 在正式 Supabase 執行新版，得到預期的 `ROLLBACK_FLOW_PASS`；事後查詢測試會員、商品與訂單各 0 筆。
 
-購物車畫面目前限制 15 件。資料庫端的 [`supabase/migrations/20260924_order_item_limit_15.sql`](supabase/migrations/20260924_order_item_limit_15.sql) 已備妥，**尚未套用正式 Supabase**；在套用前，直接呼叫下單 RPC 仍可能送出超過 15 件。登入資料庫後應先確認訂單明細表結構、執行 migration，再重跑回滾測試。
+購物車畫面限制 15 件。資料庫端的 [`supabase/migrations/20260924_order_item_limit_15.sql`](supabase/migrations/20260924_order_item_limit_15.sql) 已於 2026-09-24 套用正式 Supabase；確認 `order_items` 的欄位後建立觸發器，再查詢 `pg_trigger` 確認其存在。直接新增或調整訂單明細時，超過 15 件亦會拒絕。
 
 目前 Supabase 只有正式專案，尚未以瀏覽器中的測試會員完成實際結帳並核對顧客畫面；歷史庫存與 2 筆既有「待聯絡」訂單也需人工盤點。下一步應在隔離測試專案驗證顧客操作，不以真實顧客訂單當測試資料。
