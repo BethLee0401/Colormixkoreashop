@@ -503,6 +503,7 @@ storageKey: "colormix-member-session"
 
     let product = null;
     let variants = [];
+    let hasConfiguredVariants = false;
     let selectedSize = "";
     let selectedColor = "";
     let quantity = 1;
@@ -662,18 +663,16 @@ function money(value) {
   const selectedVariant = variants.find(function (variant) {
     const sizeMatches =
       !variant.size ||
-      variant.size === selectedSize ||
-      selectedSize === "單一規格";
+      variant.size === selectedSize;
 
     const colorMatches =
       !variant.color ||
-      variant.color === selectedColor ||
-      selectedColor === "單一顏色";
+      variant.color === selectedColor;
 
     return sizeMatches && colorMatches;
   });
 
-  if (variants.length && !selectedVariant) {
+  if (hasConfiguredVariants && !selectedVariant) {
     stockStatus.textContent = "此尺寸與顏色無法選購";
     stockStatus.style.color = "#a93636";
     addButton.disabled = true;
@@ -788,16 +787,16 @@ function money(value) {
     variants.find(function (variant) {
       const sizeMatches =
         !variant.size ||
-        variant.size === selectedSize ||
-        selectedSize === "單一規格";
+        variant.size === selectedSize;
 
       const colorMatches =
         !variant.color ||
-        variant.color === selectedColor ||
-        selectedColor === "單一顏色";
+        variant.color === selectedColor;
 
       return sizeMatches && colorMatches;
     });
+
+  if (hasConfiguredVariants && !selectedVariant) return;
 
   const availableStock = Number(
     selectedVariant?.stock ??
@@ -895,12 +894,16 @@ function money(value) {
     .from("product_variants")
     .select("*")
     .eq("product_id", product.id)
-    .eq("active", true)
     .order("id", { ascending: true });
 
-variants = variantError
-  ? []
-  : (variantData || []);
+if (variantError) {
+  showError();
+  return;
+}
+hasConfiguredVariants = (variantData || []).length > 0;
+variants = (variantData || []).filter(function (variant) {
+  return variant.active === true;
+});
 
       document.title =
         product.name + "｜COLORMIX";

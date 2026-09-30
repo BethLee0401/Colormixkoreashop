@@ -1044,7 +1044,6 @@ storageKey: "colormix-member-session"
         .from("product_variants")
         .select("*")
         .eq("product_id", item.id)
-        .eq("active", true)
         .order("id", { ascending: true });
 
       if (request !== quickRequest || !quickView.open) return;
@@ -1053,7 +1052,8 @@ storageKey: "colormix-member-session"
         return;
       }
 
-      const variants = variantData || [];
+      const hasConfiguredVariants = (variantData || []).length > 0;
+      const variants = (variantData || []).filter(function (v) { return v.active === true; });
       const sizes = variants.length
         ? [...new Set(variants.map(function (v) { return v.size; }).filter(Boolean))]
         : parseOptions(item.size);
@@ -1106,8 +1106,8 @@ storageKey: "colormix-member-session"
 
       function selectedVariant() {
         return variants.find(function (v) {
-          return (!v.size || v.size === selectedSize || selectedSize === "單一規格") &&
-            (!v.color || v.color === selectedColor || selectedColor === "單一顏色");
+          return (!v.size || v.size === selectedSize) &&
+            (!v.color || v.color === selectedColor);
         });
       }
 
@@ -1120,9 +1120,9 @@ storageKey: "colormix-member-session"
         });
         const choice = selectedVariant();
         document.getElementById("quickNumber").textContent = quantity;
-        document.getElementById("quickAdd").disabled = variants.length > 0 && !choice;
+        document.getElementById("quickAdd").disabled = hasConfiguredVariants && !choice;
         document.getElementById("quickStatus").textContent =
-          variants.length > 0 && !choice ? "此尺寸與顏色無法選購" :
+          hasConfiguredVariants && !choice ? "此尺寸與顏色無法選購" :
           item.product_type === "stock" &&
           Number(choice?.stock ?? item.stock_quantity ?? 0) >= quantity
             ? "現貨可選購" : "預購｜到貨後出貨";
@@ -1150,7 +1150,7 @@ storageKey: "colormix-member-session"
       });
       document.getElementById("quickAdd").addEventListener("click", function () {
         const choice = selectedVariant();
-        if (variants.length > 0 && !choice) return;
+        if (hasConfiguredVariants && !choice) return;
         let cart;
         try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
         catch (error) { cart = []; }
