@@ -518,7 +518,7 @@ storageKey: "colormix-member-session"
     `;
   }
 
-  if (order.payment_last5) {
+  if (order.status === "cancelled") return `<div style="margin-top:12px;color:#666;">付款方式：銀行匯款<br>此訂單已取消，無須回報付款。</div>`; if (order.payment_last5) {
     return `
       <div
         style="
