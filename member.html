@@ -684,6 +684,7 @@ storageKey: "colormix-member-session"
             shippingText(order.shipping_method)
           )}
           ・運費 ${money(fee)}
+          <br>寄送資料：${escapeHtml(order.shipping_address || "未提供")}
         </div>
 
         <div class="order-total">
