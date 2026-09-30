@@ -1252,6 +1252,7 @@ function renderCart() {
             draft[id] = document.getElementById(id).value;
           }
           draft.shippingMethod = chosenMethod;
+          draft.savedAt = Date.now();
           sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
           location.href = "/api/ecpay-map?method=" + encodeURIComponent(chosenMethod);
           return;
@@ -1718,12 +1719,13 @@ if (
       let draft;
       try { draft = JSON.parse(sessionStorage.getItem(CHECKOUT_DRAFT_KEY) || "null"); }
       catch (error) { draft = null; }
-      if (draft && ["family", "seven"].includes(draft.shippingMethod)) {
+      sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+      if (draft && Number.isFinite(draft.savedAt) && Date.now() - draft.savedAt < 20 * 60 * 1000 &&
+          Date.now() >= draft.savedAt && ["family", "seven"].includes(draft.shippingMethod)) {
         shippingMethod.value = draft.shippingMethod;
         for (const id of ["customerName", "customerPhone", "paymentMethod", "orderNote"]) {
           if (typeof draft[id] === "string") document.getElementById(id).value = draft[id];
         }
-        sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
         updateShippingFields();
       }
       restoreStoreSelection();

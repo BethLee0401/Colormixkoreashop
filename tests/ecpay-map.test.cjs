@@ -21,7 +21,7 @@ async function invoke(handler, method, query = {}, body = {}) {
 }
 
 for (const [method, subtype] of [['family', 'FAMI'], ['seven', 'UNIMART']]) {
-  test(`${method}: map launch and signed callback`, async () => {
+  test(`${method}: map launch and matching return token`, async () => {
     const response = await invoke(launch, 'GET', { method });
     assert.equal(response.status, 200);
     assert.match(response.body, /logistics-stage\.ecpay\.com\.tw\/Express\/map/);
