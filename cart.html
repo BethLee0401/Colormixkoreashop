@@ -1133,8 +1133,8 @@ function renderCart() {
         });
         const variant = productVariants.find(function (row) {
           return row.active === true &&
-            (!row.size || row.size === item.size || item.size === "單一規格") &&
-            (!row.color || row.color === item.color || item.color === "單一顏色");
+            (!row.size || row.size === item.size) &&
+            (!row.color || row.color === item.color);
         });
         if (productVariants.length && !variant) {
           throw new Error(item.name + " 的尺寸或顏色已變更，請移除後重新選購。");
