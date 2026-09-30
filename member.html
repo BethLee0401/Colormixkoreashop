@@ -492,6 +492,11 @@ storageKey: "colormix-member-session"
     }
 
     function paymentReportHtml(order, number) {
+  if (order.status === "cancelled") {
+    const method = order.payment_method === "convenience_store_cod" ? "超商取貨付款" : "銀行匯款";
+    return `<div style="margin-top:12px;color:#666;">付款方式：${method}<br>此訂單已取消，無須付款或回報付款。</div>`;
+  }
+
   if (
     order.payment_method ===
     "convenience_store_cod"
@@ -515,10 +520,9 @@ storageKey: "colormix-member-session"
           商品送達門市後，請於期限內取貨並付款。
         </span>
       </div>
-    `;
-  }
+    `;  }
 
-  if (order.status === "cancelled") return `<div style="margin-top:12px;color:#666;">付款方式：銀行匯款<br>此訂單已取消，無須回報付款。</div>`; if (order.payment_last5) {
+  if (order.payment_last5) {
     return `
       <div
         style="
