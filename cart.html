@@ -496,27 +496,9 @@
           <div class="form-group">
 
             <div class="form-group">
-  <label for="paymentMethod">付款方式</label>
+  <label>付款方式</label>
 
-  <select id="paymentMethod" required>
-    <option value="bank_transfer">
-      銀行匯款
-    </option>
-
-    <option value="convenience_store_cod" disabled hidden>
-      超商取貨付款（僅限全現貨訂單）
-    </option>
-  </select>
-
-  <div
-    id="paymentNotice"
-    style="
-      margin-top:8px;
-      color:#8d555c;
-      font-size:14px;
-      line-height:1.6;
-    "
-  ></div>
+  <p>銀行匯款</p>
 </div>
             <label id="addressLabel" for="shippingAddress">
               全家店名／店號
@@ -723,7 +705,6 @@ storageKey: "colormix-member-session"
 
     let cart = [];
     let currentUser = null;
-    let canUseCod = false;
     let selectedStore = null;
     let checkoutInProgress = false;
 
@@ -900,44 +881,7 @@ storageKey: "colormix-member-session"
     }
 
     
- function updatePaymentMethod() {
-  const paymentMethod =
-    document.getElementById("paymentMethod");
-
-  const paymentNotice =
-    document.getElementById("paymentNotice");
-
-  const codOption =
-    paymentMethod.querySelector(
-      'option[value="convenience_store_cod"]'
-    );
-
-  const hasPreorder = cart.some(function (item) {
-    return item.is_preorder === true;
-  });
-
-  const codDisabled =
-    hasPreorder || !canUseCod;
-
-  codOption.disabled = codDisabled;
-
-  if (hasPreorder) {
-    paymentMethod.value = "bank_transfer";
-
-    paymentNotice.textContent =
-      "此訂單含有預購商品，必須先完成銀行匯款，無法使用超商取貨付款。";
-  } else if (!canUseCod) {
-    paymentMethod.value = "bank_transfer";
-
-paymentNotice.textContent = "";
-  } else {
-    paymentNotice.textContent =
-      "您已有成功交易紀錄，本次全現貨訂單可選擇超商取貨付款。";
-  }
-}
-
 function renderCart() {
-  updatePaymentMethod();
       const overLimit = cartQuantity() > 15;
       document.getElementById("cartLimitNotice").hidden = !overLimit;
       if (!cart.length) {
@@ -1248,7 +1192,7 @@ function renderCart() {
         const config = await response.json();
         if (config.enabled) {
           const draft = {};
-          for (const id of ["customerName", "customerPhone", "paymentMethod", "orderNote"]) {
+          for (const id of ["customerName", "customerPhone", "orderNote"]) {
             draft[id] = document.getElementById(id).value;
           }
           draft.shippingMethod = chosenMethod;
@@ -1376,7 +1320,6 @@ async function checkLogin() {
   }
 
   currentUser = session?.user || null;
-  canUseCod = false;
 
   let profile = null;
 
@@ -1385,26 +1328,6 @@ async function checkLogin() {
       currentUser
     );
 
-    const {
-      data: completedOrders,
-      error: completedOrderError
-    } = await db
-      .from("orders")
-      .select("id")
-      .eq("user_id", currentUser.id)
-      .eq("status", "completed")
-      .limit(1);
-
-    if (completedOrderError) {
-      console.error(
-        "讀取交易紀錄失敗：",
-        completedOrderError
-      );
-    } else {
-      canUseCod =
-        Array.isArray(completedOrders) &&
-        completedOrders.length > 0;
-    }
   }
 
   const memberLink =
@@ -1546,23 +1469,7 @@ document.getElementById("sevenStoreLink").addEventListener("click", openStorePic
             };
           });
 
-        const paymentMethod =
-  document.getElementById("paymentMethod").value;
-
-if (
-  paymentMethod === "convenience_store_cod" &&
-  shippingMethod.value === "post"
-) {
-  checkoutInProgress = false;
-  checkoutButton.disabled = false;
-  checkoutButton.textContent =
-    "確認成立訂單";
-
-  showMessage(
-    "超商取貨付款必須選擇全家或 7-ELEVEN 店到店。"
-  );
-  return;
-}
+        const paymentMethod = "bank_transfer";
 
 let data, error;
 try {
@@ -1677,22 +1584,6 @@ const facebookButton =
 const instagramButton =
   document.getElementById("instagramOrderLink");
 
-if (
-  paymentMethod === "convenience_store_cod"
-) {
-  successMessage.innerHTML = `
-    此訂單付款方式為
-    <strong>超商取貨付款</strong>。<br>
-    商品送達指定門市後，請於期限內前往取貨並付款。<br><br>
-    <strong style="color:#a93434;">
-      請留意到貨通知，未取件可能影響日後使用
-      超商取貨付款的權限。
-    </strong>
-  `;
-
-  facebookButton.style.display = "none";
-  instagramButton.style.display = "none";
-} else {
   successMessage.innerHTML = `
     請點選下方 Facebook 或 Instagram
     私訊店家索取轉帳帳號。<br>
@@ -1705,7 +1596,6 @@ if (
 
   facebookButton.style.display = "";
   instagramButton.style.display = "";
-}
           window.scrollTo({
             top: 0,
             behavior: "smooth"
@@ -1723,7 +1613,7 @@ if (
       if (draft && Number.isFinite(draft.savedAt) && Date.now() - draft.savedAt < 20 * 60 * 1000 &&
           Date.now() >= draft.savedAt && ["family", "seven"].includes(draft.shippingMethod)) {
         shippingMethod.value = draft.shippingMethod;
-        for (const id of ["customerName", "customerPhone", "paymentMethod", "orderNote"]) {
+        for (const id of ["customerName", "customerPhone", "orderNote"]) {
           if (typeof draft[id] === "string") document.getElementById(id).value = draft[id];
         }
         updateShippingFields();
