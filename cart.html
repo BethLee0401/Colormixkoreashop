@@ -534,7 +534,7 @@
   href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  查詢並填入全家門市
+  選擇全家門市
 </a>
 
 <a
@@ -542,7 +542,7 @@
   href="#"
   style="display:none; margin-top:8px; color:#8d555c; text-decoration:underline;"
 >
-  查詢並填入 7-ELEVEN 門市
+  選擇 7-ELEVEN 門市
 </a>
           </div>
 
@@ -688,7 +688,7 @@
 
   <dialog id="storePicker" aria-labelledby="storePickerTitle" style="border:1px solid #ddd; border-radius:12px; width:min(92vw,480px); padding:24px; box-shadow:0 16px 45px #0003;">
     <h2 id="storePickerTitle" style="margin-top:0;">選擇取貨門市</h2>
-    <p style="line-height:1.6;">先開啟官方門市查詢，找到門市後回到這裡填入店名和店號，再按「使用這間門市」。</p>
+    <p style="line-height:1.6;">正式門市地圖尚未啟用，請先透過官方查詢頁找到門市，再填寫店名與店號。</p>
     <p><a id="officialStoreMap" href="#" target="_blank" rel="noopener noreferrer">開啟官方門市查詢 ↗</a></p>
     <form id="storePickerForm">
       <div class="form-group"><label for="storeName">門市名稱</label><input id="storeName" type="text" maxlength="40" required placeholder="例如：台中○○店"></div>
@@ -719,6 +719,7 @@ storageKey: "colormix-member-session"
 
     const CART_KEY = "colormix_cart";
     const STORE_RESULT_KEY = "colormix_selected_store";
+    const CHECKOUT_DRAFT_KEY = "colormix_checkout_store_draft";
 
     let cart = [];
     let currentUser = null;
@@ -1238,8 +1239,25 @@ function renderCart() {
       }
     }
 
-    function openStorePicker(event) {
+    async function openStorePicker(event) {
       event.preventDefault();
+      const chosenMethod = shippingMethod.value;
+      if (chosenMethod !== "family" && chosenMethod !== "seven") return;
+      try {
+        const response = await fetch("/api/ecpay-map?status=1", { cache: "no-store" });
+        const config = await response.json();
+        if (config.enabled) {
+          const draft = {};
+          for (const id of ["customerName", "customerPhone", "paymentMethod", "orderNote"]) {
+            draft[id] = document.getElementById(id).value;
+          }
+          draft.shippingMethod = chosenMethod;
+          draft.savedAt = Date.now();
+          sessionStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+          location.href = "/api/ecpay-map?method=" + encodeURIComponent(chosenMethod);
+          return;
+        }
+      } catch (error) { console.warn("門市地圖尚未啟用", error); }
       const method = shippingMethod.value;
       if (method !== "family" && method !== "seven") return;
       document.getElementById("storePickerTitle").textContent =
@@ -1697,7 +1715,21 @@ if (
 
     loadCart();
     updateShippingFields();
-    checkLogin().then(restoreStoreSelection);
+    checkLogin().then(() => {
+      let draft;
+      try { draft = JSON.parse(sessionStorage.getItem(CHECKOUT_DRAFT_KEY) || "null"); }
+      catch (error) { draft = null; }
+      sessionStorage.removeItem(CHECKOUT_DRAFT_KEY);
+      if (draft && Number.isFinite(draft.savedAt) && Date.now() - draft.savedAt < 20 * 60 * 1000 &&
+          Date.now() >= draft.savedAt && ["family", "seven"].includes(draft.shippingMethod)) {
+        shippingMethod.value = draft.shippingMethod;
+        for (const id of ["customerName", "customerPhone", "paymentMethod", "orderNote"]) {
+          if (typeof draft[id] === "string") document.getElementById(id).value = draft[id];
+        }
+        updateShippingFields();
+      }
+      restoreStoreSelection();
+    });
   </script>
 </body>
 </html>
