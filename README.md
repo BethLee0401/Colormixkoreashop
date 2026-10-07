@@ -35,3 +35,9 @@
 購物車畫面限制 15 件。資料庫端的 [`supabase/migrations/20260924_order_item_limit_15.sql`](supabase/migrations/20260924_order_item_limit_15.sql) 已於 2026-09-24 套用正式 Supabase；確認 `order_items` 的欄位後建立觸發器，再查詢 `pg_trigger` 確認其存在。直接新增或調整訂單明細時，超過 15 件亦會拒絕。
 
 目前 Supabase 只有正式專案。2026-09-30 的郵寄宅配測試訂單已在會員與後台核對並取消；歷史庫存與 2 筆既有「待聯絡」訂單仍需人工盤點。
+
+## 取貨付款停用（2026-10-02）
+
+新訂單僅使用銀行匯款。結帳頁已移除取貨付款選項，正式 Supabase 已套用 `20261002_disable_convenience_store_cod.sql`，拒絕新增取貨付款訂單及將其他付款方式改為取貨付款。歷史訂單保留原付款方式。
+
+`tests/rollback_order_flow.sql` 已改為驗證取貨付款被拒絕，且訂單筆數及庫存不變。新版尚未在正式資料庫執行；先前 2026-09-24 的通過記錄對應停用前版本。
