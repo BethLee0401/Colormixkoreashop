@@ -11,7 +11,6 @@ declare
   v_stock bigint;
   v_total_stock integer;
   v_status text;
-  v_payment text;
   v_cancelled integer;
   v_deducted integer;
   v_preorder boolean;
@@ -138,39 +137,25 @@ begin
   update public.orders set status = 'completed'
   where user_id = v_user_id and order_number = v_result->>'order_number';
 
-  v_result := public.create_order_with_payment(
-    '回滾流程測試', '0912345678', 'family', '測試門市（123456）',
-    '', v_items, 'convenience_store_cod'
-  );
-  select id, payment_method into v_order_id, v_payment
-  from public.orders
-  where user_id = v_user_id and order_number = v_result->>'order_number';
-  select stock into v_stock from public.product_variants
-  where product_id = v_product_id;
-  if v_payment is distinct from 'convenience_store_cod'
-    or v_stock is distinct from 3
-  then
-    raise exception 'FLOW_TEST_FAIL: eligible COD';
-  end if;
-
+  -- Even returning customers with stock-only orders must be rejected.
   begin
     perform public.create_order_with_payment(
       '回滾流程測試', '0912345678', 'family', '測試門市（123456）',
-      '', jsonb_build_array(jsonb_build_object(
-        'product_id', v_product_id, 'quantity', 10,
-        'size', 'M', 'color', '黑'
-      )), 'convenience_store_cod'
+      '', v_items, 'convenience_store_cod'
     );
-    raise exception 'FLOW_TEST_FAIL: COD preorder was accepted';
+    raise exception 'FLOW_TEST_FAIL: disabled COD was accepted';
   exception when others then
-    if sqlerrm not like '%訂單含有預購商品%' then
+    if sqlerrm not like '%目前不提供超商取貨付款%' then
       raise;
     end if;
   end;
   select count(*) into v_count from public.orders where user_id = v_user_id;
   select stock into v_stock from public.product_variants
   where product_id = v_product_id;
-  if v_count is distinct from 3 or v_stock is distinct from 3 then
+  select stock_quantity into v_total_stock from public."Products"
+  where id = v_product_id;
+  if v_count is distinct from 2 or v_stock is distinct from 4
+    or v_total_stock is distinct from 4 then
     raise exception 'FLOW_TEST_FAIL: rejected COD changed order/stock';
   end if;
 
@@ -190,7 +175,7 @@ begin
   select stock_quantity into v_total_stock from public."Products"
   where id = v_product_id;
   if v_preorder is distinct from true
-    or v_deducted is distinct from 3
+    or v_deducted is distinct from 4
     or v_stock is distinct from 0
     or v_total_stock is distinct from 0
     or (v_result->>'total')::integer is distinct from 4330
@@ -198,6 +183,6 @@ begin
     raise exception 'FLOW_TEST_FAIL: bank transfer preorder';
   end if;
 
-  raise exception 'ROLLBACK_FLOW_PASS: order, price, stock, cancellation, admin restore, COD and preorder verified';
+  raise exception 'ROLLBACK_FLOW_PASS: order, price, stock, cancellation, admin restore, COD rejection and preorder verified';
 end
 $cm_flow$;

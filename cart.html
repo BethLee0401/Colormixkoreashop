@@ -494,12 +494,11 @@
           </div>
 
           <div class="form-group">
+            <span>付款方式</span>
+            <p>銀行匯款</p>
+          </div>
 
-            <div class="form-group">
-  <label>付款方式</label>
-
-  <p>銀行匯款</p>
-</div>
+          <div class="form-group">
             <label id="addressLabel" for="shippingAddress">
               全家店名／店號
             </label>
@@ -1025,11 +1024,15 @@ function renderCart() {
           `;
         }).join("");
 
-      checkoutButton.disabled = !currentUser || overLimit;
+      checkoutButton.disabled = checkoutInProgress || !currentUser || overLimit;
+      if (checkoutInProgress) {
+        cartItemsElement.querySelectorAll("button").forEach(function (button) { button.disabled = true; });
+      }
       renderSummary();
     }
 
     function changeQuantity(index, amount) {
+      if (checkoutInProgress) return;
       if (amount > 0 && cartQuantity() >= 15) {
         showMessage("購物車最多 15 件，請減少數量後再繼續選購。");
         return;
@@ -1043,10 +1046,36 @@ function renderCart() {
     }
 
     function removeItem(index) {
+      if (checkoutInProgress) return;
       cart.splice(index, 1);
       clearMessage();
       saveCart();
       renderCart();
+    }
+
+    function setCheckoutBusy(busy, label = "確認成立訂單") {
+      checkoutInProgress = busy;
+      document.querySelectorAll("#checkoutForm input, #checkoutForm select, #checkoutForm textarea, #cartItems button")
+        .forEach(function (control) { control.disabled = busy; });
+      checkoutButton.disabled = busy || !currentUser || !cart.length || cartQuantity() > 15;
+      checkoutButton.textContent = label;
+    }
+
+    function openOrderChat(url, orderNumber, platform) {
+      const message = "您好，我的訂單編號是 " + orderNumber + "，請提供轉帳資料，謝謝。";
+      let copying;
+      try { copying = navigator.clipboard?.writeText(message); }
+      catch (error) { copying = null; }
+      window.open(url, "_blank", "noopener,noreferrer");
+      if (copying) {
+        copying.then(function () {
+          window.alert("訂單訊息已複製，請在 " + platform + " 對話中貼上並傳送。");
+        }).catch(function () {
+          window.prompt("無法自動複製，請複製下方訊息並貼到 " + platform + " 對話：", message);
+        });
+      } else {
+        window.prompt("請複製下方訊息並貼到 " + platform + " 對話：", message);
+      }
     }
 
     async function refreshCartBeforeCheckout() {
@@ -1185,6 +1214,7 @@ function renderCart() {
 
     async function openStorePicker(event) {
       event.preventDefault();
+      if (checkoutInProgress) return;
       const chosenMethod = shippingMethod.value;
       if (chosenMethod !== "family" && chosenMethod !== "seven") return;
       try {
@@ -1435,11 +1465,7 @@ document.getElementById("sevenStoreLink").addEventListener("click", openStorePic
           }
 
           if (checkoutInProgress) return;
-          checkoutInProgress = true;
-
-          checkoutButton.disabled = true;
-          checkoutButton.textContent =
-            "檢查商品資訊⋯";
+          setCheckoutBusy(true, "檢查商品資訊⋯");
 
           try {
             if (await refreshCartBeforeCheckout()) {
@@ -1450,15 +1476,11 @@ document.getElementById("sevenStoreLink").addEventListener("click", openStorePic
             showMessage("無法確認商品資訊：" + refreshError.message);
             return;
           } finally {
-            checkoutInProgress = false;
-            checkoutButton.disabled = !currentUser || !cart.length || cartQuantity() > 15;
-            checkoutButton.textContent = "確認成立訂單";
+            setCheckoutBusy(false);
           }
 
           if (checkoutInProgress) return;
-          checkoutInProgress = true;
-          checkoutButton.disabled = true;
-          checkoutButton.textContent = "訂單建立中⋯";
+          setCheckoutBusy(true, "訂單建立中⋯");
 
           const items = cart.map(function (item) {
             return {
@@ -1489,10 +1511,7 @@ try {
   error = requestError;
 }
 
-          checkoutInProgress = false;
-          checkoutButton.disabled = false;
-          checkoutButton.textContent =
-            "確認成立訂單";
+          setCheckoutBusy(false);
 
           if (error) {
             showMessage(
@@ -1515,46 +1534,14 @@ document
   .onclick = function (event) {
     event.preventDefault();
 
-    const message =
-      "您好，我的訂單編號是 " +
-      orderNumber +
-      "，請提供轉帳資料，謝謝。";
-
-    navigator.clipboard
-      .writeText(message)
-      .catch(function () {});
-
-    window.open(
-      "https://m.me/100063898780134",
-      "_blank"
-    );
-
-    window.alert(
-      "訂單訊息已複製，請在 Facebook 對話中貼上並傳送。"
-    );
+    openOrderChat("https://m.me/100063898780134", orderNumber, "Facebook");
   };
           document
   .getElementById("instagramOrderLink")
   .onclick = function (event) {
     event.preventDefault();
 
-    const message =
-      "您好，我的訂單編號是 " +
-      orderNumber +
-      "，請提供轉帳資料，謝謝。";
-
-    navigator.clipboard
-      .writeText(message)
-      .catch(function () {});
-
-    window.open(
-      "https://ig.me/m/colormix637",
-      "_blank"
-    );
-
-    window.alert(
-      "訂單訊息已複製，請在 Instagram 對話中貼上並傳送。"
-    );
+    openOrderChat("https://ig.me/m/colormix637", orderNumber, "Instagram");
   };
 
           cart = [];
